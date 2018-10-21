@@ -28,6 +28,8 @@ class ObjectFiwareConverter(object):
 
     @classmethod
     def fiware2Obj(clsself, _fiware_str, _objectStructure={}, useMetadata=True, ignoreWrongDataType=False):
+        if(type(_fiware_str) is dict):
+            _fiware_str = json.dumps(_fiware_str);
         jsonObj = clsself._obj(_fiware_str)
         re = ReverseEntity(**jsonObj)
         return re.setObject(_objectStructure, useMetadata, ignoreWrongDataType)

@@ -2,22 +2,32 @@ import requests
 import json 
 import httplib
 
-HEADERS = {"Content-Type" : "application/json"}
+
 
 def isResponseOk(statusCode):
     if(statusCode >= httplib.OK and statusCode <= httplib.IM_USED): # everything is fine
-        return True;
-    return False;
+        return True
+    return False
 
 
+ENTITIES = "entities"
+SUBSCRIPTIONS = "subscriptions"
 
+    
 class ContextBrokerHandler:
+    HEADER = {"Content-Type" : "application/json"}
+    HEADER_NO_PAYLOAD = {
+        "Accept": "application/json"
+    }
+
+    TIMEOUT = 0.5
+    NGSI_VERSION = "v2"
 
     def __init__(self, fiwareAddress):
         self.fiwareAddress = fiwareAddress
-         
+        self.fiwareAddress = "Http://localhost:1026"
         self.published_entities = []
-        self.entities = [];
+        self.entities = []
 
     def attach_entity(self, entity):
         self.entities.append(entity)
@@ -39,7 +49,7 @@ class ContextBrokerHandler:
         asJson = JsonConvert.ToJSON(entity)
         print asJson
 
-        response = requests.post(self.fiwareAddress + "/v2/entities", data=asJson, headers=HEADERS)
+        response = requests.post(self._getUrl(ENTITIES) , data=asJson, headers=HEADERS)
         statusCode = response.status_code;
         if(isResponseOk(statusCode)): # everything is fine
             self.published_entities.append(entityInstance)
@@ -94,26 +104,74 @@ class ContextBrokerHandler:
                 sub.run(msg)
         self.msg_queue = []
  
-    def subscribe2Entity(self, _entity_id, _endpoint):
-        msg =   {  
-            "description" : "Notify me",
-           "subject": {
-                "entities": [{"idPattern": ".*", "type": "" +_entity_id + ""}] 
-            },
-            "notification": {
-                "http": { "url": "http://10.64.10.152:5555/Task" } 
-            }
-        }   
-        print msg 
-        try:
-            response = requests.post(self.fiwareAddress + "/v2/subscriptions", data=json.dumps(msg), headers=HEADERS, timeout = 0.5)
+    def _request(self, method, url, data = None, **kwargs):
+        response = None
+        try:           
+            response = requests.request(method, url, data = data, headers = kwargs['headers'], timeout = self.TIMEOUT)      
+        except requests.exceptions.Timeout:
+            print "pass"
+        return response
+
+    
+
+    def getEntities(self, _entityId = None , _entityType=None):
+        
+        getUrl = self._getUrl(ENTITIES) + "/"
+        if (_entityId):
+            getUrl = getUrl + _entityId
+        if (_entityType):
+            getUrl += "?type=" + _entityType
+        
+        response = self._request("GET", getUrl, headers = self.HEADER_NO_PAYLOAD)
+        return json.loads(response.content.decode('utf-8'))
+
+    def subscribe2Entity(self, _description, _entities, _notification,  _metadata=None, _expires=None, _throttling=None,
+                        _condition_attributes=None, _condition_expression=None):
+        # based upon http://telefonicaid.github.io/fiware-orion/api/v2/stable/
+
+        msg = {}
+        msg["description"] = _description
+        condition = {}
+        if _condition_attributes:
+            condition["attrs"] = condition_attributes
+        if _condition_expression:
+            condition["expression"] = condition_expression
+
+        subject = {}
+        subject["entities"] = _entities
+        if(condition):
+            subject = {"condition": condition}
+        
+        msg["subject"] = subject
+
+        notification = {}
+        if _notification:
+            notification["http"] = { "url" : _notification}
+
+        msg["notification"] = notification
+        if _expires:
+            subscription["expires"] = _expires
+        if _throttling:
+            subscription["throttling"] = _throttling
+
+        # msg =   {  
+        #     "description" : "Notify me",
+        #    "subject": {
+        #         "entities": [{"idPattern": ".*", "type": "" +_entityType + ""}] 
+        #     },
+        #     "notification": {
+        #         "http": { "url": "" } 
+        #     }
+        # }   
+        print json.dumps(msg) 
+        try:            
+            #response = requests.post(self._getUrl(SUBSCRIPTIONS), data=json.dumps(msg), headers= self.HEADERS, timeout = self.TIMEOUT)
+            response = self._request("POST",self._getUrl(SUBSCRIPTIONS), data =json.dumps(msg), headers = self.HEADER)
             print response.headers.get('Location')
 
         except requests.exceptions.Timeout:
             pass
-        
-        return "57458eb60962ef754e7c0998", "Task"
-        
+               
         statusCode = response.status_code
         if(isResponseOk(statusCode)): # everything is fine 
             print "Status OK"
@@ -125,3 +183,8 @@ class ContextBrokerHandler:
         else:
             print statusCode
             print response
+        
+        return response.headers.get('Location')
+    def _getUrl(self, _uri):
+        return (self.fiwareAddress + "/" + self.NGSI_VERSION + "/" + _uri)
+       

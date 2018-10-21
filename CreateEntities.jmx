@@ -12,7 +12,7 @@
       <stringProp name="TestPlan.user_define_classpath"></stringProp>
     </TestPlan>
     <hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="CreateEntityTask" enabled="false">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="CreateEntityTask" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -30,7 +30,7 @@
           <collectionProp name="Arguments.arguments">
             <elementProp name="OCB_Address" elementType="Argument">
               <stringProp name="Argument.name">OCB_Address</stringProp>
-              <stringProp name="Argument.value">10.64.10.144</stringProp>
+              <stringProp name="Argument.value">localhost</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="OCB_Port" elementType="Argument">
@@ -59,7 +59,11 @@
                 <stringProp name="Argument.value">{&#xd;
 	&quot;id&quot;: &quot;Task1&quot;,&#xd;
 	&quot;type&quot;: &quot;Task&quot;,&#xd;
-	&quot;task&quot;: {&#xd;
+	&quot;taskOrder&quot;: {&#xd;
+		&quot;type&quot;: &quot;Integer&quot;,&#xd;
+		&quot;value&quot;: 0&#xd;
+	},&#xd;
+	&quot;taskTd&quot;: {&#xd;
 		&quot;type&quot;: &quot;Integer&quot;,&#xd;
 		&quot;value&quot;: 0&#xd;
 	}&#xd;
@@ -83,7 +87,7 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Update Task" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Update Task" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -277,7 +281,7 @@
         </ResultCollector>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="LocalHost" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="LocalHost" enabled="false">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -315,7 +319,7 @@
           </collectionProp>
         </HeaderManager>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create Entity" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Task" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -326,11 +330,14 @@
 &#xd;
 		&quot;id&quot;: &quot;Task1&quot;,&#xd;
 		&quot;type&quot;: &quot;Task&quot;,&#xd;
-		&quot;tasks&quot;: {&#xd;
+		&quot;taskOrder&quot;: {&#xd;
+			&quot;type&quot;: &quot;Integer&quot;,&#xd;
+			&quot;value&quot;: 0&#xd;
+		},&#xd;
+		&quot;taskTd&quot;: {&#xd;
 			&quot;type&quot;: &quot;Integer&quot;,&#xd;
 			&quot;value&quot;: 0&#xd;
 		}&#xd;
-&#xd;
 	}],&#xd;
 	&quot;subscriptionId&quot;: &quot;57458eb60962ef754e7c0998&quot;&#xd;
 }</stringProp>
@@ -342,7 +349,45 @@
           <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/Task</stringProp>
+          <stringProp name="HTTPSampler.path">/task</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Sensor" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;data&quot;: [{&#xd;
+&#xd;
+		&quot;id&quot;: &quot;SAN1&quot;,&#xd;
+		&quot;type&quot;: &quot;SAN&quot;,&#xd;
+		&quot;Sensor&quot;: {&#xd;
+			&quot;type&quot;: &quot;Integer&quot;,&#xd;
+			&quot;value&quot;: 5&#xd;
+		}&#xd;
+&#xd;
+	}],&#xd;
+	&quot;subscriptionId&quot;: &quot;57458eb60962ef754e7c0999&quot;&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/san</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>

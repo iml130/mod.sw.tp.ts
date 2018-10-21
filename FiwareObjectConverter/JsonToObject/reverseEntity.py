@@ -21,6 +21,8 @@ class ReverseEntity(object):
         self.payload = payload
 
     def setObject(self, obj, useMetadata=True, ignoreWrongDataType=False):
+        obj.type = self.type
+        obj.id = self.id
         for key, value in self.payload.iteritems():
             if key in obj.__dict__:
                 rea = ReverseEntityAttribute(value, useMetadata)
