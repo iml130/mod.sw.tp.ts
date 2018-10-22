@@ -14,8 +14,7 @@ san_bp = Blueprint('sanEndpoint', __name__)
 @san_bp.route('', methods=['GET', 'POST']) 
 def sanEndPoint():
     """Renders the home page.""" 
-    if request.json:
-        print request.json
+    if request.json: 
         jsonReq = request.json
         if(globals.FI_SUB_ID in jsonReq and globals.FI_DATA in jsonReq):
             subId =jsonReq[globals.FI_SUB_ID] 
