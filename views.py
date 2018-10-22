@@ -12,7 +12,6 @@ from Queue import Queue
 import httplib
 #from version import Version 
 import globals
-from statemachine import StateMachine 
 
 @app.route('/')
 @app.route('/home')

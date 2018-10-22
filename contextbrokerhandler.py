@@ -2,7 +2,7 @@ import requests
 import json 
 import httplib
 
-
+from FiwareObjectConverter.objectFiwareConverter import ObjectFiwareConverter
 
 def isResponseOk(statusCode):
     if(statusCode >= httplib.OK and statusCode <= httplib.IM_USED): # everything is fine
@@ -24,8 +24,7 @@ class ContextBrokerHandler:
     NGSI_VERSION = "v2"
 
     def __init__(self, fiwareAddress):
-        self.fiwareAddress = fiwareAddress
-        self.fiwareAddress = "Http://localhost:1026"
+        self.fiwareAddress = fiwareAddress 
         self.published_entities = []
         self.entities = []
 
@@ -41,40 +40,20 @@ class ContextBrokerHandler:
         statusCode = httplib.OK
 
         # check maybe to delete:
-        if(self.delete_entity(entityInstance)):
+        if(self.delete_entity(entityInstance.getId())):
             print "error"
 
-        entity = Entity()
-        entity.convertObjectToEntity(entityInstance) 
-        asJson = JsonConvert.ToJSON(entity)
-        print asJson
+        json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4)     
+        response = self._request("POST",self._getUrl(ENTITIES), data = json, headers = self.HEADER)
+        statusCode = response.status_code
+        if(not isResponseOk(statusCode)):
+            return json.loads(response.content)
+            # todo: raise error 
 
-        response = requests.post(self._getUrl(ENTITIES) , data=asJson, headers=HEADERS)
-        statusCode = response.status_code;
-        if(isResponseOk(statusCode)): # everything is fine
-            self.published_entities.append(entityInstance)
-            print "Status OK"
-        elif(statusCode == httplib.BAD_REQUEST): # everything is NOT fine
-            print "httplib.UNPROCESSABLE_ENTITY"
-            content = json.loads(response.content)
-            print content
-        else:
-            print statusCode
-            print response
-
-        # update of an entity:
-        #elif(statusCode == httplib.UNPROCESSABLE_ENTITY): # everything is fine
-        #    print "httplib.UNPROCESSABLE_ENTITY"
-        #    response = requests.patch(self.fiwareAddress + "/v2/entities/" + str(entity.id) + "/attrs", data=asJson, headers=HEADERS)
-        #    statusCode = response.status_code;
-        #    print statusCode
-
-    def delete_entity(self, entityInstance):
-        print "Delete Entity - Id: " + str (entityInstance)
-        entity = Entity()
-        entity.convertObjectToEntity(entityInstance) 
-        response = requests.delete(self.fiwareAddress + "/v2/entities/" + str(entity.id))
-        statusCode = response.status_code;
+    def delete_entity(self, entityId):
+        print "Delete Entity - Id: " + str (entityId) 
+        response = self._request("DELETE", self._getUrl(ENTITIES) + "/" + str(entityId), headers = self.HEADER_NO_PAYLOAD)
+        statusCode = response.status_code
         
         if(isResponseOk(statusCode)): # everything is fine
             print "Status OK"
@@ -111,8 +90,6 @@ class ContextBrokerHandler:
         except requests.exceptions.Timeout:
             print "pass"
         return response
-
-    
 
     def getEntities(self, _entityId = None , _entityType=None):
         
@@ -154,15 +131,6 @@ class ContextBrokerHandler:
         if _throttling:
             subscription["throttling"] = _throttling
 
-        # msg =   {  
-        #     "description" : "Notify me",
-        #    "subject": {
-        #         "entities": [{"idPattern": ".*", "type": "" +_entityType + ""}] 
-        #     },
-        #     "notification": {
-        #         "http": { "url": "" } 
-        #     }
-        # }   
         print json.dumps(msg) 
         try:            
             #response = requests.post(self._getUrl(SUBSCRIPTIONS), data=json.dumps(msg), headers= self.HEADERS, timeout = self.TIMEOUT)
@@ -174,17 +142,9 @@ class ContextBrokerHandler:
                
         statusCode = response.status_code
         if(isResponseOk(statusCode)): # everything is fine 
-            print "Status OK"
-            
-        elif(statusCode == httplib.BAD_REQUEST): # everything is NOT fine
-            print "httplib.UNPROCESSABLE_ENTITY"
-            content = json.loads(response.content)
-            print content
-        else:
-            print statusCode
-            print response
-        
-        return response.headers.get('Location')
+            print "Status OK"            
+        return response.headers.get('Location').replace("/v2/subscriptions/","")
+
     def _getUrl(self, _uri):
         return (self.fiwareAddress + "/" + self.NGSI_VERSION + "/" + _uri)
        

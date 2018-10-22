@@ -15,14 +15,14 @@ from flask import render_template,Response
 from Queue import Queue
 import json
 from datetime import datetime 
-
+from jinja2 import Environment, FileSystemLoader
 
 # local imports
 import globals 
 from configParser import Config
 from contextbrokerhandler import ContextBrokerHandler
 from FiwareObjectConverter import objectFiwareConverter
-from Entities import task
+from Entities import task, taskstate
 from icent import IcentDemo
 import servercheck
 
@@ -34,37 +34,73 @@ SERVER_ADDRESS = "localhost"
 CONFIG_FILE = "./fiware_config.ini"
 parsedConfigFile = Config(CONFIG_FILE)
 icentStateMachine = IcentDemo("Anda")
+
+currenTaskDesc = task.Task()
+currentTaskState = taskstate.TaskState()
   
 def flaskThread():
-    app.run(host= '0.0.0.0', port= PORT, threaded=True,use_reloader=False, debug = True)
+    app.run(host= parsedConfigFile.TASKPLANNER_HOST, port= parsedConfigFile.TASKPLANNER_PORT, threaded=True,use_reloader=False, debug = True)
     
+
+def ranDealer(q):
+    global icentStateMachine
+    while(True):
+        jsonReq, entityType = q.get()
+        jsonReq = jsonReq[0]
+        print "received RAN"
+        if(entityType == "RAN"):
+            # todo: check for state
+            if(icentStateMachine.state == "ran2LoadingDestination"):
+                icentStateMachine.AgvArrivedAtLoadingDestination()
+            elif(icentStateMachine.state == "ran2UnloadingDestination"):
+                icentStateMachine.AgvArrivedAtUnloadingDestination()
+            elif(icentStateMachine.state == "ran2WaitingArea"):
+                icentStateMachine.AgvArrivedAtWaitingArea()            
+            print icentStateMachine.state
 
 def sanDealer(q):
     global icentStateMachine 
-    while True:
-        print threading.current_thread()
+    while True: 
         jsonReq, entityType = q.get() 
         #jsonReq = jsonReq[0]
         if(entityType == "SAN"):
-            print "received an SAN update"
+            if(icentStateMachine.state == "wait4ran2loading"):
+                # to do: check for SAN_ID, Type and Value
+
+                # AGV is loaded manually and confirmed
+                icentStateMachine.AgvIsLoaded()
+                # send agv to unload destination
+                # todo: send agv to destinatin
+            elif(icentStateMachine.state == "wait4ran2unloading"):
+                # to do: check for SAN_ID, Type and Value
+                
+                # agv is unloaded manually and confirmed
+                icentStateMachine.AgvIsUnloaded()
+                # send AGV to waiting area
+            print icentStateMachine.state
         else:
             print "Not a known Entitytype\n"
 
 def taskDealer(q):    
     global icentStateMachine 
-    while True:
-        print threading.current_thread()
+    while True: 
         jsonReq, entityType = q.get()
         jsonReq = jsonReq[0]
         if(entityType == "Task"):
             entityTask = task.Task()
             objectFiwareConverter.ObjectFiwareConverter.fiware2Obj(jsonReq,entityTask,useMetadata=False)
-            
-            if(entityTask.taskOrder == task.TaskOrder.New):
-                icentStateMachine.start()
-                print icentStateMachine.state
+            if(icentStateMachine.state == "idle"):
+                if(entityTask.taskOrder == task.TaskOrder.New):
+                    icentStateMachine.NewTask()
+                    currentTask = taskstate.getNewTaskId()
+                    
+                    print icentStateMachine.state 
+                    j2_env = Environment(loader=FileSystemLoader("./Templates"), trim_blocks=True)
+                    print j2_env.get_template('motion_channel.template').render( my_string="Wheeeee!")
+                    #print render_template('./Templates.motion_channel.template',)
+                # todo: Send AGV to LoadingDestination
             elif(entityTask.taskOrder== task.TaskOrder.EmergencyStop):
-                icentStateMachine.panic()
+                icentStateMachine.Panic()
                 print icentStateMachine.state
                 
         elif (entityType == "SAN"):
@@ -97,13 +133,17 @@ if __name__ == '__main__':
     checkIfServerIsUpRunning.join()
     # # create an instance of the fiware ocb handler
     ocbHandler = ContextBrokerHandler(parsedConfigFile.getFiwareServerAddress())
-    print ocbHandler.getEntities()
+    ocbHandler.create_entity(currentTaskState) 
+    ocbHandler.create_entity(currenTaskDesc) 
+
     subscriptionId = ocbHandler.subscribe2Entity( _description = "notify me",
-            _entities = obj2JsonArray({ "id" : "Task1", "type" : "Task"}),  
+            _entities = obj2JsonArray(task.Task.getEntity()),  
             _notification = "http://localhost:5555/task",)
 
-    globals.subscriptionDict[subscriptionId] = task.Task.getType()
-    globals.subscriptionDict["57458eb60962ef754e7c0999"] = "SAN"
+    globals.subscriptionDict[subscriptionId] = task.Task.Type()
+    globals.subscriptionDict["0"] = "Task"
+    globals.subscriptionDict["1"] = "SAN"
+    globals.subscriptionDict["2"] = "RAN"
 
     # entityAttributeChangePublisher = EntityAttributeChangeObserver(parsedConfigFile.getFiwareServerAddress())
  
@@ -120,8 +160,10 @@ if __name__ == '__main__':
     # # wait until server is available
     workerTask = Thread(target=taskDealer, args=(globals.taskQueue,))
     workerSan = Thread(target=sanDealer, args=(globals.sanQueue,))
+    workerRan = Thread(target=ranDealer, args=(globals.ranQueue,))
     workerTask.start()
     workerSan.start()
+    workerRan.start()
     
     print "Done"
     user_input = ""

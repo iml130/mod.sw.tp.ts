@@ -5,7 +5,8 @@ class IcentDemo(object):
 
     # Define some states. Most of the time, narcoleptic superheroes are just like
     # everyone else. Except for...
-    states = ['init', 'idle', 'ran2loading', 'wait4ran2loading', 'ran2unloading', 'ran2waitingarea', 'finished', 'error']
+    states = ['init', 'idle', 'ran2LoadingDestination', 'wait4ran2loading', 'ran2UnloadingDestination',
+              'wait4ran2unloading', 'ran2WaitingArea', 'finished', 'error']
 
     def __init__(self, name):
 
@@ -21,14 +22,15 @@ class IcentDemo(object):
         # the Machine initializer as the transitions= argument.
 
         # At some point, every superhero must rise and shine.
-        self.machine.add_transition(trigger='start', source='idle', dest='ran2loading')
-
-        # Superheroes need to keep in shape.
-        self.machine.add_transition(trigger='Go2LoadingArea', source='ran2loading', dest='wait4ran2loading')
-
+        self.machine.add_transition(trigger='NewTask', source='idle', dest='ran2LoadingDestination')
+        self.machine.add_transition(trigger='AgvArrivedAtLoadingDestination', source='ran2LoadingDestination', dest='wait4ran2loading')
+        self.machine.add_transition(trigger='AgvIsLoaded', source='wait4ran2loading', dest='ran2UnloadingDestination')
+        self.machine.add_transition(trigger='AgvArrivedAtUnloadingDestination', source='ran2UnloadingDestination', dest='wait4ran2unloading')
+        self.machine.add_transition(trigger='AgvIsUnloaded', source='wait4ran2unloading', dest='ran2WaitingArea')
+        self.machine.add_transition(trigger='AgvArrivedAtWaitingArea', source='ran2WaitingArea', dest='idle')
         
-        self.machine.add_transition('panic', '*', 'error')
-        self.machine.add_transition('init', 'error', 'idle')
+        self.machine.add_transition('Panic', '*', 'error')
+        self.machine.add_transition('Init', 'error', 'idle')
 
     def update_journal(self):
         """ Dear Diary, today I saved Mr. Whiskers. Again. """
