@@ -21,19 +21,16 @@ class ObjectFiwareConverter(object):
     """
 
     @classmethod
-    def obj2Fiware(clsself, _object, ind=0):
+    def obj2Fiware(clsself, _object, ind=0, dataTypeDict={}, ignorePythonMetaData=False): 
         en = Entity()
-        en.setObject(_object)
+        en.setObject(_object, dataTypeDict, ignorePythonMetaData)
         return clsself._json(en, ind)
 
     @classmethod
-    def fiware2Obj(clsself, _fiware_str, _objectStructure={}, useMetadata=True, ignoreWrongDataType=False):
-        if(type(_fiware_str) is dict):
-            _fiware_str = json.dumps(_fiware_str);
+    def fiware2Obj(clsself, _fiware_str, _objectStructure={}, useMetadata=True, ignoreWrongDataType=False, setAttr=False):
         jsonObj = clsself._obj(_fiware_str)
         re = ReverseEntity(**jsonObj)
-        return re.setObject(_objectStructure, useMetadata, ignoreWrongDataType)
-      
+        return re.setObject(_objectStructure, useMetadata, ignoreWrongDataType, setAttr) 
 
     @classmethod
     def _complex_handler(clsself, Obj):

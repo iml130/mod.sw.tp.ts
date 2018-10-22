@@ -30,13 +30,38 @@ class ReverseEntityAttribute(object):
             # Check if a viable struct exists.
             raise ValueError(TYPE_VALUE_METADATA_NOT_DEFINED_MESSAGE)
 
-        if _dict['type'] == '' or _dict['type'] == 'boolean' or _dict['type'] == 'number' or _dict['type']=="Integer":
-            # We don't care about primitive types just set them
+        if not 'metadata' in _dict:
+            useMetadata=False
+
+
+        if _dict['type'] == '' :
             self.value = _dict['value']
+
+        if _dict['type'] == 'boolean' :
+            self.value = bool(_dict['value'])
+            return
+
+        if  _dict['type'] == 'number' or _dict['type'] == 'Integer':
+            self.value = float(_dict['value'])
+            if self.value % 1 == 0.0:
+                if useMetadata and 'python' in _dict['metadata']:
+                    metadata = _dict['metadata']
+                    if metadata['python'] == dict(type="dataType", value="int"):
+                        self.value = int(_dict['value'])
+                        return
+                    else: 
+                        self.value = long(_dict['value'])
+                        return
+                else: 
+                    self.value = long(self.value)
+                    return
+            else:
+                return
+        
 
         elif _dict['type'] == 'string':
             # Case String or Unicode
-            if 'python' in _dict['metadata'] and useMetadata:
+            if useMetadata and 'python' in _dict['metadata']:
                 metadata = _dict['metadata']
                 if metadata['python'] == dict(type="dataType", value="unicode"):
                     self.value = unicode(_dict['value'])
@@ -54,7 +79,7 @@ class ReverseEntityAttribute(object):
                 tempValue.append(re.getValue())
 
             # Second: decide if Complex, Tuple or List
-            if 'python' in _dict['metadata'] and useMetadata:
+            if useMetadata and 'python' in _dict['metadata']:
                 metadata = _dict['metadata']
                 if metadata['python'] == dict(type="dataType", value="complex"):
                     self.value = complex(*tempValue)
@@ -72,14 +97,19 @@ class ReverseEntityAttribute(object):
             for key, value in tempDict.iteritems():
                 re = ReverseEntityAttribute(value, useMetadata)
                 self.value[key] = re.getValue()
+            return
 
         else:
-            # Maybe a class with key, value or another JSON object
+            # Maybe a class with key, value or another JSON object, check if you can iterate!
+            if (not hasattr(_dict['value'], 'iteritems')):
+                raise ValueError("Unknown Object-Type: " + _dict['type'] + ". And it is not possible to iterate over this Object-Type!")
+
             tempDict = {}
             for key, value in _dict['value'].iteritems():
                 rea = ReverseEntityAttribute(value, useMetadata)
                 tempDict[key] = rea.getValue()
             self.value = tempDict
+            return
 
     def getValue(self):
         return self.value

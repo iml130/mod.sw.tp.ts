@@ -18,7 +18,7 @@ class Test_JsonConverter(unittest.TestCase):
     def test_2Obj(self):
         json = """{"type": "TestClass", "id": "TestClass1", "val": {"type": "number", "value": 1, "metadata": {} } }"""
         tc = TestClass()
-        tc.val = 2
+        tc.val = 2L
         ObjectFiwareConverter.fiware2Obj(json, tc)
         self.assertEqual(tc.val, 1)
 
@@ -59,6 +59,17 @@ class Test_JsonConverter(unittest.TestCase):
 
         self.assertEqual(tc.val, 1)
 
+    def test_IntegerType(self): ### TODO Accept Integers and other primitives?
+        json = """{"id":"Task1","type":"Task","task":{"type":"Integer","value":0}}"""
+        tc = TestClass()
+        tc.val = 1 # set Number/Integer
+
+        ObjectFiwareConverter.fiware2Obj(json, tc, setAttr=True)
+
+        self.assertEqual(getattr(tc, 'task'), 0)
+        self.assertEqual(getattr(tc, 'id'), 'Task1')
+        self.assertEqual(getattr(tc, 'type'), 'Task')
+        self.assertEqual(tc.val, 1)
 
 class TestClass(object):
     def __init__(self):

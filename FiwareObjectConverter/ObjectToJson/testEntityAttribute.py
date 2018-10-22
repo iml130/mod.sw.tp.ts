@@ -15,51 +15,51 @@ class TestEntityAttribute(unittest.TestCase):
     def test_EntityAttributeCompletely(self):
         # General functionality given.
         entity = Entity()
-        entity.setObject(ComplexExample())
+        entity.setObject(ComplexExample(), {}, False)
         ComplexExample().ToJSON(entity)
         # No Error thrown
 
     def test_EntityAttributeBool(self):
-        ea = EA(True)
-        self.assertEqual(ea.metadata, {})
+        ea = EA(True, False)
+        self.assertTrue(not hasattr(ea, 'metadata'))
         self.assertEqual(ea.value, True)
         self.assertEqual(ea.type, "boolean")
 
-        ea = EA(False)
-        self.assertEqual(ea.metadata, {})
+        ea = EA(False, False)
+        self.assertTrue(not hasattr(ea, 'metadata'))
         self.assertEqual(ea.value, False)
         self.assertEqual(ea.type, "boolean")
 
     def test_EntityAttributeInt(self):
-        ea = EA(1)
+        ea = EA(1, False)
         self.assertEqual(ea.metadata, dict(
             python=dict(type="dataType", value="int")))
         self.assertEqual(ea.value, 1)
         self.assertEqual(ea.type, "number")
 
     def test_EntityAttributeFloat(self):
-        ea = EA(2.132)
+        ea = EA(2.132, False)
         self.assertEqual(ea.metadata, dict(
             python=dict(type="dataType", value="float")))
         self.assertEqual(ea.value, 2.132)
         self.assertEqual(ea.type, "number")
 
     def test_EntityAttributeLong(self):
-        ea = EA(42L)
+        ea = EA(42L, False)
         self.assertEqual(ea.metadata, dict(
             python=dict(type="dataType", value="long")))
         self.assertEqual(ea.value, 42L)
         self.assertEqual(ea.type, "number")
 
     def test_EntityAttributeComplex(self):
-        ea = EA(complex(3, 1))
+        ea = EA(complex(3, 1), False)
         self.assertEqual(ea.metadata, dict(
             python=dict(type="dataType", value="complex")))
         self.assertEqual(ea.value[0].value, 3)
         self.assertEqual(ea.value[1].value, 1)
         self.assertEqual(ea.type, "array")
 
-        ea = EA(2.34j)
+        ea = EA(2.34j, False)
         self.assertEqual(ea.metadata, dict(
             python=dict(type="dataType", value="complex")))
         self.assertEqual(ea.value[0].value, 0)
@@ -67,20 +67,20 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(ea.type, "array")
 
     def test_EntityAttributeString(self):
-        ea = EA("Hello world!")
-        self.assertEqual(ea.metadata, {})
+        ea = EA("Hello world!", False)
+        self.assertTrue(not hasattr(ea, 'metadata'))
         self.assertEqual(ea.value, "Hello world!")
         self.assertEqual(ea.type, "string")
 
     def test_EntityAttributeUnicode(self):
-        ea = EA(u'Unicode')
+        ea = EA(u'Unicode', False)
         self.assertEqual(ea.metadata, dict(
             python=dict(type="dataType", value="unicode")))
         self.assertEqual(ea.value, u'Unicode')
         self.assertEqual(ea.type, "string")
 
     def test_EntityAttributeTuple(self):
-        ea = EA((1, 2))
+        ea = EA((1, 2), False)
         self.assertEqual(ea.metadata, dict(
             python=dict(type="dataType", value="tuple")))
         self.assertTrue(isinstance(ea.value, list))
@@ -89,23 +89,23 @@ class TestEntityAttribute(unittest.TestCase):
         self.assertEqual(ea.type, "array")
 
     def test_EntityAttributeList(self):
-        ea = EA([1, 2])
-        self.assertEqual(ea.metadata, {})
+        ea = EA([1, 2], False)
+        self.assertTrue(not hasattr(ea, 'metadata'))
         self.assertTrue(isinstance(ea.value, list))
         self.assertEqual(ea.value[0].value, 1)
         self.assertEqual(ea.value[1].value, 2)
         self.assertEqual(ea.type, "array")
 
     def test_EntityAttributeDict(self):
-        ea = EA(dict(a=1, b=2))
-        self.assertEqual(ea.metadata, {})
+        ea = EA(dict(a=1, b=2), False)
+        self.assertTrue(not hasattr(ea, 'metadata'))
         self.assertTrue(isinstance(ea.value, dict))
         self.assertEqual(ea.value.get('a').value, 1)
         self.assertEqual(ea.value.get('b').value, 2)
         self.assertEqual(ea.type, "object")
 
     def test_EntityAttributeForeignClass(self):
-        ea = EA(ClassInt())
+        ea = EA(ClassInt(), False)
         self.assertEqual(ea.metadata, dict(
             python=dict(type="dataType", value="class")))
         self.assertEqual(ea.type, "ClassInt")

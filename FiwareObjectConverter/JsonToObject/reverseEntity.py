@@ -20,12 +20,16 @@ class ReverseEntity(object):
         self.id = id
         self.payload = payload
 
-    def setObject(self, obj, useMetadata=True, ignoreWrongDataType=False):
-        obj.type = self.type
-        obj.id = self.id
+    def setObject(self, obj, useMetadata=True, ignoreWrongDataType=False, setAttr=False):
+        # Explicitly set id and type, always!
+        setattr(obj, 'id', self.id)
+        setattr(obj, 'type', self.type)
+        
         for key, value in self.payload.iteritems():
-            if key in obj.__dict__:
-                rea = ReverseEntityAttribute(value, useMetadata)
+            rea = ReverseEntityAttribute(value, useMetadata)
+            if (setAttr):
+                setattr(obj, key, rea.getValue())
+            elif key in obj.__dict__:
                 if (ignoreWrongDataType):
                     # Not bidirectional
                     obj.__dict__[key] = rea.getValue()

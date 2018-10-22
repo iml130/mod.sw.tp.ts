@@ -21,21 +21,32 @@ class Entity(object):
         self.type = self.__class__.__name__
         self.id = self.type + str(uuid.uuid4())
 
-    def setObject(self, _object):
+    def setObject(self, _object, dataTypeDict, ignorePythonMetaData):
         # Clear own dictionary
         self.__dict__.clear()
         try:
             # Setting EntityType and EntitiyID
             self.type = _object.__class__.__name__
-            self.id = self.type + str(uuid.uuid4())
+            self.id = self.type + "1"
 
             # Set Key/Value in own Dictionary
-            for key, value in _object.__dict__.iteritems():
+            if (isinstance(_object, dict)):
+                iterL = _object.keys()
+            elif(hasattr(_object, '__slots__')):
+                iterL = getattr(_object, '__slots__')
+            else:
+                iterL = _object.__dict__
+
+            for key in iterL:
+                if (isinstance(_object, dict)):
+                    value = _object[key]
+                else:
+                    value = getattr(_object, key)
                 if (key == "type" or key == "id" or key.startswith('_', 0, 1)):
                     # Object contains invalid key-name, ignore!
                     pass
                 else:
-                    self.__dict__[key] = EntityAttribute(value)
+                    self.__dict__[key] = EntityAttribute(value, ignorePythonMetaData, dataTypeDict.get(key)) 
         except AttributeError as ex:
             raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex)
 

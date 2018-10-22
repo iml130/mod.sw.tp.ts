@@ -13,11 +13,12 @@ class EntityAttribute():
 
     """
 
-    def __init__(self, _object):
+    def __init__(self, _object, ipmd, concreteDataType=None):  
         self.value = _object
         self.type = ""
-        self.metadata = {}
+        self.metadata = dict()
         objectType = type(_object)
+
 
         # Simply if-then-else to the Json fromat
         if(objectType is type(None)):
@@ -28,49 +29,63 @@ class EntityAttribute():
         elif objectType is int:
             self.type = "number"
             self.value = int(_object)
-            self.metadata = dict(python=dict(type="dataType", value="int"))
+            self.setPythonMetaData(ipmd, "int")
         elif objectType is float:
             self.type = "number"
             self.value = float(_object)
-            self.metadata = dict(python=dict(type="dataType", value="float"))
+            self.setPythonMetaData(ipmd, "float")
         elif objectType is long:
             self.type = "number"
             self.value = long(_object)
-            self.metadata = dict(python=dict(type="dataType", value="long"))
+            self.setPythonMetaData(ipmd, "long")
         elif objectType is complex:
             self.type = "array"
             t = complex(_object)
-            self.value = [EntityAttribute(t.real), EntityAttribute(t.imag)]
-            self.metadata = dict(python=dict(type="dataType", value="complex"))
+            self.value = [EntityAttribute(t.real, ipmd), EntityAttribute(t.imag, ipmd)]
+            self.setPythonMetaData(ipmd, "complex")
         elif objectType is str:
             self.type = "string"
             self.value = str(_object)
         elif objectType is unicode:
             self.type = "string"
             self.value = unicode(_object)
-            self.metadata = dict(python=dict(type="dataType", value="unicode"))
+            self.setPythonMetaData(ipmd, "unicode")
         elif objectType is tuple:
             self.type = "array"
             self.value = []
-            self.metadata = dict(python=dict(type="dataType", value="tuple"))
+            self.setPythonMetaData(ipmd, "tuple")
             for item in _object:
-                self.value.append(EntityAttribute(item))
+                self.value.append(EntityAttribute(item, ipmd))
         elif objectType is list:
             self.type = "array"
             self.value = []
             for item in _object:
-                self.value.append(EntityAttribute(item))
+                self.value.append(EntityAttribute(item, ipmd))
         elif objectType is dict:
             self.type = "object"
             tempDict = {}
             for key, value in _object.iteritems():
-                tempDict[key] = EntityAttribute(value)
-            self.value = tempDict
+                tempDict[key] = EntityAttribute(value,ipmd )
+            self.value = tempDict        
         else:
             # Case it is a Class
             self.type = _object.__class__.__name__
-            self.metadata = dict(python=dict(type="dataType", value="class"))
+            self.setPythonMetaData(ipmd, "class")
             tempDict = {}
             for key, value in _object.__dict__.iteritems():
-                tempDict[key] = EntityAttribute(value)
+                tempDict[key] = EntityAttribute(value, ipmd)
             self.value = tempDict
+
+
+        if concreteDataType is not None:
+            self.metadata["dataType"] = dict(type="dataType", value=concreteDataType)
+            pass
+
+        # Remove metadata-Attribute if it is empty (minimizing the JSON)
+        if self.metadata == {} :
+            delattr(self, "metadata")
+
+    def setPythonMetaData(self, ignorePythonMetaData, val):
+        if not ignorePythonMetaData:
+            self.metadata["python"] = dict(type="dataType", value=val)
+    

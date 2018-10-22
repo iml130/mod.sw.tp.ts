@@ -96,3 +96,5 @@ class TestEntityAttribute(unittest.TestCase):
         rea = ReverseEntityAttribute(d)
         self.assertEqual(dict(int=1), rea.getValue())
         self.assertEqual(type(rea.getValue()), dict)
+
+

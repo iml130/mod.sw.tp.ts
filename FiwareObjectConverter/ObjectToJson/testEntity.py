@@ -18,13 +18,13 @@ class Test_JsonConverter(unittest.TestCase):
     def test_EntitiysetObejct_Primitve(self):
         en = Entity()
         try:
-            en.setObject(1)
+            en.setObject(1, {}, False)
         except ValueError:
             self.assertTrue(True)
 
     def test_EntitiysetObejct_Non_Primitve(self):
         en = Entity()
-        en.setObject(TestClass())
+        en.setObject(TestClass(), {}, False)
         self.assertEqual(en.id[0:9], "TestClass")
         self.assertEqual(en.type, "TestClass")
         self.assertEqual(en.__dict__['value'].value, 1)
