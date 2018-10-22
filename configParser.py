@@ -3,6 +3,7 @@ import io
 import sys
 
 
+
 class Config(object):
     """description of class"""
     def __init__(self, _fileName):
@@ -17,7 +18,8 @@ class Config(object):
         self.CB_FIWARE_SERVICE=config.get('contextbroker', 'fiware_service')
         self.CB_FIWARE_SERVICEPATH = "/Sensors"
         self.CB_URL = "http://"+self.CB_HOST+":"+self.CB_PORT
-    
+        self.TASKPLANNER_PORT = int(config.get('taskplanner', 'port'))
+        self.TASKPLANNER_HOST = config.get('taskplanner', 'host')
 
     def getFiwareServerAddress(self):
         return "http://"+ self.CB_HOST+":"+self.CB_PORT
