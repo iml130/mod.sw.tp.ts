@@ -1,0 +1,15 @@
+General Info
+	POST /NGSI10/updateContext HTTP/1.1
+	Accept-Encoding: identity
+	Content-Length: 1284
+	Host: 10.48.135.27:1026
+	Accept: application/json
+	User-Agent: Python-urllib/2.7
+	Connection: close
+	Content-Type: application/json
+
+REST CALL	
+POST context_broker_IP:1026/v1/updateContext
+
+BODY
+{"contextElements": [{"attributes": [{"type": "COMMAND", "name": "COMMAND", "value": ["motion_channel"]}, {"type": "opil_v1.msg.MotionAssignment", "name": "motion_channel", "value": "{%27firosstamp%27: 1536222410.771381, %27is_waypoint%27: false, %27task_id%27: {%27id%27: 1, %27description%27: %27%27}, %27point%27: {%27y%27: 14.0, %27x%27: 11.0, %27theta%27: 0.0}, %27point_id%27: {%27id%27: 1, %27description%27: %27%27}, %27sequence%27: {%27length%27: 1, %27sequence_number%27: 1}, %27motion_area%27: {%27header%27: {%27stamp%27: {%27secs%27: 0, %27nsecs%27: 0}, %27frame_id%27: %27%27, %27seq%27: 0}, %27polygon%27: {%27points%27: []}}, %27max_velocity%27: {%27linear%27: {%27y%27: 0.0, %27x%27: 0.0, %27z%27: 0.0}, %27angular%27: {%27y%27: 0.0, %27x%27: 0.0, %27z%27: 0.0}}, %27header%27: {%27stamp%27: {%27secs%27: 1536222372, %27nsecs%27: 930678771}, %27frame_id%27: %27/map%27, %27seq%27: 0}, %27max_acceleration%27: {%27linear%27: {%27y%27: 0.0, %27x%27: 0.0, %27z%27: 0.0}, %27angular%27: {%27y%27: 0.0, %27x%27: 0.0, %27z%27: 0.0}}, %27motion_id%27: {%27id%27: 1, %27description%27: %27%27}, %27robot_id%27: {%27id%27: 0, %27description%27: %27%27}, %27use_orientation%27: true}"}], "type": "ROBOT", "id": "robot_opil_v1", "isPattern": "false"}], "updateAction": "APPEND"}

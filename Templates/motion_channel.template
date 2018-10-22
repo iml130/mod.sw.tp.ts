@@ -1,0 +1,8 @@
+{
+    "id" : "test", 
+    "type": "ran", 
+    "value" : {
+        "type": "vvvv",
+        "value" : "{{ my_string }}"
+    }
+}
