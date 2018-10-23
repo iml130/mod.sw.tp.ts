@@ -21,13 +21,14 @@ class Entity(object):
         self.type = self.__class__.__name__
         self.id = self.type + str(uuid.uuid4())
 
-    def setObject(self, _object, dataTypeDict, ignorePythonMetaData):
+    def setObject(self, _object, dataTypeDict, ignorePythonMetaData, showIdValue = True ):
         # Clear own dictionary
         self.__dict__.clear()
         try:
             # Setting EntityType and EntitiyID
-            self.type = _object.__class__.__name__
-            self.id = self.type + "1"
+            if (showIdValue):
+                self.type = _object.__class__.__name__
+                self.id = self.type + "1"
 
             # Set Key/Value in own Dictionary
             if (isinstance(_object, dict)):
@@ -49,6 +50,6 @@ class Entity(object):
                     self.__dict__[key] = EntityAttribute(value, ignorePythonMetaData, dataTypeDict.get(key)) 
         except AttributeError as ex:
             raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex)
-
+ 
     def __repr__(self):
         return "Id: " + str(self.id) + ", Type: " + str(self.type)

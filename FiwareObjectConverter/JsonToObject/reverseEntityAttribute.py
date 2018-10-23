@@ -41,20 +41,26 @@ class ReverseEntityAttribute(object):
             self.value = bool(_dict['value'])
             return
 
-        if  _dict['type'] == 'number' or _dict['type'] == 'Integer':
-            self.value = float(_dict['value'])
-            if self.value % 1 == 0.0:
-                if useMetadata and 'python' in _dict['metadata']:
-                    metadata = _dict['metadata']
-                    if metadata['python'] == dict(type="dataType", value="int"):
-                        self.value = int(_dict['value'])
-                        return
-                    else: 
-                        self.value = long(_dict['value'])
-                        return
-                else: 
-                    self.value = long(self.value)
-                    return
+        if  _dict['type'] == 'number' or _dict['type'] == 'Integer' or _dict['type'] == 'Float':
+            if(isinstance(_dict['value'], int)):
+                self.value = int(_dict['value'])
+            elif(isinstance(_dict['value'], float)):
+                self.value = float (_dict['value'])
+            elif(isinstance(_dict['value'], long)):
+                self.value = long(_dict['value'])                
+            
+            # if self.value % 1 == 0.0:
+            #     if useMetadata and 'python' in _dict['metadata']:
+            #         metadata = _dict['metadata']
+            #         if metadata['python'] == dict(type="dataType", value="int"):
+            #             self.value = int(_dict['value'])
+            #             return
+            #         else: 
+            #             self.value = long(_dict['value'])
+            #             return
+            #     else: 
+            #         self.value = long(self.value)
+            #         return
             else:
                 return
         

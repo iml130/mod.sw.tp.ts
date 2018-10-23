@@ -3,8 +3,4 @@
 __pycache__/
 *.py[cod]
 *$py.class
-
-# C extensions
-*.so
-/configParser.pyc
-/configParser.pyc
+*$.pyc

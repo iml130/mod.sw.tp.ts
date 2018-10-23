@@ -83,6 +83,7 @@ def sanDealer(q):
 
 def taskDealer(q):    
     global icentStateMachine 
+    global currentTaskState
     while True: 
         jsonReq, entityType = q.get()
         jsonReq = jsonReq[0]
@@ -92,8 +93,9 @@ def taskDealer(q):
             if(icentStateMachine.state == "idle"):
                 if(entityTask.taskOrder == task.TaskOrder.New):
                     icentStateMachine.NewTask()
-                    currentTask = taskstate.getNewTaskId()
-                    
+                    currentTaskState.taskId = taskstate.getNewTaskId()
+                    ocbHandler.update_entity(currentTaskState);
+                    # prepare of sending motionassignment tasks
                     print icentStateMachine.state 
                     j2_env = Environment(loader=FileSystemLoader("./Templates"), trim_blocks=True)
                     print j2_env.get_template('motion_channel.template').render( my_string="Wheeeee!")
@@ -131,16 +133,21 @@ if __name__ == '__main__':
     flaskServerThread.start() 
     print "wait for finish"
     checkIfServerIsUpRunning.join()
-    # # create an instance of the fiware ocb handler
+    # create an instance of the fiware ocb handler
     ocbHandler = ContextBrokerHandler(parsedConfigFile.getFiwareServerAddress())
+
+    # publish first the needed entities before subscribing ot it
     ocbHandler.create_entity(currentTaskState) 
     ocbHandler.create_entity(currenTaskDesc) 
 
+    # subscribe to entities
     subscriptionId = ocbHandler.subscribe2Entity( _description = "notify me",
             _entities = obj2JsonArray(task.Task.getEntity()),  
             _notification = "http://localhost:5555/task",)
 
     globals.subscriptionDict[subscriptionId] = task.Task.Type()
+
+    # this is just for mockup
     globals.subscriptionDict["0"] = "Task"
     globals.subscriptionDict["1"] = "SAN"
     globals.subscriptionDict["2"] = "RAN"
@@ -158,6 +165,8 @@ if __name__ == '__main__':
     
     # taskMon.time = "23";
     # # wait until server is available
+
+
     workerTask = Thread(target=taskDealer, args=(globals.taskQueue,))
     workerSan = Thread(target=sanDealer, args=(globals.sanQueue,))
     workerRan = Thread(target=ranDealer, args=(globals.ranQueue,))
@@ -170,6 +179,7 @@ if __name__ == '__main__':
     while user_input!= "exit":
         user_input = raw_input("-->").strip()
             
+    # todo: delete subscriptions
     # ocbHandler.unregister_entities()
     # #SubscribtionHandler.unsubscribeContext(parsedConfigFile)
     print "shutdown flask"    

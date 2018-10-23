@@ -1,6 +1,14 @@
 from transitions import Machine
 import random
 
+
+
+# maybe it would be better to inject the received data/events to the statemachine of icent
+# as parameter ocb handler would be required (including concurency, m)
+# a singleton-task-generator also to store the latest information
+# configuration file (first: hardcoded, later config file)
+#
+
 class IcentDemo(object):
 
     # Define some states. Most of the time, narcoleptic superheroes are just like
@@ -10,8 +18,6 @@ class IcentDemo(object):
 
     def __init__(self, name):
 
-        # No anonymous superheroes on my watch! Every narcoleptic superhero gets
-        # a name. Any name at all. SleepyMan. SlumberGirl. You get the idea.
         self.name = name
  
         # Initialize the state machine

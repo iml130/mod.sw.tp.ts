@@ -68,7 +68,9 @@ class ContextBrokerHandler:
             self.delete_entity(entity)
             self.published_entities.remove(entity)
 
-    def update_entity(self, msg):
+    def update_entity(self, entityInstance):
+        json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4, showIdValue= False)     
+        response = self._request("PATCH",self._getUrl(ENTITIES +"/"+  entityInstance.getId() + "/attrs"), data = json, headers = self.HEADER) 
         self.msg_queue.append(msg)
 
     def subscribe(self, msg, subscriber):
