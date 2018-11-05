@@ -28,7 +28,7 @@ class IcentDemo(object):
         # the Machine initializer as the transitions= argument.
 
         # At some point, every superhero must rise and shine.
-        self.machine.add_transition(trigger='NewTask', source='idle', dest='ran2LoadingDestination')
+        self.machine.add_transition(trigger='NewTask', source='idle', dest='ran2LoadingDestination', after=self.update_journal)
         self.machine.add_transition(trigger='AgvArrivedAtLoadingDestination', source='ran2LoadingDestination', dest='wait4ran2loading')
         self.machine.add_transition(trigger='AgvIsLoaded', source='wait4ran2loading', dest='ran2UnloadingDestination')
         self.machine.add_transition(trigger='AgvArrivedAtUnloadingDestination', source='ran2UnloadingDestination', dest='wait4ran2unloading')
@@ -40,7 +40,7 @@ class IcentDemo(object):
 
     def update_journal(self):
         """ Dear Diary, today I saved Mr. Whiskers. Again. """
-        self.kittens_rescued += 1
+        print "update journal"
 
     def is_exhausted(self):
         """ Basically a coin toss. """

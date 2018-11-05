@@ -22,10 +22,12 @@ import globals
 from configParser import Config
 from contextbrokerhandler import ContextBrokerHandler
 from FiwareObjectConverter import objectFiwareConverter
-from Entities import task, taskstate
+from Entities import task, taskState
 from icent import IcentDemo
 import servercheck
 
+# from Entities import task.Task
+# from Entities import taskstate.TaskState
 
 HOST = '0.0.0.0'
 PORT = 5555
@@ -34,9 +36,9 @@ SERVER_ADDRESS = "localhost"
 CONFIG_FILE = "./fiware_config.ini"
 parsedConfigFile = Config(CONFIG_FILE)
 icentStateMachine = IcentDemo("Anda")
-
+ 
 currenTaskDesc = task.Task()
-currentTaskState = taskstate.TaskState()
+currentTaskState = taskState.TaskState()
   
 def flaskThread():
     app.run(host= parsedConfigFile.TASKPLANNER_HOST, port= parsedConfigFile.TASKPLANNER_PORT, threaded=True,use_reloader=False, debug = True)
@@ -93,7 +95,7 @@ def taskDealer(q):
             if(icentStateMachine.state == "idle"):
                 if(entityTask.taskOrder == task.TaskOrder.New):
                     icentStateMachine.NewTask()
-                    currentTaskState.taskId = taskstate.getNewTaskId()
+                    currentTaskState.taskId = taskState.getNewTaskId()
                     ocbHandler.update_entity(currentTaskState);
                     # prepare of sending motionassignment tasks
                     print icentStateMachine.state 
@@ -136,16 +138,17 @@ if __name__ == '__main__':
     # create an instance of the fiware ocb handler
     ocbHandler = ContextBrokerHandler(parsedConfigFile.getFiwareServerAddress())
 
+# few things commented due to the damn airplane mode 
     # publish first the needed entities before subscribing ot it
-    ocbHandler.create_entity(currentTaskState) 
-    ocbHandler.create_entity(currenTaskDesc) 
+    #ocbHandler.create_entity(currentTaskState) 
+    #ocbHandler.create_entity(currenTaskDesc) 
 
     # subscribe to entities
-    subscriptionId = ocbHandler.subscribe2Entity( _description = "notify me",
-            _entities = obj2JsonArray(task.Task.getEntity()),  
-            _notification = "http://localhost:5555/task",)
+    #subscriptionId = ocbHandler.subscribe2Entity( _description = "notify me",
+    #        _entities = obj2JsonArray(task.Task.getEntity()),  
+    #        _notification = "http://localhost:5555/task",)
 
-    globals.subscriptionDict[subscriptionId] = task.Task.Type()
+    #globals.subscriptionDict[subscriptionId] = task.Task.Type()
 
     # this is just for mockup
     globals.subscriptionDict["0"] = "Task"

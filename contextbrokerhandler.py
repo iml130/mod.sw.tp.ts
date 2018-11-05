@@ -71,7 +71,7 @@ class ContextBrokerHandler:
     def update_entity(self, entityInstance):
         json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4, showIdValue= False)     
         response = self._request("PATCH",self._getUrl(ENTITIES +"/"+  entityInstance.getId() + "/attrs"), data = json, headers = self.HEADER) 
-        self.msg_queue.append(msg)
+        #self.msg_queue.append(msg)
 
     def subscribe(self, msg, subscriber):
         self.subscribers.setdefault(msg, []).append(subscriber)
