@@ -1,9 +1,9 @@
 from flask import Blueprint
 from flask import request 
 from threading import Event, Thread
-
+import httplib
 import json
-import jsonSchemaValidator
+import jsonschema
 
 #local imports 
 import globals
@@ -21,9 +21,10 @@ def task():
         try:
             jsonschema.validate(jsonReq['data'][0], json.loads(schema))
         except jsonschema.ValidationError as e:
-            print e.message
+            return httplib.BAD_REQUEST, e.message
         except jsonschema.SchemaError as e:
-            print e
+            return httplib.INTERNAL_SERVER_ERROR, e.message
+            
         if(globals.FI_SUB_ID in jsonReq and globals.FI_DATA in jsonReq):
             subId =jsonReq[globals.FI_SUB_ID] 
             if(subId in globals.subscriptionDict): 
@@ -33,5 +34,5 @@ def task():
             print "narf"
     else:
         print "no json"
-    return "ok", 201
+    return "ok", httplib.CREATED
  

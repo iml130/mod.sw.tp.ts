@@ -14,6 +14,8 @@ def checkServerRunning(SERVER_ADDRESS, PORT):
         try:
             request = urllib2.Request("http://"+ SERVER_ADDRESS+  ":" + str(PORT) ) 
             response = urllib2.urlopen(request)        
+
+            print "is working"
             doForever = False
         except urllib2.HTTPError, err:
             print('HTTPError = ' + str(err.code))
@@ -21,7 +23,7 @@ def checkServerRunning(SERVER_ADDRESS, PORT):
             print('URLError = ' + str(err.reason))
         except httplib.HTTPException, err:
             print('HTTPException')
-        else:
+        finally:
             print "FAILED"
     print "Thread is ending"
  
