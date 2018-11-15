@@ -37,27 +37,33 @@
       "title": "The State Schema",
       "required": [
         "type",
-        "value"
+        "value",
+        "metadata"
       ],
       "properties": {
         "type": {
-          "$id": "#/properties/taskOrder/properties/type",
+          "$id": "#/properties/state/properties/type",
           "type": "string",
           "title": "The Type Schema",
           "default": "",
           "examples": [
-            "Integer"
+            "Number"
           ],
           "pattern": "^(.*)$"
         },
         "value": {
-          "$id": "#/properties/taskOrder/properties/value",
+          "$id": "#/properties/state/properties/value",
           "type": "integer",
           "title": "The Value Schema",
           "default": 0,
           "examples": [
             0
           ]
+        },
+        "metadata": {
+          "$id": "#/properties/state/properties/metadata",
+          "type": "object",
+          "title": "The Metadata Schema"
         }
       }
     },
@@ -67,7 +73,8 @@
       "title": "The Taskid Schema",
       "required": [
         "type",
-        "value"
+        "value",
+        "metadata"
       ],
       "properties": {
         "type": {
@@ -76,7 +83,7 @@
           "title": "The Type Schema",
           "default": "",
           "examples": [
-            "Integer"
+            "Number"
           ],
           "pattern": "^(.*)$"
         },
@@ -86,8 +93,13 @@
           "title": "The Value Schema",
           "default": 0,
           "examples": [
-            0
+            1
           ]
+        },
+        "metadata": {
+          "$id": "#/properties/taskId/properties/metadata",
+          "type": "object",
+          "title": "The Metadata Schema"
         }
       }
     }

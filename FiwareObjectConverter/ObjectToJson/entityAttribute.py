@@ -16,7 +16,7 @@ class EntityAttribute():
     def __init__(self, _object, ipmd, concreteDataType=None):  
         self.value = _object
         self.type = ""
-        self.metadata = dict()
+        #self.metadata = dict()
         objectType = type(_object)
 
 
@@ -27,15 +27,15 @@ class EntityAttribute():
             self.type = "boolean"
             self.value = bool(_object)
         elif objectType is int:
-            self.type = "number"
+            self.type = "Number"
             self.value = int(_object)
             self.setPythonMetaData(ipmd, "int")
         elif objectType is float:
-            self.type = "number"
+            self.type = "Number"
             self.value = float(_object)
             self.setPythonMetaData(ipmd, "float")
         elif objectType is long:
-            self.type = "number"
+            self.type = "Number"
             self.value = long(_object)
             self.setPythonMetaData(ipmd, "long")
         elif objectType is complex:
@@ -77,15 +77,16 @@ class EntityAttribute():
             self.value = tempDict
 
 
-        if concreteDataType is not None:
-            self.metadata["dataType"] = dict(type="dataType", value=concreteDataType)
-            pass
+        # if concreteDataType is not None:
+        #     self.metadata["dataType"] = dict(type="dataType", value=concreteDataType)
+        #     pass
 
         # Remove metadata-Attribute if it is empty (minimizing the JSON)
-        if self.metadata == {} :
-            delattr(self, "metadata")
+        
+        # if self.metadata == {} :
+        #     delattr(self, "metadata")
 
     def setPythonMetaData(self, ignorePythonMetaData, val):
-        if not ignorePythonMetaData:
-            self.metadata["python"] = dict(type="dataType", value=val)
-    
+        # if not ignorePythonMetaData:
+        #     self.metadata["python"] = dict(type="dataType", value=val)
+        pass

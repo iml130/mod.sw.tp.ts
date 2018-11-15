@@ -18,12 +18,12 @@ def task():
     if request.json: 
         jsonReq = request.json
         # jsonschema.validate(jsonReq, schema)
-        try:
-            jsonschema.validate(jsonReq['data'][0], json.loads(schema))
-        except jsonschema.ValidationError as e:
-            return httplib.BAD_REQUEST, e.message
-        except jsonschema.SchemaError as e:
-            return httplib.INTERNAL_SERVER_ERROR, e.message
+        # try:
+        #     jsonschema.validate(jsonReq['data'][0], json.loads(schema))
+        # except jsonschema.ValidationError as e:
+        #     return httplib.BAD_REQUEST, e.message
+        # except jsonschema.SchemaError as e:
+        #     return httplib.INTERNAL_SERVER_ERROR, e.message
             
         if(globals.FI_SUB_ID in jsonReq and globals.FI_DATA in jsonReq):
             subId =jsonReq[globals.FI_SUB_ID] 

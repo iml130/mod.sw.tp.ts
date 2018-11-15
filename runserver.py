@@ -233,7 +233,7 @@ def taskDealer(q):
         jsonReq = jsonReq[0]
         if(entityType == "Task"):
             entityTask = task.Task() #taskState.getCurrentTaskId() 
-            objectFiwareConverter.ObjectFiwareConverter.fiware2Obj(jsonReq,entityTask,useMetadata=False)
+            objectFiwareConverter.ObjectFiwareConverter.fiware2Obj(jsonReq,entityTask)
             if(icentStateMachine.state == "idle" and entityTask.taskId == currenTaskDesc.taskId and entityTask.state == task.TaskState.Start):
                 if(entityTask.state == task.TaskState.Start):
                     icentStateMachine.NewTask()

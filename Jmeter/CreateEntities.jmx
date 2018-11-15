@@ -302,15 +302,27 @@
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{ &#xd;
-	&quot;state&quot; : {&#xd;
-		&quot;type&quot; : &quot;Number&quot;,&#xd;
-		&quot;value&quot; : 1&#xd;
-	},&#xd;
-	&quot;taskId&quot;: {&#xd;
-		&quot;type&quot;: &quot;Number&quot;,&#xd;
-		&quot;value&quot;: 1&#xd;
-	}&#xd;
-} </stringProp>
+    &quot;state&quot; : {&#xd;
+        &quot;type&quot; : &quot;Number&quot;,&#xd;
+        &quot;value&quot; : 1,&#xd;
+        &quot;metadata&quot; : {&#xd;
+        	&quot;info&quot; : {&#xd;
+            	&quot;type&quot; : &quot;String&quot;,&#xd;
+            	&quot;value&quot; : &quot;0: No-Task, 1: Start, 2: Pause, 3: Cancel, 4: EmergencyStop, 5: Reset&quot;&#xd;
+        	}&#xd;
+        }&#xd;
+    },&#xd;
+   &quot;taskId&quot;: {&#xd;
+       &quot;type&quot;: &quot;Number&quot;,&#xd;
+       &quot;value&quot;: 1,&#xd;
+       &quot;metadata&quot;: {&#xd;
+           &quot;info&quot;: {&#xd;
+               &quot;type&quot;: &quot;String&quot;,&#xd;
+               &quot;value&quot;: &quot;Just an Integer for the current Task starting from 1&quot;&#xd;
+           }&#xd;
+       }&#xd;
+   }&#xd;
+}</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>

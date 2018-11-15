@@ -21,14 +21,14 @@ class ObjectFiwareConverter(object):
     """
 
     @classmethod
-    def obj2Fiware(clsself, _object, ind=0, dataTypeDict={}, ignorePythonMetaData=False, showIdValue = True): 
+    def obj2Fiware(clsself, _object, ind=0, dataTypeDict={}, ignorePythonMetaData=True, showIdValue = True): 
         en = Entity()
         en.setObject(_object, dataTypeDict, ignorePythonMetaData, showIdValue= showIdValue)
  
         return clsself._json(en, ind)
 
     @classmethod
-    def fiware2Obj(clsself, _fiware_str, _objectStructure={}, useMetadata=True, ignoreWrongDataType=False, setAttr=False):
+    def fiware2Obj(clsself, _fiware_str, _objectStructure={}, useMetadata=False, ignoreWrongDataType=False, setAttr=False):
         if(type(_fiware_str) is dict):
             _fiware_str = json.dumps(_fiware_str)
         jsonObj = clsself._obj(_fiware_str)
