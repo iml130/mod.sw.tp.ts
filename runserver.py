@@ -8,8 +8,9 @@ import sys
 import os
 from sys import exit
 from os import environ
-# from . import app
-from __init__ import app
+from setup import app
+#import app
+
 import time
 import urllib2
 import threading
@@ -38,10 +39,11 @@ import servercheck
 HOST = '0.0.0.0'
 PORT = 5555
 SERVER_ADDRESS = "localhost"
-ocbHandler = None
+
 
 CONFIG_FILE = "./fiware_config.ini"
 parsedConfigFile = Config(CONFIG_FILE)
+ocbHandler = ContextBrokerHandler(parsedConfigFile.getFiwareServerAddress())
 icentStateMachine = IcentDemo("Anda")
  
 currenTaskDesc = task.Task()
@@ -177,6 +179,10 @@ def sanDealer(q):
                 readings = findSanById(jsonReq, "IR_1")
                 if(readings):
                     if(isButtonPressed(readings)):
+                        currentTaskState.state = taskState.State.Running
+                        currentTaskState.userAction = taskState.UserAction.Idle
+                        ocbHandler.update_entity(currentTaskState) 
+
                         retVal = getMotionChannel(parsedConfigFile.unloadingArea)
                         ocbHandler.update_entity_dirty(retVal)                        
                         icentStateMachine.AgvIsLoaded()
@@ -189,6 +195,9 @@ def sanDealer(q):
                 readings = findSanById(jsonReq, "IR_2")
                 if(readings):
                     if(isButtonPressed(readings)):
+                        currentTaskState.state = taskState.State.Running
+                        currentTaskState.userAction = taskState.UserAction.Idle
+                        ocbHandler.update_entity(currentTaskState) 
                         retVal = getMotionChannel(parsedConfigFile.waitingArea) # ATTENTION: NEED TO FIX THE LOCATION --> Waiting Area
                         ocbHandler.update_entity_dirty(retVal)
                         print retVal
@@ -233,10 +242,10 @@ def taskDealer(q):
                     currentTaskState.userAction = taskState.UserAction.Idle
                     ocbHandler.update_entity(currentTaskState)
                     # prepare of sending motionassignment tasks
-                    print icentStateMachine.state 
                     retVal = getMotionChannel(parsedConfigFile.loadingArea)
                     ocbHandler.update_entity_dirty(retVal)
-                    print retVal
+                    
+                    print icentStateMachine.state  
                     #print render_template('./Templates.motion_channel.template',)
                 # todo: Send AGV to LoadingDestination
             elif(icentStateMachine.state == "error" and entityTask.state == task.TaskState.Reset):
@@ -248,6 +257,7 @@ def taskDealer(q):
                 ocbHandler.update_entity(currentTaskState)
                 print icentStateMachine.state                        
             elif(entityTask.state== task.TaskState.EmergencyStop):
+                # todo: stop the robot
                 icentStateMachine.Panic()
                 currentTaskState.taskId = currenTaskDesc.taskId
                 currentTaskState.state = taskState.State.Aborted
@@ -272,7 +282,8 @@ if __name__ == '__main__':
     signal.signal(signal.SIGINT, signal_handler)
     checkIfServerIsUpRunning = threading.Thread(name='checkServerRunning', 
                                                 target=servercheck.checkServerRunning, 
-                                                args=(SERVER_ADDRESS, PORT,))
+                                                args=(SERVER_ADDRESS, parsedConfigFile.TASKPLANNER_PORT,))
+
 
     flaskServerThread = threading.Thread(name= 'flaskThread',target = flaskThread) 
 
@@ -282,7 +293,7 @@ if __name__ == '__main__':
     print "wait for finish"
     checkIfServerIsUpRunning.join()
     # create an instance of the fiware ocb handler
-    ocbHandler = ContextBrokerHandler(parsedConfigFile.getFiwareServerAddress())
+    
 
 # few things commented due to the damn airplane mode 
     # publish first the needed entities before subscribing ot it

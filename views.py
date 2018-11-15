@@ -6,7 +6,7 @@ from flask import request
 from threading import Event, Thread
 from datetime import datetime
 from flask import render_template,Response
-from __init__ import app
+from setup import app
 from Queue import Queue
 
 import httplib

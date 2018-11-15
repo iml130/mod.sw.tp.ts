@@ -14,8 +14,10 @@ class TaskState(FiwareEntity):
         self.userAction = UserAction.Idle
         self.errorMessage = ""
 
-
+# TASK
 #0= No-Task, 1 = Start, 2 = Pause, 3 = Cancel, 4 = EmergencyStop, 5 = Reset"
+# TASK_STATE
+# Idle : 0, Running : 1, Waiting : 2, Active : 3, Finished : 4, Aborted : 5, Error : 6
 class State():
     Idle  = 0 
     Running = 1
