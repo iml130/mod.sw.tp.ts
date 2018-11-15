@@ -3,3 +3,4 @@ requests
 transitions
 enum34
 jinja2
+jsonschema

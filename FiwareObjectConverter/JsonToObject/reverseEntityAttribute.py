@@ -41,7 +41,7 @@ class ReverseEntityAttribute(object):
             self.value = bool(_dict['value'])
             return
 
-        if  _dict['type'] == 'number' or _dict['type'] == 'Integer' or _dict['type'] == 'Float':
+        if  _dict['type'] == 'number' or _dict['type'] == 'Number' or _dict['type'] == 'Integer' or _dict['type'] == 'Float':
             if(isinstance(_dict['value'], int)):
                 self.value = int(_dict['value'])
             elif(isinstance(_dict['value'], float)):

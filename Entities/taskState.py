@@ -10,8 +10,9 @@ idHistory = []
 class TaskState(FiwareEntity): 
     def __init__(self): 
         self.state = State.Idle
-        self.taskId = 0
+        self.taskId = 1
         self.userAction = UserAction.Idle
+        self.errorMessage = ""
 
 
 #0= No-Task, 1 = Start, 2 = Pause, 3 = Cancel, 4 = EmergencyStop, 5 = Reset"
@@ -24,12 +25,14 @@ class State():
     Aborted = 5
     Error = 6
 
-
 class UserAction():
     Idle = 0
     WaitForLoading = 1
     WaitForUnloading = 2
 
+def getCurrentTaskId():
+    global id
+    return id
 
 def getNewTaskId():
     global id

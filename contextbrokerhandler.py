@@ -13,7 +13,11 @@ def isResponseOk(statusCode):
 ENTITIES = "entities"
 SUBSCRIPTIONS = "subscriptions"
 
-    
+def obj2JsonArray(_obj):
+    tempArray = []
+    tempArray.append(_obj)
+    return (tempArray)
+
 class ContextBrokerHandler:
     HEADER = {"Content-Type" : "application/json"}
     HEADER_NO_PAYLOAD = {
@@ -71,19 +75,27 @@ class ContextBrokerHandler:
     def update_entity(self, entityInstance):
         json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4, showIdValue= False)     
         response = self._request("PATCH",self._getUrl(ENTITIES +"/"+  entityInstance.getId() + "/attrs"), data = json, headers = self.HEADER) 
-        #self.msg_queue.append(msg)
+        if(isResponseOk(response.status_code)): #everything is fine
+            print "Status OK"
+            return 0
+    
+    def update_entity_dirty(self, _json):
+        response = self._request("POST",self._getUrlv1(), data = _json, headers = self.HEADER) 
+        if(isResponseOk(response.status_code)): #everything is fine
+            print "Status OK"
+            return 0
 
-    def subscribe(self, msg, subscriber):
-        self.subscribers.setdefault(msg, []).append(subscriber)
+    # def subscribe(self, msg, subscriber):
+    #     self.subscribers.setdefault(msg, []).append(subscriber)
 
-    def unsubscribe(self, msg, subscriber):
-        self.subscribers[msg].remove(subscriber)
+    # def unsubscribe(self, msg, subscriber):
+    #     self.subscribers[msg].remove(subscriber)
 
-    def update(self):
-        for msg in self.msg_queue:
-            for sub in self.subscribers.get(msg, []):
-                sub.run(msg)
-        self.msg_queue = []
+    # def update(self):
+    #     for msg in self.msg_queue:
+    #         for sub in self.subscribers.get(msg, []):
+    #             sub.run(msg)
+    #     self.msg_queue = []
  
     def _request(self, method, url, data = None, **kwargs):
         response = None
@@ -112,15 +124,16 @@ class ContextBrokerHandler:
         msg["description"] = _description
         condition = {}
         if _condition_attributes:
-            condition["attrs"] = condition_attributes
+            condition["attrs"] = obj2JsonArray(_condition_attributes)
         if _condition_expression:
-            condition["expression"] = condition_expression
+            condition["expression"] = _condition_expression
 
         subject = {}
         subject["entities"] = _entities
         if(condition):
-            subject = {"condition": condition}
-        
+            subject["condition"]  = (condition)
+        print condition
+        print subject
         msg["subject"] = subject
 
         notification = {}
@@ -149,4 +162,6 @@ class ContextBrokerHandler:
 
     def _getUrl(self, _uri):
         return (self.fiwareAddress + "/" + self.NGSI_VERSION + "/" + _uri)
-       
+
+    def _getUrlv1(self):
+        return (self.fiwareAddress + "/v1/updateContext")       

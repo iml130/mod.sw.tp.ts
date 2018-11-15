@@ -1,0 +1,2724 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.0 r1840935">
+  <hashTree>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="SAN widgets data update" enabled="true">
+      <stringProp name="TestPlan.comments">Simulate sensors sending data</stringProp>
+      <boolProp name="TestPlan.functional_mode">false</boolProp>
+      <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
+      <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
+      <elementProp name="TestPlan.user_defined_variables" elementType="Arguments" guiclass="ArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+        <collectionProp name="Arguments.arguments"/>
+      </elementProp>
+      <stringProp name="TestPlan.user_define_classpath"></stringProp>
+    </TestPlan>
+    <hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Sensors" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <stringProp name="TestPlan.comments">Three sensors sending updated data</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="AddressServer" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="OCB_Address" elementType="Argument">
+              <stringProp name="Argument.name">OCB_Address</stringProp>
+              <stringProp name="Argument.value">10.64.10.144</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+            <elementProp name="OCB_Port" elementType="Argument">
+              <stringProp name="Argument.name">OCB_Port</stringProp>
+              <stringProp name="Argument.value">1026</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+        </Arguments>
+        <hashTree/>
+        <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+          <collectionProp name="HeaderManager.headers">
+            <elementProp name="" elementType="Header">
+              <stringProp name="Header.name">Content-Type</stringProp>
+              <stringProp name="Header.value">application/json</stringProp>
+            </elementProp>
+          </collectionProp>
+        </HeaderManager>
+        <hashTree/>
+        <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+          <stringProp name="ConstantTimer.delay">1000</stringProp>
+        </ConstantTimer>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Add entity" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;SAN1&quot;,&#xd;
+	&quot;type&quot;: &quot;SensorAgent&quot;,&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:34:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: true,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:34:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 20,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:34:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 2,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:34:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:35:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: true,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:35:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 20,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:35:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 2,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:35:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN1/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:36:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: false,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:36:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 15,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:36:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 1,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:36:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN1/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:37:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: true,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:37:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 16,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:37:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 0,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:37:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN1/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:38:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: false,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:38:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 19,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:38:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 2,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:38:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN1/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:39:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: true,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:39:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 22,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:39:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 0,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:39:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:40:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: true,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:40:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 21,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:40:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 1,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:40:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:41:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: true,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:41:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 23,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:41:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 0,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:41:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:42:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: false,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:42:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 15,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:42:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 2,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:42:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:43:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: true,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:43:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 16,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:43:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 1,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:43:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:44:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: true,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:44:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 17,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:44:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 1,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:44:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:45:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: true,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:45:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 20,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:45:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 2,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:45:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:46:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: false,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:46:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 15,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:46:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 1,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:46:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:47:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: true,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:47:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 16,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:47:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 0,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:47:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="HTTP Request" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:48:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+	&quot;sensorData&quot;: {&#xd;
+		&quot;type&quot;: &quot;Array&quot;,&#xd;
+		&quot;value&quot;: [&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;IR_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Infrared Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Object Presence&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: false,&#xd;
+							&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;none&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:48:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+				{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;CS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Current&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [&#xd;
+					{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 19,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;mA&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:48:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			},&#xd;
+			{&#xd;
+				&quot;sensorId&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;SS_1&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;sensorType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Sensor&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+&#xd;
+				&quot;measurementType&quot;: {&#xd;
+					&quot;type&quot;: &quot;String&quot;,&#xd;
+					&quot;value&quot;: &quot;Switch Position&quot;,&#xd;
+					&quot;metadata&quot;: {}&#xd;
+				},&#xd;
+				&quot;readings&quot;: {&#xd;
+					&quot;type&quot;: &quot;Array&quot;,&#xd;
+					&quot;value&quot;: [{&#xd;
+						&quot;reading&quot;: {&#xd;
+							&quot;value&quot;: 2,&#xd;
+							&quot;type&quot;: &quot;Number&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;unit&quot;: {&#xd;
+									&quot;value&quot;: &quot;Position&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						},&#xd;
+						&quot;modifiedTime&quot;: {&#xd;
+							&quot;type&quot;: &quot;String&quot;,&#xd;
+							&quot;value&quot;: &quot;2018-08-25T19:48:00&quot;,&#xd;
+							&quot;metadata&quot;: {&#xd;
+								&quot;timeFormat&quot;: {&#xd;
+									&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+									&quot;type&quot;: &quot;String&quot;&#xd;
+								}&#xd;
+							}&#xd;
+						}&#xd;
+					}]&#xd;
+				}&#xd;
+			}&#xd;
+		],&#xd;
+		&quot;metadata&quot;: {}&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete entity" enabled="false">
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
+            <collectionProp name="Arguments.arguments"/>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo/</stringProp>
+          <stringProp name="HTTPSampler.method">DELETE</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <HeaderManager guiclass="HeaderPanel" testclass="HeaderManager" testname="HTTP Header Manager" enabled="true">
+            <collectionProp name="HeaderManager.headers">
+              <elementProp name="" elementType="Header">
+                <stringProp name="Header.name">Content-Type</stringProp>
+                <stringProp name="Header.value"></stringProp>
+              </elementProp>
+            </collectionProp>
+          </HeaderManager>
+          <hashTree/>
+        </hashTree>
+        <ResultCollector guiclass="ViewResultsFullVisualizer" testclass="ResultCollector" testname="View Results Tree" enabled="true">
+          <boolProp name="ResultCollector.error_logging">false</boolProp>
+          <objProp>
+            <name>saveConfig</name>
+            <value class="SampleSaveConfiguration">
+              <time>true</time>
+              <latency>true</latency>
+              <timestamp>true</timestamp>
+              <success>true</success>
+              <label>true</label>
+              <code>true</code>
+              <message>true</message>
+              <threadName>true</threadName>
+              <dataType>true</dataType>
+              <encoding>false</encoding>
+              <assertions>true</assertions>
+              <subresults>true</subresults>
+              <responseData>false</responseData>
+              <samplerData>false</samplerData>
+              <xml>false</xml>
+              <fieldNames>true</fieldNames>
+              <responseHeaders>false</responseHeaders>
+              <requestHeaders>false</requestHeaders>
+              <responseDataOnError>false</responseDataOnError>
+              <saveAssertionResultsFailureMessage>true</saveAssertionResultsFailureMessage>
+              <assertionsResultsToSave>0</assertionsResultsToSave>
+              <bytes>true</bytes>
+              <sentBytes>true</sentBytes>
+              <url>true</url>
+              <threadCounts>true</threadCounts>
+              <idleTime>true</idleTime>
+              <connectTime>true</connectTime>
+            </value>
+          </objProp>
+          <stringProp name="filename"></stringProp>
+        </ResultCollector>
+        <hashTree/>
+      </hashTree>
+    </hashTree>
+  </hashTree>
+</jmeterTestPlan>

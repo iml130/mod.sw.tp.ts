@@ -13,7 +13,7 @@ class IcentDemo(object):
 
     # Define some states. Most of the time, narcoleptic superheroes are just like
     # everyone else. Except for...
-    states = ['init', 'idle', 'ran2LoadingDestination', 'wait4ran2loading', 'ran2UnloadingDestination',
+    states = ['init',  'reset', 'idle', 'ran2LoadingDestination', 'wait4ran2loading', 'ran2UnloadingDestination',
               'wait4ran2unloading', 'ran2WaitingArea', 'finished', 'error']
 
     def __init__(self, name):
@@ -36,7 +36,8 @@ class IcentDemo(object):
         self.machine.add_transition(trigger='AgvArrivedAtWaitingArea', source='ran2WaitingArea', dest='idle')
         
         self.machine.add_transition('Panic', '*', 'error')
-        self.machine.add_transition('Init', 'error', 'idle')
+        self.machine.add_transition('Reset', 'error', 'idle')
+        self.machine.add_transition('Init', ['reset','error'], 'idle')
 
     def update_journal(self):
         """ Dear Diary, today I saved Mr. Whiskers. Again. """
