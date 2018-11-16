@@ -42,13 +42,24 @@ class ReverseEntityAttribute(object):
             return
 
         if  _dict['type'] == 'number' or _dict['type'] == 'Number' or _dict['type'] == 'Integer' or _dict['type'] == 'Float':
+     
+            print type(_dict['value'])
+            print _dict['value']
             if(isinstance(_dict['value'], int)):
                 self.value = int(_dict['value'])
             elif(isinstance(_dict['value'], float)):
                 self.value = float (_dict['value'])
             elif(isinstance(_dict['value'], long)):
-                self.value = long(_dict['value'])                
-            
+                self.value = long(_dict['value'])         
+            # some how Python 2.7/NGSIproxy/wirecloud is converting an unicode instead of having the correct type
+            elif isinstance(_dict['value'], str) or isinstance(_dict['value'], unicode):
+                try:
+                    self.value =  int(_dict['value'])
+                except ValueError:
+                    try:
+                        self.value = float(_dict['value'])
+                    except ValueError:
+                        return 
             # if self.value % 1 == 0.0:
             #     if useMetadata and 'python' in _dict['metadata']:
             #         metadata = _dict['metadata']
@@ -61,8 +72,7 @@ class ReverseEntityAttribute(object):
             #     else: 
             #         self.value = long(self.value)
             #         return
-            else:
-                return
+       
         
 
         elif _dict['type'] == 'string':

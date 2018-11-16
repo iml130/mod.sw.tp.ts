@@ -16,7 +16,7 @@ class EntityAttribute():
     def __init__(self, _object, ipmd, concreteDataType=None):  
         self.value = _object
         self.type = ""
-        #self.metadata = dict()
+        self.metadata = dict()
         objectType = type(_object)
 
 
@@ -77,16 +77,15 @@ class EntityAttribute():
             self.value = tempDict
 
 
-        # if concreteDataType is not None:
-        #     self.metadata["dataType"] = dict(type="dataType", value=concreteDataType)
-        #     pass
+        if concreteDataType is not None:
+            self.metadata["dataType"] = dict(type="dataType", value=concreteDataType)
+            pass
 
-        # Remove metadata-Attribute if it is empty (minimizing the JSON)
-        
-        # if self.metadata == {} :
-        #     delattr(self, "metadata")
+        # Remove metadata-Attribute if it is empty (minimizing the JSON)      
+        if self.metadata == {} :
+            delattr(self, "metadata")
 
     def setPythonMetaData(self, ignorePythonMetaData, val):
-        # if not ignorePythonMetaData:
-        #     self.metadata["python"] = dict(type="dataType", value=val)
-        pass
+        if not ignorePythonMetaData:
+            self.metadata["python"] = dict(type="dataType", value=val)
+ 

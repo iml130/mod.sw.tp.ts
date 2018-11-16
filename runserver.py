@@ -248,23 +248,26 @@ def taskDealer(q):
                     print icentStateMachine.state  
                     #print render_template('./Templates.motion_channel.template',)
                 # todo: Send AGV to LoadingDestination
-            elif(icentStateMachine.state == "error" and entityTask.state == task.TaskState.Reset):
-                icentStateMachine.Reset()
-                currentTaskState.taskId = currenTaskDesc.taskId
-                currentTaskState.state = taskState.State.Waiting
-                currentTaskState.userAction = taskState.UserAction.Idle
-                currentTaskState.errorMessage = "Please restart the task"
-                ocbHandler.update_entity(currentTaskState)
-                print icentStateMachine.state                        
+            # elif(icentStateMachine.state == "error" and entityTask.state == task.TaskState.Reset):
+                
+
+            #     print icentStateMachine.state                        
             elif(entityTask.state== task.TaskState.EmergencyStop):
                 # todo: stop the robot
-                icentStateMachine.Panic()
                 currentTaskState.taskId = currenTaskDesc.taskId
                 currentTaskState.state = taskState.State.Aborted
                 currentTaskState.userAction = taskState.UserAction.Idle
                 currentTaskState.errorMessage = "Please reset the task"
                 ocbHandler.update_entity(currentTaskState)
+                icentStateMachine.Panic()
                 print icentStateMachine.state
+
+                currentTaskState.taskId = currenTaskDesc.taskId
+                currentTaskState.state = taskState.State.Idle
+                currentTaskState.userAction = taskState.UserAction.Idle
+                currentTaskState.errorMessage = "Please restart the task"
+                ocbHandler.update_entity(currentTaskState)
+                icentStateMachine.Reset()
 
 def obj2JsonArray(_obj):
     tempArray = []
