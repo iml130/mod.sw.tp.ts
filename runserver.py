@@ -68,9 +68,9 @@ def deleteSubscriptionById(id):
         return True
 
 def signal_handler(sig, frame):
-    print('You pressed Ctrl+C!')
     global terminate
     terminate = True 
+    print('You pressed Ctrl+C!')
     print "cleaning up"
 
     
@@ -275,6 +275,28 @@ def obj2JsonArray(_obj):
     print json.dumps(tempArray)
     return (tempArray)
 
+def bing():
+    try:
+        input()
+    except EOFError:
+        print("Caught an EOFError")
+
+def waitForEnd():
+    user_input = ""
+    global terminate 
+    while user_input!= "exit" or terminate==False:
+        try:  
+            user_input = input('Input please ?').strip('\n').strip('\r')
+            if(user_input == "exit"):
+                terminate = True
+        except EOFError:
+            pass
+        except KeyboardInterrupt:
+            print "ERR"
+        except:
+            global terminate
+            terminate = False
+
 if __name__ == '__main__': 
     global subscriptionDict
     global stateQueue 
@@ -286,6 +308,17 @@ if __name__ == '__main__':
     checkIfServerIsUpRunning = threading.Thread(name='checkServerRunning', 
                                                 target=servercheck.checkServerRunning, 
                                                 args=(SERVER_ADDRESS, parsedConfigFile.TASKPLANNER_PORT,))
+
+    checkForProgrammEnd = threading.Thread(name='waitForEnd', 
+                                                target=waitForEnd, 
+                                                args=())
+
+
+    original_sigint = signal.getsignal(signal.SIGINT)
+    signal.signal(signal.SIGINT, original_sigint)
+
+    checkForProgrammEnd.start()
+    checkForProgrammEnd.join()
 
 
     flaskServerThread = threading.Thread(name= 'flaskThread',target = flaskThread) 
@@ -359,9 +392,19 @@ if __name__ == '__main__':
 
     print "Push Ctrl+C to exit()"
 
-    user_input = ""
-    while terminate == False:
-        pass
+    
+    # while terminate == False:
+    #     pass
+    # user_input = ""
+    # while user_input!= "exit" or terminate==False:
+    #     try:
+    #         user_input = input('Input please ?').strip('\n')
+    #     except KeyboardInterrupt:
+    #         pass
+    #     except:
+    #         global terminate
+    #         terminate = False
+
 
     for item in globals.subscriptionDict:
         deleteSubscriptionById(item)
