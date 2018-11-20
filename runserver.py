@@ -61,7 +61,7 @@ import httplib
 # shift method 'deleteSubscriptionById' to the context-broker; internal subscriptionId handler
 # storage of subscriptions in a database, when starting the programm what to do with subscriptions (deleting? Adding a new name to it?);
 # ending/exiting programm either by typing 'exit' or pushing ctrl-c
-# 
+# json schema validation for this tools
 
 
 #todo: put this into ran 
