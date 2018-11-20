@@ -54,6 +54,21 @@ terminate = False
 import requests
 import httplib
 
+# todos: 
+# updating the task id; actually HMI sets a task and the taskState represents a task
+# taskLanguage
+# stateMachine should be in charge of the states and dealing with the event; internal pub/sub mechanism
+# shift method 'deleteSubscriptionById' to the context-broker; internal subscriptionId handler
+# storage of subscriptions in a database, when starting the programm what to do with subscriptions (deleting? Adding a new name to it?);
+# ending/exiting programm either by typing 'exit' or pushing ctrl-c
+# 
+
+
+#todo: put this into ran 
+RAN_IS_DONE = 0
+RAN_IS_MOVING = 1
+RAN_IN_ACTION = 2
+
 def deleteSubscriptionById(id):
     if(len(id)>1):
         try:
@@ -107,14 +122,14 @@ def ranDealer(q):
                     print ran_task_id
                 ran_task_id = d["current_task_id"]["id"]
             if(d):
-                if(d["ran_status"] == 1):
+                if(d["ran_status"] == RAN_IS_MOVING):
                     isMoving = True
                 if(isMoving):
                     # if a position of the AGV has reached do the following:
                         # agv --> setActionMotion(Do nothing) and publish it
                         # update taskState and publish it
                         # change state of stateMachine
-                    if(icentStateMachine.state == "ran2LoadingDestination" and d["ran_status"]==0):
+                    if(icentStateMachine.state == "ran2LoadingDestination" and d["ran_status"]== RAN_IS_DONE):
                         isMoving = False
                         print "reached destination@Loading"         
                         ocbHandler.update_entity_dirty(getActionChannel(d["current_task_id"]["id"]))
@@ -126,7 +141,7 @@ def ranDealer(q):
                         # change state
                         icentStateMachine.AgvArrivedAtLoadingDestination()
                         
-                    elif(icentStateMachine.state == "ran2UnloadingDestination" and d["ran_status"]==0):
+                    elif(icentStateMachine.state == "ran2UnloadingDestination" and d["ran_status"]==RAN_IS_DONE):
                         isMoving = False
                         print "reached destination@Unloading"            
                         ocbHandler.update_entity_dirty(getActionChannel(d["current_task_id"]["id"]))
@@ -136,7 +151,7 @@ def ranDealer(q):
                         ocbHandler.update_entity(currentTaskState)
 
                         icentStateMachine.AgvArrivedAtUnloadingDestination()
-                    elif(icentStateMachine.state == "ran2WaitingArea" and d["ran_status"]==0):                    
+                    elif(icentStateMachine.state == "ran2WaitingArea" and d["ran_status"]==RAN_IS_DONE):                    
                         isMoving = False
                         print "reached destination@Waiting"                        
                         ocbHandler.update_entity_dirty(getActionChannel(d["current_task_id"]["id"]))    
@@ -314,13 +329,6 @@ if __name__ == '__main__':
                                                 args=())
 
 
-    original_sigint = signal.getsignal(signal.SIGINT)
-    signal.signal(signal.SIGINT, original_sigint)
-
-    checkForProgrammEnd.start()
-    checkForProgrammEnd.join()
-
-
     flaskServerThread = threading.Thread(name= 'flaskThread',target = flaskThread) 
 
     checkIfServerIsUpRunning.start()       
@@ -392,18 +400,24 @@ if __name__ == '__main__':
 
     print "Push Ctrl+C to exit()"
 
-    
-    # while terminate == False:
-    #     pass
-    # user_input = ""
-    # while user_input!= "exit" or terminate==False:
-    #     try:
-    #         user_input = input('Input please ?').strip('\n')
-    #     except KeyboardInterrupt:
-    #         pass
-    #     except:
-    #         global terminate
-    #         terminate = False
+
+    # original_sigint = signal.getsignal(signal.SIGINT)
+    # signal.signal(signal.SIGINT, original_sigint)
+
+    # checkForProgrammEnd.start()
+    # checkForProgrammEnd.join()
+
+    while terminate == False:
+        pass
+    user_input = ""
+    while user_input!= "exit" or terminate==False:
+        try:
+            user_input = input('Input please ?').strip('\n')
+        except KeyboardInterrupt:
+            pass
+        except:
+            global terminate
+            terminate = False
 
 
     for item in globals.subscriptionDict:
