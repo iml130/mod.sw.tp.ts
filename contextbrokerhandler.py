@@ -13,6 +13,9 @@ def isResponseOk(statusCode):
 ENTITIES = "entities"
 SUBSCRIPTIONS = "subscriptions"
 
+# how to deal with "outdated" subscriptions after restart of the system
+# automatic deletion of old, not needed?!
+# 
 def obj2JsonArray(_obj):
     tempArray = []
     tempArray.append(_obj)
@@ -117,7 +120,7 @@ class ContextBrokerHandler:
         return json.loads(response.content.decode('utf-8'))
 
     def subscribe2Entity(self, _description, _entities, _notification,  _metadata=None, _expires=None, _throttling=None,
-                        _condition_attributes=None, _condition_expression=None):
+                        _condition_attributes=None, _condition_expression=None, _generic = False):
         # based upon http://telefonicaid.github.io/fiware-orion/api/v2/stable/
 
         msg = {}
@@ -130,6 +133,10 @@ class ContextBrokerHandler:
 
         subject = {}
         subject["entities"] = _entities
+        if(_generic):
+            for item in subject["entities"]:
+                item['idPattern'] = ".*"
+                del item['id']
         if(condition):
             subject["condition"]  = (condition)
         print condition
