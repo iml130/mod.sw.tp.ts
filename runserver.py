@@ -6,6 +6,7 @@ __status__ = "Developement"
 import signal
 import sys
 import os
+import urllib
 from sys import exit
 from os import environ
 from setup import app
@@ -17,6 +18,7 @@ import threading
 from threading import Event, Thread
 from flask import g 
 from flask import render_template,Response
+
 from Queue import Queue
 import json
 from datetime import datetime 
@@ -27,12 +29,15 @@ import globals
 from configParser import Config
 from contextbrokerhandler import ContextBrokerHandler
 from FiwareObjectConverter import objectFiwareConverter
-from Entities import task, taskState
+from Entities import task, taskState, taskSpec, taskSpecState
 from Entities import san
 from Entities import ran
 from icent import IcentDemo
 import servercheck
 
+
+from TaskLanguage.checkGrammar import checkTaskLanguage
+from TaskSupervisor.taskScheduler import taskScheduler
 # from Entities import task.Task
 # from Entities import taskstate.TaskState
 
@@ -48,6 +53,7 @@ icentStateMachine = IcentDemo("Anda")
  
 currenTaskDesc = task.Task()
 currentTaskState = taskState.TaskState()
+currentTaskSpecState = taskSpecState.TaskSpecState()
 ran_task_id = 0  
 terminate = False 
 
@@ -238,63 +244,81 @@ def getMotionChannel(area):
     retVal = retVal.replace('\t', '').replace('\n', '')
     return retVal
 
+def taskSchedulerDealer(taskSchedulerQueue):
+    while True: 
+        dmp = taskSchedulerQueue.get()
+        
+        ts = taskScheduler("feinfacherTest", dmp)
+        ts.start()
+        print "Is Running"        
+
+
 def taskDealer(q):    
     global icentStateMachine  
     global currentTaskState
     global ocbHandler
     global currenTaskDesc
+    global currentTaskSpecState
     while True: 
         jsonReq, entityType = q.get()
-        jsonReq = jsonReq[0]
-        if(entityType == "Task"):
-            entityTask = task.Task() #taskState.getCurrentTaskId() 
-            objectFiwareConverter.ObjectFiwareConverter.fiware2Obj(jsonReq,entityTask)
-            if(icentStateMachine.state == "idle" and entityTask.taskId == currenTaskDesc.taskId and entityTask.state == task.TaskState.Start):
-                if(entityTask.state == task.TaskState.Start):
-                    icentStateMachine.NewTask()
-                    currentTaskState.taskId = currenTaskDesc.taskId
-                    currentTaskState.state = taskState.State.Running
-                    currentTaskState.userAction = taskState.UserAction.Idle
-                    ocbHandler.update_entity(currentTaskState)
-                    # prepare of sending motionassignment tasks
-                    retVal = getMotionChannel(parsedConfigFile.loadingArea)
-                    ocbHandler.update_entity_dirty(retVal)
+        jsonReq = jsonReq[0] 
+        decodedString = jsonReq["TaskSpec"]["value"]
+        decodedString = urllib.unquote_plus(decodedString)
+        
+        retVal, message = checkTaskLanguage(decodedString)
+        currentTaskSpecState.message = str(message)
+        if (retVal == 0): # no error
+            globals.taskSchedulerQueue.put(decodedString)
+        
+        currentTaskSpecState.state =  retVal
+        currentTaskSpecState.refId = jsonReq["id"]
+        ocbHandler.update_entity(currentTaskSpecState)
+            
+
+        # if(entityType == "Task"):
+        #     entityTask = task.Task() #taskState.getCurrentTaskId() 
+        #     objectFiwareConverter.ObjectFiwareConverter.fiware2Obj(jsonReq,entityTask)
+        #     if(icentStateMachine.state == "idle" and entityTask.taskId == currenTaskDesc.taskId and entityTask.state == task.TaskState.Start):
+        #         if(entityTask.state == task.TaskState.Start):
+        #             icentStateMachine.NewTask()
+        #             currentTaskState.taskId = currenTaskDesc.taskId
+        #             currentTaskState.state = taskState.State.Running
+        #             currentTaskState.userAction = taskState.UserAction.Idle
+        #             ocbHandler.update_entity(currentTaskState)
+        #             # prepare of sending motionassignment tasks
+        #             retVal = getMotionChannel(parsedConfigFile.loadingArea)
+        #             ocbHandler.update_entity_dirty(retVal)
                     
-                    print icentStateMachine.state  
-                    #print render_template('./Templates.motion_channel.template',)
-                # todo: Send AGV to LoadingDestination
-            # elif(icentStateMachine.state == "error" and entityTask.state == task.TaskState.Reset):
+        #             print icentStateMachine.state  
+        #             #print render_template('./Templates.motion_channel.template',)
+        #         # todo: Send AGV to LoadingDestination
+        #     # elif(icentStateMachine.state == "error" and entityTask.state == task.TaskState.Reset):
                 
 
-            #     print icentStateMachine.state                        
-            elif(entityTask.state== task.TaskState.EmergencyStop):
-                # todo: stop the robot
-                currentTaskState.taskId = currenTaskDesc.taskId
-                currentTaskState.state = taskState.State.Aborted
-                currentTaskState.userAction = taskState.UserAction.Idle
-                currentTaskState.errorMessage = "Please reset the task"
-                ocbHandler.update_entity(currentTaskState)
-                icentStateMachine.Panic()
-                print icentStateMachine.state
+        #     #     print icentStateMachine.state                        
+        #     elif(entityTask.state== task.TaskState.EmergencyStop):
+        #         # todo: stop the robot
+        #         currentTaskState.taskId = currenTaskDesc.taskId
+        #         currentTaskState.state = taskState.State.Aborted
+        #         currentTaskState.userAction = taskState.UserAction.Idle
+        #         currentTaskState.errorMessage = "Please reset the task"
+        #         ocbHandler.update_entity(currentTaskState)
+        #         icentStateMachine.Panic()
+        #         print icentStateMachine.state
 
-                currentTaskState.taskId = currenTaskDesc.taskId
-                currentTaskState.state = taskState.State.Idle
-                currentTaskState.userAction = taskState.UserAction.Idle
-                currentTaskState.errorMessage = "Please restart the task"
-                ocbHandler.update_entity(currentTaskState)
-                icentStateMachine.Reset()
+        #         currentTaskState.taskId = currenTaskDesc.taskId
+        #         currentTaskState.state = taskState.State.Idle
+        #         currentTaskState.userAction = taskState.UserAction.Idle
+        #         currentTaskState.errorMessage = "Please restart the task"
+        #         ocbHandler.update_entity(currentTaskState)
+        #         icentStateMachine.Reset()
 
 def obj2JsonArray(_obj):
     tempArray = []
     tempArray.append(_obj)
     print json.dumps(tempArray)
     return (tempArray)
-
-def bing():
-    try:
-        input()
-    except EOFError:
-        print("Caught an EOFError")
+ 
 
 def waitForEnd():
     user_input = ""
@@ -318,8 +342,14 @@ if __name__ == '__main__':
     global ocbHandler
     global currenTaskDesc
     global currentTaskState
+    global currentTaskSpecState
 
+    if(os.path.isfile('./images/task.png')):
+        os.remove('./images/task.png')
+    
     signal.signal(signal.SIGINT, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler)
+
     checkIfServerIsUpRunning = threading.Thread(name='checkServerRunning', 
                                                 target=servercheck.checkServerRunning, 
                                                 args=(SERVER_ADDRESS, parsedConfigFile.TASKPLANNER_PORT,))
@@ -339,16 +369,12 @@ if __name__ == '__main__':
     # create an instance of the fiware ocb handler
     
 
-# few things commented due to the damn airplane mode 
+    # few things commented due to the damn airplane mode 
     # publish first the needed entities before subscribing ot it
-    ocbHandler.create_entity(currentTaskState) 
-    ocbHandler.create_entity(currenTaskDesc) 
+    ocbHandler.create_entity(currentTaskSpecState) 
+    #ocbHandler.create_entity(currenTaskDesc) 
 
     # subscribe to entities
-    subscriptionId = ocbHandler.subscribe2Entity( _description = "notify me",
-            _entities = obj2JsonArray(task.Task.getEntity()),  
-            _notification = parsedConfigFile.getTaskPlannerAddress() +"/task",)
-    globals.subscriptionDict[subscriptionId] ="Task"     
 
     #globals.subscriptionDict[subscriptionId] = task.Task.Type()
     subscriptionId = ocbHandler.subscribe2Entity( _description = "SAN Updates Notification",
@@ -357,10 +383,10 @@ if __name__ == '__main__':
     globals.subscriptionDict[subscriptionId] ="SensorAgent"       
      
       
-    subscriptionId = ocbHandler.subscribe2Entity( _description = "subscriber",
-            _entities = obj2JsonArray(ran.Ran.getEntity()), _condition_attributes="status_channel",  
-            _notification = parsedConfigFile.getTaskPlannerAddress()+"/ran",)
-    globals.subscriptionDict[subscriptionId] = "opil_v1.msg.RANState"             
+    # subscriptionId = ocbHandler.subscribe2Entity( _description = "subscriber",
+    #         _entities = obj2JsonArray(ran.Ran.getEntity()), _condition_attributes="status_channel",  
+    #         _notification = parsedConfigFile.getTaskPlannerAddress()+"/ran",)
+    # globals.subscriptionDict[subscriptionId] = "opil_v1.msg.RANState"             
 
 
     # this is just for mockup
@@ -385,11 +411,19 @@ if __name__ == '__main__':
     print "Setting up working Threads for Task, RAN, SAN"
     workerTask = Thread(target=taskDealer, args=(globals.taskQueue,))
     workerSan = Thread(target=sanDealer, args=(globals.sanQueue,))
-    workerRan = Thread(target=ranDealer, args=(globals.ranQueue,))
+    workerTaskScheduler = Thread(target=taskSchedulerDealer, args=(globals.taskSchedulerQueue,))
+    #workerRan = Thread(target=ranDealer, args=(globals.ranQueue,))
     workerTask.start()
     workerSan.start()
-    workerRan.start()
+    workerTaskScheduler.start()
+    #workerRan.start()
     
+    subscriptionId = ocbHandler.subscribe2Entity( _description = "notify me",
+            _entities = obj2JsonArray(task.Task.getEntity()),  
+            _notification = parsedConfigFile.getTaskPlannerAddress() +"/task",_generic=True)
+    globals.subscriptionDict[subscriptionId] ="Task"     
+
+
     print "Done"
     print "Publishing TaskState"
     # currentTaskState.taskId = taskState.getCurrentTaskId()
@@ -408,16 +442,22 @@ if __name__ == '__main__':
     # checkForProgrammEnd.join()
 
     while terminate == False:
+        try:
+            time.sleep(10)
+        except expression as identifier:
+            pass
+        
         pass
     user_input = ""
-    while user_input!= "exit" or terminate==False:
-        try:
-            user_input = input('Input please ?').strip('\n')
-        except KeyboardInterrupt:
-            pass
-        except:
-            global terminate
-            terminate = False
+    # while user_input!= "exit" or terminate==False:
+    #     try:
+    #         user_input = raw_input('Input please ?').strip('\n')
+    #         user_input = user_input.replace('\r','')
+    #     except KeyboardInterrupt:
+    #         pass
+    #     except:
+    #         global terminate
+    #         terminate = False
 
 
     for item in globals.subscriptionDict:
