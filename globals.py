@@ -2,9 +2,13 @@ import Queue
 
 import threading
 
+from dictQueue import DictQueue
+
 taskQueue = Queue.Queue()
+sanDictQueue = DictQueue()
 sanQueue = Queue.Queue()
 ranQueue = Queue.Queue()
+taskSchedulerQueue = Queue.Queue()
 
 subscriptionDict = {}
 
