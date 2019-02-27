@@ -1,7 +1,7 @@
 import requests
 import urllib2
-
-maxCheck = 10
+import time
+maxCheck = 100
 
 ### check if the server is running, otherwise wait until 
 def checkServerRunning(SERVER_ADDRESS, PORT):
@@ -27,6 +27,7 @@ def checkServerRunning(SERVER_ADDRESS, PORT):
         except httplib.HTTPException, err:
             print('HTTPException')
         finally:
+            time.sleep(100)
             print "FAILED"
     print "Thread is ending"
  
