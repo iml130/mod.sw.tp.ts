@@ -443,10 +443,9 @@ if __name__ == '__main__':
 
     while terminate == False:
         try:
-            time.sleep(10)
-        except expression as identifier:
-            pass
-        
+            time.sleep(1)
+        except Exception:
+            pass        
         pass
     user_input = ""
     # while user_input!= "exit" or terminate==False:
