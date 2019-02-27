@@ -4,3 +4,4 @@ transitions
 enum34
 jinja2
 jsonschema
+antlr4-python2-runtime
