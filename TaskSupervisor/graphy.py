@@ -1,7 +1,7 @@
 import networkx as nx
 import matplotlib as mpl
-import matplotlib.pyplot as plt
 mpl.use('Agg') 
+import matplotlib.pyplot as plt
 
 def getChildTask(G, currentTask):
     child = None
