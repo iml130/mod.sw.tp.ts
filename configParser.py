@@ -24,21 +24,22 @@ class Config(object):
         self.CB_URL = "http://"+self.CB_HOST+":"+self.CB_PORT
         self.TASKPLANNER_PORT = int(config.get('taskplanner', 'port'))
         self.TASKPLANNER_HOST = config.get('taskplanner', 'host')
-        self.robot_id = config.get('RAN', 'robot_id')
-        self.FLASK_HOST = config.get('flask', 'host')
         
-        self.loadingArea = Area()
-        self.loadingArea.point_x = config.get('loadingArea', 'point_x')
-        self.loadingArea.point_y = config.get('loadingArea', 'point_y')
-        self.loadingArea.theta  = config.get('loadingArea', 'theta')
-        self.waitingArea = Area()
-        self.waitingArea.point_x = config.get('waitingArea', 'point_x')
-        self.waitingArea.point_y = config.get('waitingArea', 'point_y')
-        self.waitingArea.theta  = config.get('waitingArea', 'theta')
-        self.unloadingArea = Area()
-        self.unloadingArea.point_x = config.get('unloadingArea', 'point_x')
-        self.unloadingArea.point_y = config.get('unloadingArea', 'point_y')
-        self.unloadingArea.theta  = config.get('unloadingArea', 'theta')
+        #self.robot_id = config.get('RAN', 'robot_id')
+        # self.FLASK_HOST = config.get('flask', 'host')
+        
+        # self.loadingArea = Area()
+        # self.loadingArea.point_x = config.get('loadingArea', 'point_x')
+        # self.loadingArea.point_y = config.get('loadingArea', 'point_y')
+        # self.loadingArea.theta  = config.get('loadingArea', 'theta')
+        # self.waitingArea = Area()
+        # self.waitingArea.point_x = config.get('waitingArea', 'point_x')
+        # self.waitingArea.point_y = config.get('waitingArea', 'point_y')
+        # self.waitingArea.theta  = config.get('waitingArea', 'theta')
+        # self.unloadingArea = Area()
+        # self.unloadingArea.point_x = config.get('unloadingArea', 'point_x')
+        # self.unloadingArea.point_y = config.get('unloadingArea', 'point_y')
+        # self.unloadingArea.theta  = config.get('unloadingArea', 'theta')
 
  
     def getTaskPlannerAddress(self):
