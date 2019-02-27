@@ -96,16 +96,13 @@ def signal_handler(sig, frame):
 
     
 
-def flaskThread():
-    print "debggerFlaskThreadOutput"
-    print parsedConfigFile.FLASK_HOST
-    print parsedConfigFile.TASKPLANNER_PORT
+def flaskThread(): 
     app.run(host= parsedConfigFile.FLASK_HOST, port= parsedConfigFile.TASKPLANNER_PORT, threaded=True,use_reloader=False, debug = True)
 
 def convertRanState(jsonReq):
     loaded_r = (jsonReq['status_channel'])
     loaded_r = loaded_r['value']
-    loaded_r = loaded_r.replace("%27",'"');
+    loaded_r = loaded_r.replace("%27",'"')
     d = json.loads(loaded_r)
     return d
 

@@ -26,7 +26,7 @@ class Config(object):
         self.TASKPLANNER_HOST = config.get('taskplanner', 'host')
         
         #self.robot_id = config.get('RAN', 'robot_id')
-        # self.FLASK_HOST = config.get('flask', 'host')
+        self.FLASK_HOST = config.get('flask', 'host')
         
         # self.loadingArea = Area()
         # self.loadingArea.point_x = config.get('loadingArea', 'point_x')
