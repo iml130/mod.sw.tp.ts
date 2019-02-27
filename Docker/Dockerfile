@@ -2,15 +2,15 @@ FROM ubuntu:latest
 
 ### Pre Settings:
 # Set Proxy Settings 
-ENV http_proxy http://www-cache:80/
-ENV https_proxy http://www-cache:80/
-ENV all_proxy socks://www-cache:80/
-ENV ftp_proxy ftp://www-cache:80/
+ENV http_proxy=http://192.44.23.9:80
+ENV https_proxy=http://192.44.23.9:80
+ENV all_proxy=socks://192.44.23.9:80
+ENV ftp_proxy=ftp://192.44.23.9:80
 
 # apt-key add via Keyserver is not working (maybe firewall?), instead we just copy the key manually. (Needed for ROS-Installation)
 #COPY key.txt ./
-# package tzdata is interactive, we supress it. (Needed for ROS-Installation)
-#ENV DEBIAN_FRONTEND=noninteractive
+# package tzdata is interactive, we supress it. (Needed for ROS-Installation and python-tk)
+ENV DEBIAN_FRONTEND=noninteractive
 
 
 
@@ -20,10 +20,23 @@ RUN apt-get update && apt-get upgrade -y && apt-get dist-upgrade -y
 
 
 ### Installation Pytthon2.7
-RUN apt-get update
+RUN apt-get install -y git-core
 RUN apt-get install -y python2.7
 RUN apt-get install -y python-pip
+RUN apt-get install -y python-tk
 
+RUN echo "Remove me b!"
+
+RUN mkdir app
+RUN cd app && git clone https://atlassian.iml.fraunhofer.de/bitbucket/scm/sof/taskplanner.git
+RUN pip install -r app/taskplanner/requirements.txt
+
+EXPOSE 5555
+
+#RUN cd ./taskplanner
+# run the application
+WORKDIR "/app/taskplanner"
+CMD ["python", "runserver.py"]
 
 
 ### Installation ROS Melodic

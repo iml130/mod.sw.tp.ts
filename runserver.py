@@ -97,6 +97,9 @@ def signal_handler(sig, frame):
     
 
 def flaskThread():
+    print "debggerFlaskThreadOutput"
+    print parsedConfigFile.FLASK_HOST
+    print parsedConfigFile.TASKPLANNER_PORT
     app.run(host= parsedConfigFile.FLASK_HOST, port= parsedConfigFile.TASKPLANNER_PORT, threaded=True,use_reloader=False, debug = True)
 
 def convertRanState(jsonReq):

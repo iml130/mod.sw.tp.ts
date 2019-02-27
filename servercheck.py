@@ -9,8 +9,9 @@ def checkServerRunning(SERVER_ADDRESS, PORT):
     maxCheckCounter = 0 
     while doForever:
         print "checkServerRunning"
-        maxCheck += 1
+        maxCheckCounter += 1
         if(maxCheckCounter == maxCheck):
+            print "maxCheck is reached"
             doForever = False    
         try:
             tmpUrl = "http://"+ SERVER_ADDRESS+  ":" + str(PORT) 
