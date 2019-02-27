@@ -1,0 +1,58 @@
+template Position
+    position
+    type
+end
+
+template Sensor
+    sensorId
+    type
+end
+
+####
+
+Position moldingPallet
+    type = "pallet"
+    position = "moldingArea_palletPlace"
+end
+
+Position warehouse_pos1
+    type = "pallet"
+    position = "warehouse_destination_pos"
+end
+
+Sensor buttonPalletIsReady
+    sensorId = "buttonMoldingArea"
+    type = "Boolean"
+end
+
+####
+
+
+task Charge
+    Transport 
+    from warehouse_pos1
+    to moldingPallet 
+end
+
+task Bandito
+    Transport
+    from warehouse_pos1
+    to moldingPallet
+    OnDone Charge
+end
+
+task Refill
+    Transport 
+	from warehouse_pos1
+	to moldingPallet
+    OnDone Charge
+end
+
+task Transport_moldingPallet
+    Transport
+    from moldingPallet
+    to warehouse_pos1
+    OnDone Refill
+end
+
+
