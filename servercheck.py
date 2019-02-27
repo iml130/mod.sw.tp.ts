@@ -1,7 +1,7 @@
 import requests
 import urllib2
 
-maxCheck = 5
+maxCheck = 10
 
 ### check if the server is running, otherwise wait until 
 def checkServerRunning(SERVER_ADDRESS, PORT):
@@ -9,12 +9,14 @@ def checkServerRunning(SERVER_ADDRESS, PORT):
     maxCheckCounter = 0 
     while doForever:
         print "checkServerRunning"
+        maxCheck += 1
         if(maxCheckCounter == maxCheck):
             doForever = False    
         try:
-            request = urllib2.Request("http://"+ SERVER_ADDRESS+  ":" + str(PORT) ) 
+            tmpUrl = "http://"+ SERVER_ADDRESS+  ":" + str(PORT) 
+            print "Try to access: " + tmpUrl
+            request = urllib2.Request(tmpUrl) 
             response = urllib2.urlopen(request)        
-
             print "is working"
             doForever = False
         except urllib2.HTTPError, err:
