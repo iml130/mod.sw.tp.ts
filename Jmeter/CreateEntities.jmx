@@ -60,7 +60,7 @@
 	&quot;id&quot;: &quot;Task1&quot;,&#xd;
 	&quot;type&quot;: &quot;Task&quot;,&#xd;
 	&quot;TaskSpec&quot;: {&#xd;
-		&quot;value&quot;: &quot;template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22moldingArea_palletPlace%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonMoldingArea%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0A%23%23%23%23%0A%0Atask+AnotherTest%0A++++Transport+%0A%09from+warehouse_pos1%0A%09to+moldingPallet+%0Aend%0A%0Atask+Charge%0A++++Transport+%0A%09from+warehouse_pos1%0A%09to+moldingPallet+%0Aend%0A%0Atask+Refill%0A++++Transport+%0A%09from+warehouse_pos1%0A%09to+moldingPallet%0A++++OnDone+Charge%0Aend%0A%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++OnDone+Refill%0Aend%0A%0A%0A&quot;,&#xd;
+		&quot;value&quot;: &quot;template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0A++++value%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22moldingArea_palletPlace%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonMoldingArea%22%0A++++type+%3D+%22Boolean%22%0A++++value+%3D+TRUE%0Aend%0A%0A%23%23%23%23%0A%0A%0Atask+Charge%0A++++Transport+%0A++++from+warehouse_pos1%0A++++to+moldingPallet+%0Aend%0A%0Atask+Bandito%0A++++Transport%0A++++from+warehouse_pos1%0A++++to+moldingPallet%0A++++OnDone+Charge%0Aend%0A%0Atask+Refill%0A++++Transport+%0A%09from+warehouse_pos1%0A%09to+moldingPallet%0A++++OnDone+Charge%0Aend%0A%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++TriggeredBy+buttonPalletIsReady.value+%3D%3D+TRUE%0A++++OnDone+Refill%0Aend%0A%0A%0A&quot;,&#xd;
 		&quot;type&quot;: &quot;Text&quot;&#xd;
 	}&#xd;
 }</stringProp>
@@ -112,6 +112,39 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="NewTaskNoTrigger" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;Task1&quot;,&#xd;
+	&quot;type&quot;: &quot;Task&quot;,&#xd;
+	&quot;TaskSpec&quot;: {&#xd;
+		&quot;value&quot;: &quot;template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22moldingArea_palletPlace%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonMoldingArea%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0A%23%23%23%23%0A%0Atask+AnotherTest%0A++++Transport+%0A%09from+warehouse_pos1%0A%09to+moldingPallet+%0Aend%0A%0Atask+Charge%0A++++Transport+%0A%09from+warehouse_pos1%0A%09to+moldingPallet+%0Aend%0A%0Atask+Refill%0A++++Transport+%0A%09from+warehouse_pos1%0A%09to+moldingPallet%0A++++OnDone+Charge%0Aend%0A%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++OnDone+Refill%0Aend%0A%0A%0A&quot;,&#xd;
+		&quot;type&quot;: &quot;Text&quot;&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="ErrorNewTask" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -124,6 +157,43 @@
 	&quot;TaskSpec&quot;: {&#xd;
 		&quot;value&quot;: &quot;%23%23%23%23v1%0Atemplate+Position%0A++++position%0A++++type%0Aend%0A%0 0A++++sensorId+%3D+%22buttonMoldingArea%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0A%23%23%23%23%0A%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0Aend&quot;,&#xd;
 		&quot;type&quot;: &quot;Text&quot;&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create TaskEntity" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;Task1&quot;,&#xd;
+	&quot;type&quot;: &quot;Task&quot;,&#xd;
+	&quot;taskOrder&quot;: {&#xd;
+		&quot;type&quot;: &quot;Integer&quot;,&#xd;
+		&quot;value&quot;: 0&#xd;
+	},&#xd;
+	&quot;taskTd&quot;: {&#xd;
+		&quot;type&quot;: &quot;Integer&quot;,&#xd;
+		&quot;value&quot;: 0&#xd;
 	}&#xd;
 }</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
@@ -174,43 +244,6 @@
           </HeaderManager>
           <hashTree/>
         </hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create TaskEntity" enabled="false">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-	&quot;id&quot;: &quot;Task1&quot;,&#xd;
-	&quot;type&quot;: &quot;Task&quot;,&#xd;
-	&quot;taskOrder&quot;: {&#xd;
-		&quot;type&quot;: &quot;Integer&quot;,&#xd;
-		&quot;value&quot;: 0&#xd;
-	},&#xd;
-	&quot;taskTd&quot;: {&#xd;
-		&quot;type&quot;: &quot;Integer&quot;,&#xd;
-		&quot;value&quot;: 0&#xd;
-	}&#xd;
-}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
-          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/v2/entities/</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Update Task" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
