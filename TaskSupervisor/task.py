@@ -7,12 +7,14 @@ import Queue
 from globals import sanDictQueue
 
 from transportOrder import TransportOrder
+from taskInfo import TaskInfo
 
 class Task(threading.Thread):
-    def __init__(self, _name):
+    def __init__(self, _taskInfo):
         threading.Thread.__init__(self) 
         self.uuid = uuid.uuid1()      
-        self.name = _name
+        self.name = _taskInfo.name
+        self.taskInfo = _taskInfo
         sanDictQueue.addThread(self.uuid)
         self.q = sanDictQueue.getQueue(self.uuid)
         #self.transportOrder = TransportOrder(self.name)
@@ -29,7 +31,7 @@ class Task(threading.Thread):
         print "\nrunning " + self.name + ", sleep " + str(tempVal)
         #time.sleep(tempVal)
         try:
-            a = self.q.get(timeout = 60)
+            a = self.q.get(timeout = tempVal)
             if (a):
                 print "Received:" +str(a)
         except Queue.Empty:

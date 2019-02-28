@@ -44,12 +44,12 @@ def displayGraph(G, save = False):
         plt.savefig("./images/task.png")
     #plt.show()
 
-def createGraph(taskInfoList):
+def createGraph(taskInfos):
     G = nx.DiGraph(day="Tasks")
-    for task in taskInfoList.itervalues():
+    for task in taskInfos.itervalues():
         G.add_node(task)
 
-    for task in taskInfoList.itervalues():
-        for child in task.childs:
-            G.add_edge(task, taskInfoList[child])
+    for task in taskInfos.itervalues():
+        for child in task.onDone:
+            G.add_edge(task, taskInfos[child])
     return G

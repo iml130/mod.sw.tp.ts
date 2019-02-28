@@ -9,24 +9,24 @@ class taskManager(threading.Thread):
         threading.Thread.__init__(self) 
         self.uuid = uuid.uuid1()
         self.name = name
-        self.taskList = []
+        self.taskInfoList = []
         self.runningTask= None
         self.queue = q
 
-    def addTask(self, task):
-        if(task not in self.taskList):
-            self.taskList.append(task)
+    def addTask(self, taskInfo):
+        if(taskInfo not in self.taskInfoList):
+            self.taskInfoList.append(taskInfo)
     
     def run(self):
         
-        for task in self.taskList:    
-            print str(datetime.datetime.now().time()) + ", TM_Started: " + self.name +", start: " + task.name
-            t = Task(task.name)
+        for taskInfo in self.taskInfoList:
+            print str(datetime.datetime.now().time()) + ", TM_Started: " + self.name +", start: " + taskInfo.name
+            t = Task(taskInfo)
             t.start()
             t.join()
         self.queue.put(self.name)
         #self.queue.task_done()
-        print str(datetime.datetime.now().time()) + ", TM_Finnished: " + self.name +", start: " + task.name
+        print str(datetime.datetime.now().time()) + ", TM_Finnished: " + self.name +", start: " + taskInfo.name
     
 
     def __cmp__(self, other):

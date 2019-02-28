@@ -76,3 +76,39 @@ class TaskParserListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TaskParser#expression.
+    def enterExpression(self, ctx):
+        pass
+
+    # Exit a parse tree produced by TaskParser#expression.
+    def exitExpression(self, ctx):
+        pass
+
+
+    # Enter a parse tree produced by TaskParser#binOperation.
+    def enterBinOperation(self, ctx):
+        pass
+
+    # Exit a parse tree produced by TaskParser#binOperation.
+    def exitBinOperation(self, ctx):
+        pass
+
+
+    # Enter a parse tree produced by TaskParser#unOperation.
+    def enterUnOperation(self, ctx):
+        pass
+
+    # Exit a parse tree produced by TaskParser#unOperation.
+    def exitUnOperation(self, ctx):
+        pass
+
+
+    # Enter a parse tree produced by TaskParser#con.
+    def enterCon(self, ctx):
+        pass
+
+    # Exit a parse tree produced by TaskParser#con.
+    def exitCon(self, ctx):
+        pass
+
+
