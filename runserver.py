@@ -36,7 +36,7 @@ from icent import IcentDemo
 import servercheck
 
 
-from TaskLanguage.checkGrammar import checkTaskLanguage
+from TaskLanguage.checkGrammarTreeCreation import checkTaskLanguage
 from TaskSupervisor.taskScheduler import taskScheduler
 # from Entities import task.Task
 # from Entities import taskstate.TaskState
@@ -99,79 +99,79 @@ def signal_handler(sig, frame):
 def flaskThread(): 
     app.run(host= parsedConfigFile.FLASK_HOST, port= parsedConfigFile.TASKPLANNER_PORT, threaded=True,use_reloader=False, debug = True)
 
-def convertRanState(jsonReq):
-    loaded_r = (jsonReq['status_channel'])
-    loaded_r = loaded_r['value']
-    loaded_r = loaded_r.replace("%27",'"')
-    d = json.loads(loaded_r)
-    return d
+# def convertRanState(jsonReq):
+#     loaded_r = (jsonReq['status_channel'])
+#     loaded_r = loaded_r['value']
+#     loaded_r = ldanke, oaded_r.replace("%27",'"')
+#     d = json.loads(loaded_r)
+#     return d
 
 
-def ranDealer(q):
-    global icentStateMachine
-    global ocbHandler
-    global currentTaskState
-    isMoving = False
-    while(True):
-        jsonReq, entityType = q.get()
-        jsonReq = jsonReq[0]
-        print "received RAN" 
-        if(entityType == "opil_v1.msg.RANState"):
-            # todo: check for state
-            d = None
-            if("status_channel" in jsonReq):
-                d = convertRanState(jsonReq)
-                global ran_task_id
-                if (d["current_task_id"]["id"] != ran_task_id):
-                    print "change"
-                    print d["current_task_id"]["id"]
-                    print ran_task_id
-                ran_task_id = d["current_task_id"]["id"]
-            if(d):
-                if(d["ran_status"] == RAN_IS_MOVING):
-                    isMoving = True
-                if(isMoving):
-                    # if a position of the AGV has reached do the following:
-                        # agv --> setActionMotion(Do nothing) and publish it
-                        # update taskState and publish it
-                        # change state of stateMachine
-                    if(icentStateMachine.state == "ran2LoadingDestination" and d["ran_status"]== RAN_IS_DONE):
-                        isMoving = False
-                        print "reached destination@Loading"         
-                        ocbHandler.update_entity_dirty(getActionChannel(d["current_task_id"]["id"]))
+# def ranDealer(q):
+#     global icentStateMachine
+#     global ocbHandler
+#     global currentTaskState
+#     isMoving = False
+#     while(True):
+#         jsonReq, entityType = q.get()
+#         jsonReq = jsonReq[0]
+#         print "received RAN" 
+#         if(entityType == "opil_v1.msg.RANState"):
+#             # todo: check for state
+#             d = None
+#             if("status_channel" in jsonReq):
+#                 d = convertRanState(jsonReq)
+#                 global ran_task_id
+#                 if (d["current_task_id"]["id"] != ran_task_id):
+#                     print "change"
+#                     print d["current_task_id"]["id"]
+#                     print ran_task_id
+#                 ran_task_id = d["current_task_id"]["id"]
+#             if(d):
+#                 if(d["ran_status"] == RAN_IS_MOVING):
+#                     isMoving = True
+#                 if(isMoving):
+#                     # if a position of the AGV has reached do the following:
+#                         # agv --> setActionMotion(Do nothing) and publish it
+#                         # update taskState and publish it
+#                         # change state of stateMachine
+#                     if(icentStateMachine.state == "ran2LoadingDestination" and d["ran_status"]== RAN_IS_DONE):
+#                         isMoving = False
+#                         print "reached destination@Loading"         
+#                         ocbHandler.update_entity_dirty(getActionChannel(d["current_task_id"]["id"]))
                          
-                        currentTaskState.state = taskState.State.Running
-                        currentTaskState.userAction = taskState.UserAction.WaitForLoading
-                        ocbHandler.update_entity(currentTaskState)
+#                         currentTaskState.state = taskState.State.Running
+#                         currentTaskState.userAction = taskState.UserAction.WaitForLoading
+#                         ocbHandler.update_entity(currentTaskState)
 
-                        # change state
-                        icentStateMachine.AgvArrivedAtLoadingDestination()
+#                         # change state
+#                         icentStateMachine.AgvArrivedAtLoadingDestination()
                         
-                    elif(icentStateMachine.state == "ran2UnloadingDestination" and d["ran_status"]==RAN_IS_DONE):
-                        isMoving = False
-                        print "reached destination@Unloading"            
-                        ocbHandler.update_entity_dirty(getActionChannel(d["current_task_id"]["id"]))
+#                     elif(icentStateMachine.state == "ran2UnloadingDestination" and d["ran_status"]==RAN_IS_DONE):
+#                         isMoving = False
+#                         print "reached destination@Unloading"            
+#                         ocbHandler.update_entity_dirty(getActionChannel(d["current_task_id"]["id"]))
 
-                        currentTaskState.state = taskState.State.Running
-                        currentTaskState.userAction = taskState.UserAction.WaitForUnloading
-                        ocbHandler.update_entity(currentTaskState)
+#                         currentTaskState.state = taskState.State.Running
+#                         currentTaskState.userAction = taskState.UserAction.WaitForUnloading
+#                         ocbHandler.update_entity(currentTaskState)
 
-                        icentStateMachine.AgvArrivedAtUnloadingDestination()
-                    elif(icentStateMachine.state == "ran2WaitingArea" and d["ran_status"]==RAN_IS_DONE):                    
-                        isMoving = False
-                        print "reached destination@Waiting"                        
-                        ocbHandler.update_entity_dirty(getActionChannel(d["current_task_id"]["id"]))    
-                        # perform transistin of state: Running --> Finished
-                        currentTaskState.state = taskState.State.Finished
-                        currentTaskState.userAction = taskState.UserAction.Idle
-                        ocbHandler.update_entity(currentTaskState) 
-                        # perform transistin of state: Finished --> Idle
-                        currentTaskState.state = taskState.State.Idle
-                        currentTaskState.userAction = taskState.UserAction.Idle
-                        ocbHandler.update_entity(currentTaskState)
-                        icentStateMachine.AgvArrivedAtWaitingArea() 
+#                         icentStateMachine.AgvArrivedAtUnloadingDestination()
+#                     elif(icentStateMachine.state == "ran2WaitingArea" and d["ran_status"]==RAN_IS_DONE):                    
+#                         isMoving = False
+#                         print "reached destination@Waiting"                        
+#                         ocbHandler.update_entity_dirty(getActionChannel(d["current_task_id"]["id"]))    
+#                         # perform transistin of state: Running --> Finished
+#                         currentTaskState.state = taskState.State.Finished
+#                         currentTaskState.userAction = taskState.UserAction.Idle
+#                         ocbHandler.update_entity(currentTaskState) 
+#                         # perform transistin of state: Finished --> Idle
+#                         currentTaskState.state = taskState.State.Idle
+#                         currentTaskState.userAction = taskState.UserAction.Idle
+#                         ocbHandler.update_entity(currentTaskState)
+#                         icentStateMachine.AgvArrivedAtWaitingArea() 
 
-                    print icentStateMachine.state
+#                     print icentStateMachine.state
 
 def findSanById(_sensorData, _id):
     for sensorArrayItem in _sensorData:
