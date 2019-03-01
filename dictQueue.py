@@ -1,18 +1,25 @@
 import threading
 import Queue
+import logging 
+
+
+logger = logging.getLogger(__name__)
 
 class DictQueue:
     lock = threading.Lock()
 
     def __init__(self):
+        logger.info("DictQueue init")
         self.dict = {}
-    
+        logger.info("DictQueue init_done")
+
     def addThread(self, _uuid):
         with self.lock:
             _uuid = str(_uuid)
             if(_uuid in self.dict):
                 return False
             self.dict[_uuid] = Queue.Queue()
+            logger.info("DictQueue UUID added : " + _uuid)
             return True
     
     def getQueue(self, _uuid):
@@ -28,10 +35,10 @@ class DictQueue:
             if(_uuid in self.dict):
                 try: 
                     del self.dict[_uuid]
-                    print "UUID deleted: " + _uuid
+                    logger.info("DictQueue UUID deleted : " + _uuid)
                     return True
                 except KeyError:
-                    print("Key 'testing' not found")
+                    logger.error("DictQueue key not found : " + _uuid)
                     return False
             return False
             

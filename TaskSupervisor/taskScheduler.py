@@ -1,6 +1,7 @@
 import Queue
 import datetime 
 import copy
+import logging
 
 from antlr4 import *
 import networkx as nx
@@ -15,6 +16,7 @@ from TaskSupervisor import graphy
 from TaskSupervisor.taskManager import taskManager
 from TaskSupervisor.task import Task
 
+logger = logging.getLogger(__name__)
 
 def createPrinter(_taskLanguage):
     try:
@@ -34,41 +36,21 @@ def createPrinter(_taskLanguage):
         return -1, expression.message
     return 0, "Success"
 
-
-# def createPrinter(taskLanguage):
-#     try:
-#         lexer = TaskLexer(InputStream(taskLanguage))
-#         stream = CommonTokenStream(lexer)
-#         parser = TaskParser(stream)
-#         tree = parser.program() 
-#         printer = PythonListener()
-#         # printer = TaskParserListener()
-#         walker = ParseTreeWalker()
-#         walker.walk(printer, tree)
-       
-#         for key,value in printer.taskInfos.iteritems():
-#             print "NewTask: "
-#             print key
-#             print value.childs
-#         return printer
-#     except Exception as expression:
-#         print expression
-
-def getSuccessors(digraph, node):
-    child = None
-    print list(digraph.nodes)
-    for digraphnode in digraph.nodes:
-        if(node.name == digraphnode.name):
-            for x in digraph.successors(digraphnode):
-                child = x
+# def getSuccessors(digraph, node):
+#     child = None
+#     print list(digraph.nodes)
+#     for digraphnode in digraph.nodes:
+#         if(node.name == digraphnode.name):
+#             for x in digraph.successors(digraphnode):
+#                 child = x
     
-    
-    return child
+#     return child
 
 
 
 class taskScheduler():
     def __init__(self, name, taskLanguage):
+        logger.info("taskSchedular init")
         self.tasklanguage = taskLanguage
         printer = createPrinter(taskLanguage)
         G = graphy.createGraph(printer.taskInfos)
@@ -81,21 +63,23 @@ class taskScheduler():
         self.historyTasks = [] 
         self.taskManager = []
         self.queue = Queue.Queue()
+        logger.info("taskSchedular init_end")
     
     def addTask(self, task):
+        logger.info("taskSchedular addTask" + task.name)
         if(task not in self.runningTasks):
-            self.runningTasks.append(task)
+            self.runningTasks.append(task)        
+        logger.info("taskSchedular addTask_end")
 
     def start(self):
+        logger.info("taskSchedular start")
         for node in self.taskGraph.nodes:
             if(self.taskGraph.in_degree(node) == 0): # get all starting points from the graph
                 tM = taskManager(node.name, self.queue)
                 tM.addTask(node) # add the starting task
                 successors = nx.dfs_successors(self.taskGraph, source = node).values()
                 if(successors):
-                    #self.taskGraph.nodes()
-                    print successors
-                    print type(successors)
+                    #self.taskGraph.nodes() 
                     for successor in successors: # create linked list with child nodes
                         tM.addTask(successor[0])
                     self.taskManager.append(tM)
@@ -105,13 +89,14 @@ class taskScheduler():
                     self.taskManager.append(tM)
                     
         for tm in self.taskManager:
-            print str(datetime.datetime.now().time()) + ", Spawn_TM" + tm.name
+            logger.info("taskSchedular, taskManager spawn: " + tm.name)
             self.runningTasks.append(tm)
             tm.start()
 
+        # respawn finished taskManager 
         while (True):
             res = self.queue.get()
-            print "FINISHED " + res
+            logger.info("taskSchedular, TaskManager finished: " + res)
             for tR in self.runningTasks:
                 if(tR.name == res):
                     tR.join()
@@ -123,8 +108,9 @@ class taskScheduler():
                     temp.taskInfoList = tM.taskInfoList
                     
                     self.runningTasks.append(temp)
-                    print "RESPAWN "+ res
+                    logger.info("taskSchedular, taskManager respawn: " + res)
                     temp.start()
+        logger.info("taskSchedular start_end")
             
     def status(self):
         # return states

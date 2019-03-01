@@ -1,33 +1,37 @@
 import requests
 import urllib2
 import httplib
+import logging
 
 maxCheck = 100
+
+logger = logging.getLogger(__name__)
 
 ### check if the server is running, otherwise wait until 
 def checkServerRunning(SERVER_ADDRESS, PORT):
     doForever = True    
     maxCheckCounter = 0 
-    while doForever:
-        print "checkServerRunning"
+    while doForever: 
+        logger.info("CheckServerRunning, retry "+ str(maxCheckCounter) + "/" + str(maxCheck))
         maxCheckCounter += 1
         if(maxCheckCounter == maxCheck):
-            print "maxCheck is reached"
+            logger.info("CheckServerRunning maximum retries reached") 
             doForever = False    
         try:
             tmpUrl = "http://"+ SERVER_ADDRESS+  ":" + str(PORT) 
-            print "Try to access: " + tmpUrl
+            logger.info("CheckServerRunning Try to access: " + tmpUrl) 
+      
             request = urllib2.Request(tmpUrl) 
             response = urllib2.urlopen(request)        
-            print "is working"
+            logger.info("CheckServerRunning is avalable " + tmpUrl) 
             doForever = False
         except urllib2.HTTPError, err:
-            print('HTTPError = ' + str(err.code))
+            logger.error("CheckServerRunning HTTPError" + str(err.code)) 
         except urllib2.URLError, err:
-            print('URLError = ' + str(err.reason))
+            logger.error("CheckServerRunning URLError" + str(err.code)) 
         except httplib.HTTPException, err:
-            print('HTTPException')
+            logger.error("CheckServerRunning HTTPException" + str(err.code)) 
         finally: 
-            print "FAILED"
-    print "Thread is ending"
+            logger.error("CheckServerRunning Failed") 
+    logger.info("CheckServerRunning_done") 
  

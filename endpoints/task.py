@@ -13,11 +13,15 @@ import os
 task_bp = Blueprint('taskEndpoint', __name__)
 
  
+import logging
+
+logger = logging.getLogger(__name__)
 
 schema = open("./endpoints/taskSchema.json").read()
 
 @task_bp.route('', methods=['GET', 'POST']) 
 def task():
+    logger.info("taskEP is running")
     """Renders the home page.""" 
     if request.json: 
         jsonReq = request.json
@@ -45,8 +49,8 @@ def task():
             if(subId in globals.subscriptionDict): 
                 globals.taskQueue.put((jsonReq[globals.FI_DATA], globals.subscriptionDict[subId]))
         else:
-            # no subscription   
-            print "narf"
+            # no subscription  
+            logger.info("taskEndpoint: No Subscription in List")
     else:
         if(os.path.isfile('./images/task.png')):
             full_filename = "./images/task.png"

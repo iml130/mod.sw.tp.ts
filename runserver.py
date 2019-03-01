@@ -10,6 +10,8 @@ import urllib
 from sys import exit
 from os import environ
 from setup import app
+import logging
+import logging.config
 #import app
 
 import time
@@ -41,6 +43,28 @@ from TaskSupervisor.taskScheduler import taskScheduler
 # from Entities import task.Task
 # from Entities import taskstate.TaskState
 
+
+def setup_logging(
+    default_path='logging.json',
+    default_level=logging.INFO,
+    env_key='LOG_CFG'
+):
+    """Setup logging configuration
+
+    """
+    path = default_path
+    value = os.getenv(env_key, None)
+    if value:
+        path = value
+    if os.path.exists(path):
+        with open(path, 'rt') as f:
+            config = json.load(f)
+        logging.config.dictConfig(config)
+    else:
+        logging.basicConfig(level=default_level)
+
+setup_logging()
+logger = logging.getLogger(__name__)
 HOST = '0.0.0.0'
 PORT = 5555
 SERVER_ADDRESS = "localhost"
@@ -78,25 +102,26 @@ RAN_IN_ACTION = 2
 def deleteSubscriptionById(id):
     if(len(id)>1):
         try:
-            print "Deleting " + id 
-            print parsedConfigFile.getFiwareServerAddress()+"/v2/subscriptions/"+ id
+            logger.info("Deleting Subsciption: " + id) 
+            #print parsedConfigFile.getFiwareServerAddress()+"/v2/subscriptions/"+ id
             response = requests.request("DELETE", parsedConfigFile.getFiwareServerAddress()+"/v2/subscriptions/"+ id)  
             if(response.status_code // httplib.OK == 1):
-                print "Success"
-        except expression as Exception:
-            print "Failed"
+                logger.info("Unsubscribed: " + id) 
+        except Exception as expression:
+            logger.error("Failed Subsciption: " + id + expression) 
             return False
         return True
 
 def signal_handler(sig, frame):
     global terminate
     terminate = True 
-    print('You pressed Ctrl+C!')
-    print "cleaning up"
+    logger.info('You pressed Ctrl+C!')
+    logger.info("cleaning up")
 
     
 
 def flaskThread(): 
+    logger.info("Starting flaskServerThread")
     app.run(host= parsedConfigFile.FLASK_HOST, port= parsedConfigFile.TASKPLANNER_PORT, threaded=True,use_reloader=False, debug = True)
 
 # def convertRanState(jsonReq):
@@ -190,6 +215,7 @@ def isButtonPressed(values):
 def sanDealer(q):
     global icentStateMachine     
     global ocbHandler
+    logger.info("Setting up sanDealer")
     while True: 
         jsonReq, entityType = q.get() 
         #jsonReq = jsonReq[0]
@@ -245,12 +271,15 @@ def getMotionChannel(area):
     return retVal
 
 def taskSchedulerDealer(taskSchedulerQueue):
+    
+    logger.info("taskSchedulerDealer started")
     while True: 
         dmp = taskSchedulerQueue.get()
-        
         ts = taskScheduler("feinfacherTest", dmp)
         ts.start()
-        print "Is Running"        
+        print "Is Running"
+    
+    logger.info("taskSchedulerDealer ended")        
 
 
 def taskDealer(q):    
@@ -259,21 +288,26 @@ def taskDealer(q):
     global ocbHandler
     global currenTaskDesc
     global currentTaskSpecState
+    
+    logger.info("taskDealer started")
     while True: 
         jsonReq, entityType = q.get()
-        jsonReq = jsonReq[0] 
+        jsonReq = jsonReq[0]
+        logger.info("Received new TaskSpec")
         decodedString = jsonReq["TaskSpec"]["value"]
         decodedString = urllib.unquote_plus(decodedString)
         
         retVal, message = checkTaskLanguage(decodedString)
         currentTaskSpecState.message = str(message)
         if (retVal == 0): # no error
+            logger.info("newTaskSpec:\n"+ str(decodedString))
             globals.taskSchedulerQueue.put(decodedString)
         
         currentTaskSpecState.state =  retVal
         currentTaskSpecState.refId = jsonReq["id"]
         ocbHandler.update_entity(currentTaskSpecState)
-            
+    
+    logger.info("taskDealer ended")
 
         # if(entityType == "Task"):
         #     entityTask = task.Task() #taskState.getCurrentTaskId() 
@@ -321,6 +355,7 @@ def obj2JsonArray(_obj):
  
 
 def waitForEnd():
+    logger.info("Starting waitForEnd")
     user_input = ""
     global terminate 
     while user_input!= "exit" or terminate==False:
@@ -344,21 +379,28 @@ if __name__ == '__main__':
     global currentTaskState
     global currentTaskSpecState
 
+ 
+    logger.info("Starting TaskPlanner")
     if(os.path.isfile('./images/task.png')):
         os.remove('./images/task.png')
     
+    
+    logger.info("Setting up Singal_Handler")
     signal.signal(signal.SIGINT, signal_handler)
     signal.signal(signal.SIGTERM, signal_handler)
 
+
+    logger.info("Setting up checkIfServerIsUpRunning")
     checkIfServerIsUpRunning = threading.Thread(name='checkServerRunning', 
                                                 target=servercheck.checkServerRunning, 
                                                 args=(SERVER_ADDRESS, parsedConfigFile.TASKPLANNER_PORT,))
 
+    logger.info("Setting up checkForProgrammEnd")
     checkForProgrammEnd = threading.Thread(name='waitForEnd', 
                                                 target=waitForEnd, 
                                                 args=())
 
-
+    logger.info("Setting up flaskServerThread")
     flaskServerThread = threading.Thread(name= 'flaskThread',target = flaskThread) 
 
     checkIfServerIsUpRunning.start()       
@@ -408,11 +450,13 @@ if __name__ == '__main__':
     # taskMon.time = "23";
     # # wait until server is available
 
-    print "Setting up working Threads for Task, RAN, SAN"
+    logger.info("Setting up taskDealer, sanDealer and workTaskScheduler")
     workerTask = Thread(target=taskDealer, args=(globals.taskQueue,))
     workerSan = Thread(target=sanDealer, args=(globals.sanQueue,))
     workerTaskScheduler = Thread(target=taskSchedulerDealer, args=(globals.taskSchedulerQueue,))
     #workerRan = Thread(target=ranDealer, args=(globals.ranQueue,))
+    
+    logger.info("Starting taskDealer, sanDealer and workTaskScheduler")
     workerTask.start()
     workerSan.start()
     workerTaskScheduler.start()
@@ -423,16 +467,14 @@ if __name__ == '__main__':
             _notification = parsedConfigFile.getTaskPlannerAddress() +"/task",_generic=True)
     globals.subscriptionDict[subscriptionId] ="Task"     
 
-
-    print "Done"
-    print "Publishing TaskState"
+ 
     # currentTaskState.taskId = taskState.getCurrentTaskId()
     # currentTaskState.state = taskState.State.Idle
     # currentTaskState.userAction = taskState.UserAction.Idle
     # ocbHandler.update_entity(currentTaskState)
-    print "Done"
+ 
 
-    print "Push Ctrl+C to exit()"
+    logger.info("Push Ctrl+C to exit()")
 
 
     # original_sigint = signal.getsignal(signal.SIGINT)
@@ -458,7 +500,8 @@ if __name__ == '__main__':
     #         global terminate
     #         terminate = False
 
-
+    logger.info("Shutting down TaskPlanner") 
+    logger.info("Unsubscribing from Subscriptions")
     for item in globals.subscriptionDict:
         deleteSubscriptionById(item)
         
@@ -466,5 +509,6 @@ if __name__ == '__main__':
     # todo: delete subscriptions
     # ocbHandler.unregister_entities()
     # #SubscribtionHandler.unsubscribeContext(parsedConfigFile)
-    print "shutdown flask"    
+
+    logger.info("EndOf TaskPlanner")   
     os._exit(0)

@@ -1,12 +1,13 @@
 from flask import Blueprint
 from flask import request 
 from threading import Event, Thread
-
+import logging
 import json
 
 #local imports 
 import globals
 
+logger = logging.getLogger(__name__)
 ran_bp = Blueprint('ranEndpoint', __name__)
 
 
@@ -22,8 +23,8 @@ def ranEndPoint():
                 globals.ranQueue.put( (jsonReq[globals.FI_DATA], globals.subscriptionDict[subId]) )
         else:
             # no subscription 
-            print "narf"
+            logger.info("ranEndpoint: No Subscription in List")
     else:
-        print "no json"
+        logger.info("ranEndpoint: No json in request")
     return "ok", 201
      
