@@ -1,6 +1,7 @@
 import requests
 import json 
 import httplib
+import threading 
 
 from FiwareObjectConverter.objectFiwareConverter import ObjectFiwareConverter
 
@@ -22,6 +23,7 @@ def obj2JsonArray(_obj):
     return (tempArray)
 
 class ContextBrokerHandler:
+    lock = threading.Lock()
     HEADER = {"Content-Type" : "application/json"}
     HEADER_NO_PAYLOAD = {
         "Accept": "application/json"
@@ -43,37 +45,40 @@ class ContextBrokerHandler:
             self.create_entity(entity)
 
     def create_entity(self, entityInstance):
-        print "Create Entity"
-        statusCode = httplib.OK
+        with self.lock:
+            print "Create Entity"
+            statusCode = httplib.OK
 
-        # check maybe to delete:
-        if(self.delete_entity(entityInstance.getId())):
-            print "error"
+            # check maybe to delete:
+            # if(self.delete_entity(entityInstance.getId())):
+            #     print "error"
 
-        json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4)     
-        response = self._request("POST",self._getUrl(ENTITIES), data = json, headers = self.HEADER)
-        statusCode = response.status_code
-        if(not isResponseOk(statusCode)):
-            return json.loads(response.content)
-            # todo: raise error 
+            json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4)     
+            response = self._request("POST",self._getUrl(ENTITIES), data = json, headers = self.HEADER)
+            statusCode = response.status_code
+            if(not isResponseOk(statusCode)):
+                return json.loads(response.content)
+                # todo: raise error 
 
     def delete_entity(self, entityId):
-        print "Delete Entity - Id: " + str (entityId) 
-        response = self._request("DELETE", self._getUrl(ENTITIES) + "/" + str(entityId), headers = self.HEADER_NO_PAYLOAD)
-        statusCode = response.status_code
-        
-        if(isResponseOk(statusCode)): # everything is fine
-            print "Status OK"
-            return 0
-        else:
-            content = json.loads(response.content)
-            print content
-            return statusCode
+        with self.lock:
+            print "Delete Entity - Id: " + str (entityId) 
+            response = self._request("DELETE", self._getUrl(ENTITIES) + "/" + str(entityId), headers = self.HEADER_NO_PAYLOAD)
+            statusCode = response.status_code
+            
+            if(isResponseOk(statusCode)): # everything is fine
+                print "Status OK"
+                return 0
+            else:
+                content = json.loads(response.content)
+                print content
+                return statusCode
 
     def unregister_entities(self):
-        for entity in self.published_entities:
-            self.delete_entity(entity)
-            self.published_entities.remove(entity)
+        with self.lock:
+            for entity in self.published_entities:
+                self.delete_entity(entity)
+                self.published_entities.remove(entity)
 
     def update_entity(self, entityInstance):
         json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4, showIdValue= False)     
