@@ -1,7 +1,11 @@
+import uuid
 class FiwareEntity():
-    def __init__(self):
+    def __init__(self, id = None):
         self.type = self.__class__.__name__
-        self.id = self.id + "1"
+        if(id is None):
+            self.id = self.type + str(uuid.uuid4())
+        else:
+            self.id =self.type + str(id)  
 
     @classmethod
     def getEntity(cls):
@@ -19,4 +23,4 @@ class FiwareEntity():
         return cls.__name__
 
     def getId(self):
-        return self.__class__.__name__+"1"
+        return self.id
