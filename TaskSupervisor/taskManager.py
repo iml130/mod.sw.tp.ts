@@ -3,39 +3,59 @@ import time
 import datetime
 import uuid
 import logging 
-
+import globals 
 from TaskSupervisor.task import Task
 
 logger = logging.getLogger(__name__)
+ocbHandler = globals.ocbHandler
 
 class taskManager(threading.Thread):
     def __init__(self, name, q):
         threading.Thread.__init__(self) 
         logger.info("taskManager init")
-        self.uuid = uuid.uuid1()
-        self.name = name
-        logger.info("taskMakanger name: " + self.name + ", uuid: " + str(self.uuid))
-        self.taskInfoList = []
-        self.runningTask= None
-        self.queue = q
+        self.id = str(uuid.uuid1())
+        self.taskManagerName = name
+        logger.info("taskMakanger name: " + self.taskManagerName + ", uuid: " + str(self.id))
+        self._taskInfoList = []
+        #self.runningTask= None
+        self._queue = q
         logger.info("taskManager init_done")
 
+    def __del__(self):
+        logger.info("taskManager del")
+        logger.info("taskManager del_done")
+
+
     def addTask(self, taskInfo):
-        if(taskInfo not in self.taskInfoList):
-            self.taskInfoList.append(taskInfo)
-    
+        if(taskInfo not in self._taskInfoList):
+            self._taskInfoList.append(taskInfo)
+    def publishEntity(self):
+        global ocbHandler
+        logger.info("TaskManager publishEntity " + self.taskManagerName)
+      #  ocbHandler.create_entity(self.taskState) 
+        ocbHandler.create_entity(self)
+        logger.info("TaskManager publishEntity_done")
+
+    def deleteEntity(self):
+        global ocbHandler
+        logger.info("TaskManager deleteEntity " + self.taskManagerName)
+        ocbHandler.delete_entity(self.id)
+        logger.info("TaskManager deleteEntity_done") 
+        
     def run(self):
         
-        for taskInfo in self.taskInfoList:
-            logger.info("tM " + self.name  + " starting Task" + str(taskInfo))
-            t = Task(taskInfo)
+        for taskInfo in self._taskInfoList:
+            logger.info("tM " + self.taskManagerName  + " starting Task" + str(taskInfo))
+            t = Task(taskInfo, self.id)
+            t.publishEntity()
             t.start()
             t.join()            
-            logger.info("tM " + self.name  + " finished Task" + str(taskInfo))
-        self.queue.put(self.name)
+            t.deleteEntity()
+            logger.info("tM " + self.taskManagerName  + " finished Task" + str(taskInfo))
+        self._queue.put(self.taskManagerName)
         #self.queue.task_done()
-        print str(datetime.datetime.now().time()) + ", TM_Finnished: " + self.name +", start: " + taskInfo.name
-    
+        print str(datetime.datetime.now().time()) + ", TM_Finnished: " + self.taskManagerName +", start: " + taskInfo.name
+        self.deleteEntity()
 
     def __cmp__(self, other):
         if(self.name == other):

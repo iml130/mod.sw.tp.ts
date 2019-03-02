@@ -89,8 +89,9 @@ class taskScheduler():
                     self.taskManager.append(tM)
                     
         for tm in self.taskManager:
-            logger.info("taskSchedular, taskManager spawn: " + tm.name)
+            logger.info("taskSchedular, taskManager spawn: " + tm.taskManagerName)
             self.runningTasks.append(tm)
+            tm.publishEntity()
             tm.start()
 
         # respawn finished taskManager 
@@ -98,17 +99,20 @@ class taskScheduler():
             res = self.queue.get()
             logger.info("taskSchedular, TaskManager finished: " + res)
             for tR in self.runningTasks:
-                if(tR.name == res):
+                if(tR.taskManagerName == res):
                     tR.join()
+                    #tR.deleteEntity()
                     self.runningTasks.remove(tR)
-
+                    tR = None
+                    
             for tM in self.taskManager:
-                if(tM.name == res):
-                    temp = taskManager(tM.name, self.queue)
-                    temp.taskInfoList = tM.taskInfoList
+                if(tM.taskManagerName == res):
+                    temp = taskManager(tM.taskManagerName, self.queue)
+                    temp._taskInfoList = tM._taskInfoList
                     
                     self.runningTasks.append(temp)
                     logger.info("taskSchedular, taskManager respawn: " + res)
+                    temp.publishEntity()
                     temp.start()
         logger.info("taskSchedular start_end")
             
