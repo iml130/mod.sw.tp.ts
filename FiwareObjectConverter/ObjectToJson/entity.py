@@ -28,7 +28,7 @@ class Entity(object):
             # Setting EntityType and EntitiyID
             if (showIdValue):
                 self.type = _object.__class__.__name__
-                self.id = self.type + "1"
+                self.id = self.type + str(uuid.uuid4())
 
             # Set Key/Value in own Dictionary
             if (isinstance(_object, dict)):
@@ -45,8 +45,12 @@ class Entity(object):
                     value = getattr(_object, key)
                 if (key == "type" or key == "id" or key.startswith('_', 0, 1)):
                     # Object contains invalid key-name, ignore!
+                    if(key=="id"):
+                        self.id = iterL[key]
                     pass
                 else:
+                    print "key: "+ key + ", value: " 
+                    print value
                     self.__dict__[key] = EntityAttribute(value, ignorePythonMetaData, dataTypeDict.get(key)) 
         except AttributeError as ex:
             raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex)

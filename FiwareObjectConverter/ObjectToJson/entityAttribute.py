@@ -68,13 +68,31 @@ class EntityAttribute():
                 tempDict[key] = EntityAttribute(value,ipmd )
             self.value = tempDict        
         else:
-            # Case it is a Class
-            self.type = _object.__class__.__name__
+            # Case it is a Class 
+            if (hasattr(_object, '__slots__')):
+                iterL = getattr(_object, '__slots__')
+            elif(hasattr(_object, '__dict__')):
+                iterL = _object.__dict__
+            else:
+                raise ValueError("Cannot get attrs from {}".format(str(_object)))
+
+            if hasattr(_object, '_type'):   # ROS-Specific Type-Declaration
+                self.type = _object._type.replace("/", ".") # Needs to be replaced Fiware does not allow a '/'
+            else:
+                self.type = _object.__class__.__name__
             self.setPythonMetaData(ipmd, "class")
             tempDict = {}
-            for key, value in _object.__dict__.iteritems():
-                tempDict[key] = EntityAttribute(value, ipmd)
-            self.value = tempDict
+            for key in iterL:
+                tempDict[key] = EntityAttribute(getattr(_object, key), ipmd)
+                self.value = tempDict
+
+            # self.type = _object.__class__.__name__
+            # self.setPythonMetaData(ipmd, "class")
+            # tempDict = {}
+            # for key, value in _object.__dict__.iteritems():
+            #     print key, value
+            #     tempDict[key] = EntityAttribute(value, ipmd)
+            # self.value = tempDict
 
 
         if concreteDataType is not None:
