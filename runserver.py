@@ -47,8 +47,7 @@ from TaskSupervisor.taskScheduler import taskScheduler
 def setup_logging(
     default_path='logging.json',
     default_level=logging.INFO,
-    env_key='LOG_CFG'
-):
+    env_key='LOG_CFG'):
     """Setup logging configuration
 
     """
@@ -72,15 +71,16 @@ SERVER_ADDRESS = "localhost"
 
 CONFIG_FILE = "./fiware_config.ini"
 parsedConfigFile = Config(CONFIG_FILE)
+globals.initOcbHandler(parsedConfigFile.getFiwareServerAddress())
 ocbHandler = ContextBrokerHandler(parsedConfigFile.getFiwareServerAddress())
 icentStateMachine = IcentDemo("Anda")
  
 currenTaskDesc = task.Task()
-currentTaskState = taskState.TaskState()
+# currentTaskState = taskState.TaskState("1a","2b", "3c")
 currentTaskSpecState = taskSpecState.TaskSpecState()
 ran_task_id = 0  
 terminate = False 
-
+    
 import requests
 import httplib
 
@@ -219,41 +219,42 @@ def sanDealer(q):
     while True: 
         jsonReq, entityType = q.get() 
         #jsonReq = jsonReq[0]
-        if(entityType == "SensorAgent"):
-            if(icentStateMachine.state == "wait4ran2loading"):
-                # to do: check for SAN_ID, Type and Value
-                # make sure this is a Switch Sensor and it is the value of 1
-                readings = findSanById(jsonReq, "IR_1")
-                if(readings):
-                    if(isButtonPressed(readings)):
-                        currentTaskState.state = taskState.State.Running
-                        currentTaskState.userAction = taskState.UserAction.Idle
-                        ocbHandler.update_entity(currentTaskState) 
+        logger.info("Received json sanDealer, now continue")
+        # if(entityType == "SensorAgent"):
+        #     if(icentStateMachine.state == "wait4ran2loading"):
+        #         # to do: check for SAN_ID, Type and Value
+        #         # make sure this is a Switch Sensor and it is the value of 1
+        #         readings = findSanById(jsonReq, "IR_1")
+        #         if(readings):
+        #             if(isButtonPressed(readings)):
+        #                 currentTaskState.state = taskState.State.Running
+        #                 currentTaskState.userAction = taskState.UserAction.Idle
+        #                 ocbHandler.update_entity(currentTaskState) 
 
-                        retVal = getMotionChannel(parsedConfigFile.unloadingArea)
-                        ocbHandler.update_entity_dirty(retVal)                        
-                        icentStateMachine.AgvIsLoaded()
-                        print retVal
+        #                 retVal = getMotionChannel(parsedConfigFile.unloadingArea)
+        #                 ocbHandler.update_entity_dirty(retVal)                        
+        #                 icentStateMachine.AgvIsLoaded()
+        #                 print retVal
   
-                # send agv to unload destination
-                # todo: send agv to destinatin
-            elif(icentStateMachine.state == "wait4ran2unloading"):
-                # to do: check for SAN_ID, Type and Value
-                readings = findSanById(jsonReq, "IR_2")
-                if(readings):
-                    if(isButtonPressed(readings)):
-                        currentTaskState.state = taskState.State.Running
-                        currentTaskState.userAction = taskState.UserAction.Idle
-                        ocbHandler.update_entity(currentTaskState) 
-                        retVal = getMotionChannel(parsedConfigFile.waitingArea) # ATTENTION: NEED TO FIX THE LOCATION --> Waiting Area
-                        ocbHandler.update_entity_dirty(retVal)
-                        print retVal
-                        # agv is unloaded manually and confirmed
-                        icentStateMachine.AgvIsUnloaded()
-                # send AGV to waiting area
-            print icentStateMachine.state
-        else:
-            print "Not a known Entitytype\n"
+        #         # send agv to unload destination
+        #         # todo: send agv to destinatin
+        #     elif(icentStateMachine.state == "wait4ran2unloading"):
+        #         # to do: check for SAN_ID, Type and Value
+        #         readings = findSanById(jsonReq, "IR_2")
+        #         if(readings):
+        #             if(isButtonPressed(readings)):
+        #                 currentTaskState.state = taskState.State.Running
+        #                 currentTaskState.userAction = taskState.UserAction.Idle
+        #                 ocbHandler.update_entity(currentTaskState) 
+        #                 retVal = getMotionChannel(parsedConfigFile.waitingArea) # ATTENTION: NEED TO FIX THE LOCATION --> Waiting Area
+        #                 ocbHandler.update_entity_dirty(retVal)
+        #                 print retVal
+        #                 # agv is unloaded manually and confirmed
+        #                 icentStateMachine.AgvIsUnloaded()
+        #         # send AGV to waiting area
+        #     print icentStateMachine.state
+        # else:
+        #     print "Not a known Entitytype\n"
  
 def getActionChannel(task_id):
     j2_env = Environment(loader=FileSystemLoader("./Templates"), trim_blocks=True)
@@ -376,7 +377,7 @@ if __name__ == '__main__':
     global stateQueue 
     global ocbHandler
     global currenTaskDesc
-    global currentTaskState
+    #global currentTaskState
     global currentTaskSpecState
 
  
@@ -463,9 +464,9 @@ if __name__ == '__main__':
     #workerRan.start()
     
     subscriptionId = ocbHandler.subscribe2Entity( _description = "notify me",
-            _entities = obj2JsonArray(task.Task.getEntity()),  
+            _entities = obj2JsonArray(taskSpec.TaskSpec.getEntity()),  
             _notification = parsedConfigFile.getTaskPlannerAddress() +"/task",_generic=True)
-    globals.subscriptionDict[subscriptionId] ="Task"     
+    globals.subscriptionDict[subscriptionId] ="TaskSpec"     
 
  
     # currentTaskState.taskId = taskState.getCurrentTaskId()
