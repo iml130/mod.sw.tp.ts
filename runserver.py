@@ -71,8 +71,9 @@ SERVER_ADDRESS = "localhost"
 
 CONFIG_FILE = "./fiware_config.ini"
 parsedConfigFile = Config(CONFIG_FILE)
-globals.initOcbHandler(parsedConfigFile.getFiwareServerAddress())
-ocbHandler = ContextBrokerHandler(parsedConfigFile.getFiwareServerAddress())
+#globals.initOcbHandler(parsedConfigFile.getFiwareServerAddress())
+ocbHandler = globals.ocbHandler
+# ContextBrokerHandler(parsedConfigFile.getFiwareServerAddress())
 icentStateMachine = IcentDemo("Anda")
  
 currenTaskDesc = task.Task()
@@ -506,6 +507,11 @@ if __name__ == '__main__':
     for item in globals.subscriptionDict:
         deleteSubscriptionById(item)
         
+    logger.info("Unsubscribing from Subscriptions_done")
+    
+    logger.info("Deleting all created Entities")
+    ocbHandler.shutDown()
+    logger.info("Deleting all created Entities_done")
 
     # todo: delete subscriptions
     # ocbHandler.unregister_entities()
