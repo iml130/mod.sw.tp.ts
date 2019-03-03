@@ -1,3 +1,7 @@
+__author__ = "Peter Detzner"  
+__version__ = "0.0.1a"
+__status__ = "Developement"
+
 import Queue
 import datetime 
 import copy
@@ -57,8 +61,10 @@ class taskScheduler():
         graphy.printGraphInfo(G)
         graphy.displayGraph(G, True)
         self.taskGraph = G
+
         self.taskInfos = printer.taskInfos
         self.name = name
+        
         self.runningTasks = []
         self.historyTasks = [] 
         self.taskManager = []
@@ -102,14 +108,16 @@ class taskScheduler():
                 if(tR.taskManagerName == res):
                     tR.join()
                     #tR.deleteEntity()
-                    self.runningTasks.remove(tR)
+                    self.runningTasks.remove(tR)                                           
                     tR = None
                     
             for tM in self.taskManager:
                 if(tM.taskManagerName == res):
-                    temp = taskManager(tM.taskManagerName, self.queue)
-                    temp._taskInfoList = tM._taskInfoList
-                    temp.taskList = tM.taskList
+                    temp = taskManager.newTm(tM, self.queue)
+
+                    # temp = taskManager(tM.taskManagerName, self.queue)
+                    # temp._taskInfoList = tM._taskInfoList
+                    # temp.taskList = tM.taskList
                     self.runningTasks.append(temp)
                     logger.info("taskSchedular, taskManager respawn: " + res)
                     temp.publishEntity()

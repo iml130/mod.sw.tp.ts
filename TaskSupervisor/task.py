@@ -1,3 +1,7 @@
+__author__ = "Peter Detzner"  
+__version__ = "0.0.1a"
+__status__ = "Developement"
+
 import threading
 import time 
 from random import randint
