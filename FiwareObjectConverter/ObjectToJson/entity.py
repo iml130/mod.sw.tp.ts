@@ -15,8 +15,7 @@ class Entity(object):
         Here the __dict__ is set with setObject. Also th uuid is here generated and
         all types are converted into correct structure with EntityAttribute.
         The Keys "type" "id" and "_*" are ignored and not added into the Entity
-    """
-
+    """ 
     def __init__(self):
         self.type = self.__class__.__name__
         self.id = self.type + str(uuid.uuid4())
@@ -43,14 +42,16 @@ class Entity(object):
                     value = _object[key]
                 else:
                     value = getattr(_object, key)
-                if (key == "type" or key == "id" or key.startswith('_', 0, 1)):
+                if (key=="id" or key=="type" or key.startswith('_', 0, 1)):
                     # Object contains invalid key-name, ignore!
-                    if(key=="id"):
-                        self.id = iterL[key]
+                    if(key=="id" and showIdValue):
+                        self.id = iterL[key] 
                     pass
                 else:
                     print "key: "+ key + ", value: " 
                     print value
+                    if(key=="type" or key=="id"):
+                        continue
                     self.__dict__[key] = EntityAttribute(value, ignorePythonMetaData, dataTypeDict.get(key)) 
         except AttributeError as ex:
             raise ValueError(ERROR_MESSAGE_ATTTRIBUTE, ex)
