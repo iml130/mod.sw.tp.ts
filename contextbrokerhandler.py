@@ -81,11 +81,13 @@ class ContextBrokerHandler:
                 self.published_entities.remove(entity)
 
     def update_entity(self, entityInstance):
-        json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4, showIdValue= False)     
-        response = self._request("PATCH",self._getUrl(ENTITIES +"/"+  entityInstance.getId() + "/attrs"), data = json, headers = self.HEADER) 
-        if(isResponseOk(response.status_code)): #everything is fine
-            print "Status OK"
-            return 0
+        with self.lock:
+            json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4, showIdValue= False)  
+            id = entityInstance.id        
+            response = self._request("PATCH",self._getUrl(ENTITIES +"/"+  id + "/attrs"), data = json, headers = self.HEADER) 
+            if(isResponseOk(response.status_code)): #everything is fine
+                print "Status OK"
+                return 0
     
     def update_entity_dirty(self, _json):
         response = self._request("POST",self._getUrlv1(), data = _json, headers = self.HEADER) 
