@@ -1,3 +1,8 @@
+__author__ = "Peter Detzner"  
+__version__ = "0.0.1a"
+__status__ = "Developement"
+
+
 import threading
 import time
 import datetime
@@ -25,10 +30,12 @@ class taskManager(threading.Thread):
         self._queue = q
         logger.info("taskManager init_done")
 
-    def __del__(self):
-        logger.info("taskManager del")
-        logger.info("taskManager del_done")
-
+    @classmethod
+    def newTm(self, _object, _queue):
+        tM = taskManager(_object.taskManagerName, _queue)
+        tM.taskList = _object.taskList
+        tM._taskInfoList = _object._taskInfoList
+        return tM
 
     def addTask(self, taskInfo):
         if(taskInfo not in self._taskInfoList):
