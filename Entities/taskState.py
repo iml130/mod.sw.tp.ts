@@ -5,13 +5,19 @@ from entity import FiwareEntity
 
 id = 0
 idHistory = []
-
+from TaskSupervisor.task import Task
 
 class TaskState(FiwareEntity): 
-    def __init__(self): 
+    
+    def __init__(self, _task): 
+        if(not isinstance(_task, Task)):
+            raise Exception("TypeMissmatch")
+        FiwareEntity.__init__(self,id = _task.id)
+        self.name = _task.name
         self.state = State.Idle
-        self.taskId = 1
-        self.userAction = UserAction.Idle
+        self.taskId = _task.id
+        self.taskManagerId = _task.taskManagerId
+        #self.taskSpecUuid = None 
         self.errorMessage = ""
 
 # TASK
