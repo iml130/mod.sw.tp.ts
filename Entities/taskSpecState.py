@@ -9,6 +9,7 @@ idHistory = []
 
 class TaskSpecState(FiwareEntity): 
     def __init__(self): 
+        FiwareEntity.__init__(self)
         self.refId = ""
         self.state = SpecState.Idle
         self.message = ""
