@@ -58,6 +58,8 @@ class ContextBrokerHandler:
             statusCode = response.status_code
             if(not isResponseOk(statusCode)):
                 return json.loads(response.content)
+            else:
+                self.published_entities.append(entityInstance.id)
                 # todo: raise error 
 
     def delete_entity(self, entityId):
@@ -68,6 +70,8 @@ class ContextBrokerHandler:
             
             if(isResponseOk(statusCode)): # everything is fine
                 print "Status OK"
+                
+                self.published_entities.remove(entityId)
                 return 0
             else:
                 content = json.loads(response.content)
@@ -75,10 +79,9 @@ class ContextBrokerHandler:
                 return statusCode
 
     def unregister_entities(self):
-        with self.lock:
-            for entity in self.published_entities:
-                self.delete_entity(entity)
-                self.published_entities.remove(entity)
+         
+        for entity in range(len(self.published_entities)):
+            self.delete_entity(self.published_entities[0]) 
 
     def update_entity(self, entityInstance):
         with self.lock:
@@ -95,18 +98,6 @@ class ContextBrokerHandler:
             print "Status OK"
             return 0
 
-    # def subscribe(self, msg, subscriber):
-    #     self.subscribers.setdefault(msg, []).append(subscriber)
-
-    # def unsubscribe(self, msg, subscriber):
-    #     self.subscribers[msg].remove(subscriber)
-
-    # def update(self):
-    #     for msg in self.msg_queue:
-    #         for sub in self.subscribers.get(msg, []):
-    #             sub.run(msg)
-    #     self.msg_queue = []
- 
     def _request(self, method, url, data = None, **kwargs):
         response = None
         try:           
@@ -179,3 +170,6 @@ class ContextBrokerHandler:
 
     def _getUrlv1(self):
         return (self.fiwareAddress + "/v1/updateContext")       
+
+    def shutDown(self):
+        self.unregister_entities()
