@@ -109,7 +109,7 @@ class taskScheduler():
                 if(tM.taskManagerName == res):
                     temp = taskManager(tM.taskManagerName, self.queue)
                     temp._taskInfoList = tM._taskInfoList
-                    
+                    temp.taskList = tM.taskList
                     self.runningTasks.append(temp)
                     logger.info("taskSchedular, taskManager respawn: " + res)
                     temp.publishEntity()
