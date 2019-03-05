@@ -85,8 +85,9 @@ class ContextBrokerHandler:
 
     def update_entity(self, entityInstance):
         with self.lock:
-            json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4, showIdValue= False)  
-            id = entityInstance.id        
+            id = entityInstance.id     
+            json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4, showIdValue = False)  
+            
             response = self._request("PATCH",self._getUrl(ENTITIES +"/"+  id + "/attrs"), data = json, headers = self.HEADER) 
             if(isResponseOk(response.status_code)): #everything is fine
                 print "Status OK"
