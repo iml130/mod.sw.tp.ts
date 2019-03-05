@@ -12,8 +12,7 @@ from os import environ
 from setup import app
 import logging
 import logging.config
-#import app
-
+#import app 
 import time
 import urllib2
 import threading
@@ -37,7 +36,7 @@ from Entities import ran
 from icent import IcentDemo
 import servercheck
 
-
+from Entities.taskSpec import TaskSpec
 from TaskLanguage.checkGrammarTreeCreation import checkTaskLanguage
 from TaskSupervisor.taskScheduler import taskScheduler
 # from Entities import task.Task
@@ -295,60 +294,32 @@ def taskDealer(q):
     while True: 
         jsonReq, entityType = q.get()
         jsonReq = jsonReq[0]
-        logger.info("Received new TaskSpec")
-        decodedString = jsonReq["TaskSpec"]["value"]
-        decodedString = urllib.unquote_plus(decodedString)
+    
+        objTaskSpec = TaskSpec()
+        try:
+            objectFiwareConverter.ObjectFiwareConverter.fiware2Obj(jsonReq, objTaskSpec, setAttr=True)
+        except expression as Exception:
+            logger.info("Error in Converting JSON to Object "+ expression)
+             
+        objTaskSpec.TaskSpec = urllib.unquote_plus(objTaskSpec.TaskSpec)
         
-        retVal, message = checkTaskLanguage(decodedString)
-        currentTaskSpecState.message = str(message)
-        if (retVal == 0): # no error
-            logger.info("newTaskSpec:\n"+ str(decodedString))
-            globals.taskSchedulerQueue.put(decodedString)
+        retVal, message = checkTaskLanguage(objTaskSpec.TaskSpec)
+        currentTaskSpecState.message = message
+        if(retVal == 0):
+            logger.info("newTaskSpec:\n"+ str(objTaskSpec.TaskSpec))
+            globals.taskSchedulerQueue.put(objTaskSpec.TaskSpec)
+        # if (retVal == 0): # no error
+        #     logger.info("newTaskSpec:\n"+ str(objTaskSpec.TaskSpec)
+            
+        #     globals.taskSchedulerQueue.put(objTaskSpec.TaskSpec)
         
-        currentTaskSpecState.state =  retVal
+        currentTaskSpecState.state = retVal
         currentTaskSpecState.refId = jsonReq["id"]
         ocbHandler.update_entity(currentTaskSpecState)
     
     logger.info("taskDealer ended")
 
-        # if(entityType == "Task"):
-        #     entityTask = task.Task() #taskState.getCurrentTaskId() 
-        #     objectFiwareConverter.ObjectFiwareConverter.fiware2Obj(jsonReq,entityTask)
-        #     if(icentStateMachine.state == "idle" and entityTask.taskId == currenTaskDesc.taskId and entityTask.state == task.TaskState.Start):
-        #         if(entityTask.state == task.TaskState.Start):
-        #             icentStateMachine.NewTask()
-        #             currentTaskState.taskId = currenTaskDesc.taskId
-        #             currentTaskState.state = taskState.State.Running
-        #             currentTaskState.userAction = taskState.UserAction.Idle
-        #             ocbHandler.update_entity(currentTaskState)
-        #             # prepare of sending motionassignment tasks
-        #             retVal = getMotionChannel(parsedConfigFile.loadingArea)
-        #             ocbHandler.update_entity_dirty(retVal)
-                    
-        #             print icentStateMachine.state  
-        #             #print render_template('./Templates.motion_channel.template',)
-        #         # todo: Send AGV to LoadingDestination
-        #     # elif(icentStateMachine.state == "error" and entityTask.state == task.TaskState.Reset):
-                
-
-        #     #     print icentStateMachine.state                        
-        #     elif(entityTask.state== task.TaskState.EmergencyStop):
-        #         # todo: stop the robot
-        #         currentTaskState.taskId = currenTaskDesc.taskId
-        #         currentTaskState.state = taskState.State.Aborted
-        #         currentTaskState.userAction = taskState.UserAction.Idle
-        #         currentTaskState.errorMessage = "Please reset the task"
-        #         ocbHandler.update_entity(currentTaskState)
-        #         icentStateMachine.Panic()
-        #         print icentStateMachine.state
-
-        #         currentTaskState.taskId = currenTaskDesc.taskId
-        #         currentTaskState.state = taskState.State.Idle
-        #         currentTaskState.userAction = taskState.UserAction.Idle
-        #         currentTaskState.errorMessage = "Please restart the task"
-        #         ocbHandler.update_entity(currentTaskState)
-        #         icentStateMachine.Reset()
-
+        
 def obj2JsonArray(_obj):
     tempArray = []
     tempArray.append(_obj)
