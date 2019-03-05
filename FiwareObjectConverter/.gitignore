@@ -1,0 +1,11 @@
+*.log
+*.png
+*$.pyc
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*$.pyc
+
+/contextbrokerhandler.pyc
+/configParser.pyc

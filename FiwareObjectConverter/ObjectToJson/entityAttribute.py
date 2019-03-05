@@ -1,3 +1,17 @@
+#    Copyright 2018 Fraunhofer IML
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#        http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+
 __author__ = "Dominik Lux"
 __credits__ = ["Peter Detzner"]
 __maintainer__ = "Dominik Lux"
@@ -27,15 +41,15 @@ class EntityAttribute():
             self.type = "boolean"
             self.value = bool(_object)
         elif objectType is int:
-            self.type = "Number"
+            self.type = "number"
             self.value = int(_object)
             self.setPythonMetaData(ipmd, "int")
         elif objectType is float:
-            self.type = "Number"
+            self.type = "number"
             self.value = float(_object)
             self.setPythonMetaData(ipmd, "float")
         elif objectType is long:
-            self.type = "Number"
+            self.type = "number"
             self.value = long(_object)
             self.setPythonMetaData(ipmd, "long")
         elif objectType is complex:
@@ -66,9 +80,10 @@ class EntityAttribute():
             tempDict = {}
             for key, value in _object.iteritems():
                 tempDict[key] = EntityAttribute(value,ipmd )
-            self.value = tempDict        
+            self.value = tempDict
         else:
-            # Case it is a Class 
+            # Case it is a Class
+            # check explicitly if it has the needed attrs
             if (hasattr(_object, '__slots__')):
                 iterL = getattr(_object, '__slots__')
             elif(hasattr(_object, '__dict__')):
@@ -84,26 +99,18 @@ class EntityAttribute():
             tempDict = {}
             for key in iterL:
                 tempDict[key] = EntityAttribute(getattr(_object, key), ipmd)
-                self.value = tempDict
-
-            # self.type = _object.__class__.__name__
-            # self.setPythonMetaData(ipmd, "class")
-            # tempDict = {}
-            # for key, value in _object.__dict__.iteritems():
-            #     print key, value
-            #     tempDict[key] = EntityAttribute(value, ipmd)
-            # self.value = tempDict
+            self.value = tempDict
 
 
         if concreteDataType is not None:
             self.metadata["dataType"] = dict(type="dataType", value=concreteDataType)
             pass
 
-        # Remove metadata-Attribute if it is empty (minimizing the JSON)      
+        # Remove metadata-Attribute if it is empty (minimizing the JSON)
         if self.metadata == {} :
             delattr(self, "metadata")
 
     def setPythonMetaData(self, ignorePythonMetaData, val):
         if not ignorePythonMetaData:
             self.metadata["python"] = dict(type="dataType", value=val)
- 
+    
