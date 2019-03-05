@@ -24,12 +24,13 @@ def task():
     logger.info("taskEP is running")
     """Renders the home page.""" 
     if request.json: 
+        # handle POST request
         jsonReq = request.json
         # decodedString = jsonReq['data'][0]["TaskSpec"]["value"]
         # decodedString = urllib.unquote_plus(decodedString)
         
         # retVal = checkTaskLanguage(decodedString)  
-         
+        
         try:
             jsonschema.validate(jsonReq['data'][0], json.loads(schema))
         except jsonschema.ValidationError as e:
@@ -47,6 +48,8 @@ def task():
             # no subscription  
             logger.info("taskEndpoint: No Subscription in List")
     else:
+        # handle GET request
+
         if(os.path.isfile('./images/task.png')):
             full_filename = "./images/task.png"
         else:
