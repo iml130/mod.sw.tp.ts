@@ -1,107 +1,74 @@
 {
-  "definitions": {},
-  "$schema": "http://json-schema.org/draft-07/schema#",
-  "$id": "http://example.com/root.json",
-  "type": "object",
-  "title": "The Root Schema",
-  "required": [
-    "id",
-    "type",
-    "state",
-    "taskId"
-  ],
-  "properties": {
-    "id": {
-      "$id": "#/properties/id",
-      "type": "string",
-      "title": "The Id Schema",
-      "default": "",
-      "examples": [
-        "Task1"
-      ],
-      "pattern": "^(.*)$"
-    },
-    "type": {
-      "$id": "#/properties/type",
-      "type": "string",
-      "title": "The Type Schema",
-      "default": "",
-      "examples": [
-        "Task"
-      ],
-      "pattern": "^(.*)$"
-    },
-    "state": {
-      "$id": "#/properties/state",
-      "type": "object",
-      "title": "The State Schema",
-      "required": [
-        "type",
-        "value",
-        "metadata"
-      ],
-      "properties": {
-        "type": {
-          "$id": "#/properties/state/properties/type",
-          "type": "string",
-          "title": "The Type Schema",
-          "default": "",
-          "examples": [
-            "Number"
-          ],
-          "pattern": "^(.*)$"
-        },
-        "value": {
-          "$id": "#/properties/state/properties/value",
-          "type": "integer",
-          "title": "The Value Schema",
-          "default": 0,
-          "examples": [
-            0
-          ]
-        },
-        "metadata": {
-          "$id": "#/properties/state/properties/metadata",
-          "type": "object",
-          "title": "The Metadata Schema"
-        }
-      }
-    },
-    "taskId": {
-      "$id": "#/properties/taskId",
-      "type": "object",
-      "title": "The Taskid Schema",
-      "required": [
-        "type",
-        "value",
-        "metadata"
-      ],
-      "properties": {
-        "type": {
-          "$id": "#/properties/taskId/properties/type",
-          "type": "string",
-          "title": "The Type Schema",
-          "default": "",
-          "examples": [
-            "Number"
-          ],
-          "pattern": "^(.*)$"
-        },
-        "value": {
-          "$id": "#/properties/taskId/properties/value",
-          "type": "integer",
-          "title": "The Value Schema",
-          "default": 0,
-          "examples": [
-            1
-          ]
-        },
-        "metadata": {
-          "$id": "#/properties/taskId/properties/metadata",
-          "type": "object",
-          "title": "The Metadata Schema"
+   "definitions": {},
+    "$schema": "http://json-schema.org/draft-07/schema#",
+     "$id": "http://example.com/root.json",
+    "type": "object",
+    "title": "The Root Schema",
+    "required": [
+      "id",
+      "type",
+      "TaskSpec"
+    ],
+    "properties": {
+      "id": {
+        "$id": "#/properties/id",
+        "type": "string",
+        "title": "The Id Schema",
+        "default": "",
+        "examples": [
+          "TaskSpec1"
+        ],
+        "pattern": "^(.*)$"
+      },
+      "type": {
+        "$id": "#/properties/type",
+        "type": "string",
+        "title": "The Type Schema",
+        "default": "",
+        "examples": [
+          "TaskSpec"
+        ],
+        "pattern": "^(.*)$"
+      },
+      "TaskSpec": {
+        "$id": "#/properties/TaskSpec",
+        "type": "object",
+        "title": "The Taskspec Schema",
+        "required": [
+          "type",
+          "value",
+          "metadata"
+        ],
+        "properties": {
+          "type": {
+            "$id": "#/properties/TaskSpec/properties/type",
+            "type": "string",
+            "title": "The Type Schema",
+            "default": "",
+            "examples": [
+              "Text"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "value": {
+            "$id": "#/properties/TaskSpec/properties/value",
+            "type": "string",
+            "title": "The Value Schema",
+            "default": "",
+            "examples": [
+              "template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0A++++value%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22moldingArea_palletPlace%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonMoldingArea%22%0A++++type+%3D+%22Boolean%22%0A++++value+%3D+TRUE%0Aend%0A%0A%23%23%23%23%0A%0A%0Atask+Charge%0A++++Transport+%0A++++from+warehouse_pos1%0A++++to+moldingPallet+%0Aend%0A%0Atask+Test2%0A++++Transport%0A++++from+warehouse_pos1%0A++++to+moldingPallet%0A++++OnDone+Charge%0Aend%0A%0Atask+Refill%0A++++Transport+%0A%09from+warehouse_pos1%0A%09to+moldingPallet%0A++++OnDone+Charge%0Aend%0A%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++TriggeredBy+buttonPalletIsReady.value+%3D%3D+TRUE%0A++++OnDone+Refill%0Aend%0A%0A%0A"
+            ],
+            "pattern": "^(.*)$"
+          },
+          "metadata": {
+            "$id": "#/properties/TaskSpec/properties/metadata",
+            "type": "object",
+            "title": "The Metadata Schema"
+          }
         }
       }
     }
-  }
-}
+ }
+ 
+ 
+ 
