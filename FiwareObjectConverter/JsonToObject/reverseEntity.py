@@ -37,8 +37,8 @@ class ReverseEntity(object):
 
     def setObject(self, obj, useMetadata=True, ignoreWrongDataType=False, setAttr=False):
         # Explicitly set id and type, always!
-        setattr(obj, 'id', self.id)
-        setattr(obj, 'type', self.type)
+        setattr(obj, 'id', str(self.id))
+        setattr(obj, 'type', str(self.type))
         
         for key, value in self.payload.iteritems():
             rea = ReverseEntityAttribute(value, useMetadata)
