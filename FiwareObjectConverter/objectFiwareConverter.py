@@ -42,7 +42,13 @@ class ObjectFiwareConverter(object):
 
     @classmethod
     def fiware2Obj(clsself, _fiware_str, _objectStructure={}, useMetadata=True, ignoreWrongDataType=False, setAttr=False):
-        jsonObj = clsself._obj(_fiware_str)
+        jsonObj = None        
+        # DLUX checkup?!
+        if(type(_fiware_str) is str):
+            jsonObj = clsself._obj(_fiware_str)
+        else:
+            jsonObj = _fiware_str
+        
         re = ReverseEntity(**jsonObj)
         return re.setObject(_objectStructure, useMetadata, ignoreWrongDataType, setAttr) 
 
@@ -60,4 +66,7 @@ class ObjectFiwareConverter(object):
 
     @classmethod
     def _obj(clsself, json_str):
+        # if(type(json_str) == str):
+        #     return json_str
+
         return json.loads(json_str)
