@@ -57,7 +57,7 @@ class CreateTreeTaskParserVisitor(TaskParserVisitor):
         # Iterate until we found an innerTemplate
         for child in ctx.children:
             if isinstance(child, TaskParser.InnerTemplateContext):
-                t.attributes.append(self.visitInnerTemplate(child))
+                t.attributes = self.visitInnerTemplate(child)
                 break
         return t
 
@@ -130,7 +130,7 @@ class CreateTreeTaskParserVisitor(TaskParserVisitor):
 
     # Visit a parse tree produced by TaskParser#transportOrder.
     def visitTransportOrder(self, ctx):
-        to = TransportOrder
+        to = TransportOrder()
         l = []
         # Create the List
         for srcDst in ctx.NewInstance():
@@ -141,7 +141,6 @@ class CreateTreeTaskParserVisitor(TaskParserVisitor):
         l = l[:-1]
         to.fromm = l
         to.to = dst
-        
         return to
 
     ### Expression parsing:
@@ -190,5 +189,3 @@ class CreateTreeTaskParserVisitor(TaskParserVisitor):
     # Visit a parse tree produced by TaskParser#con.
     def visitCon(self, ctx):
         return ctx.c.text
-
-
