@@ -60,6 +60,7 @@ class ContextBrokerHandler:
                 return json.loads(response.content)
             else:
                 self.published_entities.append(entityInstance.id)
+                return 0
                 # todo: raise error 
 
     def delete_entity(self, entityId):
@@ -122,49 +123,64 @@ class ContextBrokerHandler:
                         _condition_attributes=None, _condition_expression=None, _generic = False):
         # based upon http://telefonicaid.github.io/fiware-orion/api/v2/stable/
 
-        msg = {}
-        msg["description"] = _description
-        condition = {}
-        if _condition_attributes:
-            condition["attrs"] = obj2JsonArray(_condition_attributes)
-        if _condition_expression:
-            condition["expression"] = _condition_expression
+        with self.lock:
+            msg = {}
+            msg["description"] = _description
+            condition = {}
+            if _condition_attributes:
+                condition["attrs"] = obj2JsonArray(_condition_attributes)
+            if _condition_expression:
+                condition["expression"] = _condition_expression
 
-        subject = {}
-        subject["entities"] = _entities
-        if(_generic):
-            for item in subject["entities"]:
-                item['idPattern'] = ".*"
-                del item['id']
-        if(condition):
-            subject["condition"]  = (condition)
-        print condition
-        print subject
-        msg["subject"] = subject
+            subject = {}
+            subject["entities"] = _entities
+            if(_generic):
+                for item in subject["entities"]:
+                    item['idPattern'] = ".*"
+                    del item['id']
+            if(condition):
+                subject["condition"]  = (condition)
+            print condition
+            print subject
+            msg["subject"] = subject
 
-        notification = {}
-        if _notification:
-            notification["http"] = { "url" : _notification}
+            notification = {}
+            if _notification:
+                notification["http"] = { "url" : _notification}
 
-        msg["notification"] = notification
-        if _expires:
-            subscription["expires"] = _expires
-        if _throttling:
-            subscription["throttling"] = _throttling
+            msg["notification"] = notification
+            if _expires:
+                subscription["expires"] = _expires
+            if _throttling:
+                subscription["throttling"] = _throttling
 
-        print json.dumps(msg) 
-        try:            
-            #response = requests.post(self._getUrl(SUBSCRIPTIONS), data=json.dumps(msg), headers= self.HEADERS, timeout = self.TIMEOUT)
-            response = self._request("POST",self._getUrl(SUBSCRIPTIONS), data =json.dumps(msg), headers = self.HEADER)
-            print response.headers.get('Location')
+            print json.dumps(msg) 
+            try:            
+                #response = requests.post(self._getUrl(SUBSCRIPTIONS), data=json.dumps(msg), headers= self.HEADERS, timeout = self.TIMEOUT)
+                response = self._request("POST",self._getUrl(SUBSCRIPTIONS), data =json.dumps(msg), headers = self.HEADER)
+                print response.headers.get('Location')
 
-        except requests.exceptions.Timeout:
-            pass
-               
-        statusCode = response.status_code
-        if(isResponseOk(statusCode)): # everything is fine 
-            print "Status OK"            
-        return response.headers.get('Location').replace("/v2/subscriptions/","")
+            except requests.exceptions.Timeout:
+                pass
+                
+            statusCode = response.status_code
+            if(isResponseOk(statusCode)): # everything is fine 
+                print "Status OK"            
+            return response.headers.get('Location').replace("/v2/subscriptions/","")
+
+    def deleteSubscriptionById(self, id):
+        with self.lock:
+            if(len(id)>1):
+                try:
+                    #.info("Deleting Subsciption: " + id) 
+                    #print parsedConfigFile.getFiwareServerAddress()+"/v2/subscriptions/"+ id
+                    response = self._request("DELETE", self._getUrl(SUBSCRIPTIONS) + "/" + id , headers = self.HEADER_NO_PAYLOAD)
+                    if(response.status_code // httplib.OK == 1):
+                        print "Unsubscribed: " + id
+                except Exception as expression:
+                    print "Failed Subsciption: " + id +str(expression)
+                    return False
+                return True
 
     def _getUrl(self, _uri):
         return (self.fiwareAddress + "/" + self.NGSI_VERSION + "/" + _uri)
