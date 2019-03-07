@@ -9,4 +9,5 @@ idHistory = []
 
 class TaskSpec(FiwareEntity): 
     def __init__(self): 
+        FiwareEntity.__init__(self)
         self.TaskSpec = ""
