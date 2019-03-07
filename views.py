@@ -12,10 +12,11 @@ from Queue import Queue
 import httplib
 #from version import Version 
 import globals
+from setup import VERSION
 
 @app.route('/')
 @app.route('/home')
 def home():
     """Renders the home page."""
-    return ("OK",httplib.OK)
+    return (VERSION,httplib.OK)
 
