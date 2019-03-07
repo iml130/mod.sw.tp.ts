@@ -6,21 +6,15 @@ class FiwareEntity():
             self.id = self.type + str(uuid.uuid4())
         else:
             self.id =self.type + str(id)  
-
-    @classmethod
-    def getEntity(cls):
-        print cls.Type()
-        print cls.Id()
-        return { "id" : cls.Id() , "type" : cls.Type() }
+ 
+    def getEntity(self): 
+        print self.getId()
+        print self.getType()
+        return { "id" : self.getId() , "type" : self.getType() }
     
-    @classmethod
-    def Id(cls):
-        return cls.__name__+"1"
-
-        
-    @classmethod
-    def Type(cls):
-        return cls.__name__
+      
+    def getType(self):
+        return self.type
 
     def getId(self):
         return self.id
