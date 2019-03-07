@@ -9,30 +9,53 @@ import uuid
 import Queue
 import logging
 import datetime
+import json
 
 from globals import sanDictQueue
 import globals
 from transportOrder import TransportOrder
 from taskInfo import TaskInfo
  
+from FiwareObjectConverter.objectFiwareConverter import ObjectFiwareConverter
 
 from Entities.entity import FiwareEntity
+from Entities.san import SensorAgent, SensorData
 
 ocbHandler = globals.ocbHandler
 
 logger =logging.getLogger(__name__)
+  
+def obj2JsonArray(_obj):
+    tempArray = []
+    tempArray.append(_obj)
+    print json.dumps(tempArray)
+    return (tempArray)
+
+
+def LoadData(myJson):
+    sa = SensorAgent()
+    try:
+        ObjectFiwareConverter.fiware2Obj(myJson, sa, setAttr=True)
+        for i in range(len(sa.sensorData)):
+            print sa.sensorData[i] 
+            sa.sensorData[i] = SensorData(**sa.sensorData[i])
+    except Exception as identifier:
+        return None
+    
+    return sa
 class Task():
     def __init__(self, _taskInfo, _taskManagerUuid):
         #threading.Thread.__init__(self)
         logger.info("Task init")     
 
         # only these attribues will be published
-        self.id = str(uuid.uuid4())  
+        
+        self.id = str(uuid.uuid4())
         self.taskManagerId = _taskManagerUuid
         self.taskName = str(_taskInfo.name)
         self.state = State.Idle
         self.time = str(datetime.datetime.now())
-
+ 
         # setting up the thread 
         self._threadRunner = threading.Thread(target=self.run)
         self._threadRunner.setDaemon(True)
@@ -53,7 +76,7 @@ class Task():
         logger.info("Task start_done")
 
     def join(self):
-        logger.info("Task join")     
+        logger.info("Task join")
         self._threadRunner.join()
         self.deleteEntity()
         logger.info("Task join_done")     
@@ -91,22 +114,42 @@ class Task():
     def run(self):   
         self.state = State.Running
         self.updateEntity()
+        ts = SensorAgent() 
+        subscriptionId = ocbHandler.subscribe2Entity( _description = "Individual blabla",
+            _entities = obj2JsonArray(ts.getEntity()),  
+            _notification = globals.parsedConfigFile.getTaskPlannerAddress() +"/san/" + self.id ,_generic=True)
+        globals.subscriptionDict[subscriptionId] = "SAN"
          
-        tempVal = (randint(2,7))
+        tempVal = 15 #(randint(2,7))
         logger.info("Task running, " + str(self))
         print "\nrunning " + self.taskName + ", sleep " + str(tempVal)
         #time.sleep(tempVal)
         try:
             a = self._q.get(timeout = tempVal)
-            if (a):
-                print "Received:" +str(a)
+            if (a): 
+                dd = LoadData(a["data"][0])
+                dd.findSensorById(self._taskInfo.triggers[0].left)
+                time.sleep(10)
+            
         except Queue.Empty:
             pass
         sanDictQueue.removeThread(self.id)
-        
+        ocbHandler.deleteSubscriptionById(subscriptionId)
         self.state = State.Finished
         self.updateEntity()
         logger.info("Task finished, " + str(self))
+
+
+
+
+
+
+
+
+
+
+
+
 
 class TaskState(FiwareEntity): 
     
