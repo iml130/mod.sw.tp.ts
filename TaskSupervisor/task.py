@@ -128,7 +128,8 @@ class Task():
             a = self._q.get(timeout = tempVal)
             if (a): 
                 dd = LoadData(a["data"][0])
-                dd.findSensorById(self._taskInfo.triggers[0].left)
+                logger.info("Just a small timeout of 10secs")
+               # dd.findSensorById(self._taskInfo.triggers[0].left)
                 time.sleep(10)
             
         except Queue.Empty:
