@@ -19,7 +19,7 @@ class Config(object):
         config.readfp(io.BytesIO(sample_config))
         self.CB_HOST=config.get('contextbroker', 'host')
         self.CB_PORT=config.get('contextbroker', 'port')
-        self.CB_FIWARE_SERVICE=config.get('contextbroker', 'fiware_service')
+        #self.CB_FIWARE_SERVICE=config.get('contextbroker', 'fiware_service')
         self.CB_FIWARE_SERVICEPATH = "/Sensors"
         self.CB_URL = "http://"+self.CB_HOST+":"+self.CB_PORT
         self.TASKPLANNER_PORT = int(config.get('taskplanner', 'port'))
