@@ -12,16 +12,16 @@ from os import environ
 from setup import app
 import logging
 import logging.config
-#import app 
 import time
 import urllib2
 import threading
 from threading import Event, Thread
+from Queue import Queue
+import json
+
 from flask import g 
 from flask import render_template,Response
 
-from Queue import Queue
-import json
 from datetime import datetime 
 from jinja2 import Environment, FileSystemLoader
 
@@ -31,7 +31,7 @@ from configParser import Config
 from contextbrokerhandler import ContextBrokerHandler
 from FiwareObjectConverter import objectFiwareConverter
 from Entities import task, taskState, taskSpec, taskSpecState
-from Entities import san
+from Entities.san import SensorAgent
 from Entities import ran
 from icent import IcentDemo
 import servercheck
@@ -198,19 +198,19 @@ def flaskThread():
 
 #                     print icentStateMachine.state
 
-def findSanById(_sensorData, _id):
-    for sensorArrayItem in _sensorData:
+# def findSanById(_sensorData, _id):
+#     for sensorArrayItem in _sensorData:
 
-        for sensorData in sensorArrayItem['sensorData']['value']:
+#         for sensorData in sensorArrayItem['sensorData']['value']:
              
-            if(sensorData['sensorType']['value'] == "IR Sensor" and sensorData['sensorId']['value'] == _id):
-                return sensorData['readings']['value']
+#             if(sensorData['sensorType']['value'] == "IR Sensor" and sensorData['sensorId']['value'] == _id):
+#                 return sensorData['readings']['value']
 
-def isButtonPressed(values):
-    for reading in values:
-        if(reading['reading']['value'] == True):
-            return True
-    return False 
+# def isButtonPressed(values):
+#     for reading in values:
+#         if(reading['reading']['value'] == True):
+#             return True
+#     return False 
 
 def sanDealer(q):
     global icentStateMachine     
@@ -256,20 +256,20 @@ def sanDealer(q):
         # else:
         #     print "Not a known Entitytype\n"
  
-def getActionChannel(task_id):
-    j2_env = Environment(loader=FileSystemLoader("./Templates"), trim_blocks=True)
-    retVal = j2_env.get_template('action_channel.template').render(robot_id = parsedConfigFile.robot_id, task_id=task_id)
-    retVal = retVal.replace('\t', '').replace('\n', '')
-    return retVal
+# def getActionChannel(task_id):
+#     j2_env = Environment(loader=FileSystemLoader("./Templates"), trim_blocks=True)
+#     retVal = j2_env.get_template('action_channel.template').render(robot_id = parsedConfigFile.robot_id, task_id=task_id)
+#     retVal = retVal.replace('\t', '').replace('\n', '')
+#     return retVal
 
-def getMotionChannel(area):
-    j2_env = Environment(loader=FileSystemLoader("./Templates"), trim_blocks=True)
-    new_task_id = ran_task_id
-    # if(new_task_id > 1):
-    #     new_task_id += 1
-    retVal = j2_env.get_template('motion_channel.template').render(area=area, robot_id = parsedConfigFile.robot_id, task_id=new_task_id)
-    retVal = retVal.replace('\t', '').replace('\n', '')
-    return retVal
+# def getMotionChannel(area):
+#     j2_env = Environment(loader=FileSystemLoader("./Templates"), trim_blocks=True)
+#     new_task_id = ran_task_id
+#     # if(new_task_id > 1):
+#     #     new_task_id += 1
+#     retVal = j2_env.get_template('motion_channel.template').render(area=area, robot_id = parsedConfigFile.robot_id, task_id=new_task_id)
+#     retVal = retVal.replace('\t', '').replace('\n', '')
+#     return retVal
 
 def taskSchedulerDealer(taskSchedulerQueue):
     
@@ -308,10 +308,7 @@ def taskDealer(q):
         if(retVal == 0):
             logger.info("newTaskSpec:\n"+ str(objTaskSpec.TaskSpec))
             globals.taskSchedulerQueue.put(objTaskSpec.TaskSpec)
-        # if (retVal == 0): # no error
-        #     logger.info("newTaskSpec:\n"+ str(objTaskSpec.TaskSpec)
-            
-        #     globals.taskSchedulerQueue.put(objTaskSpec.TaskSpec)
+ 
         
         currentTaskSpecState.state = retVal
         currentTaskSpecState.refId = jsonReq["id"]
@@ -379,23 +376,27 @@ if __name__ == '__main__':
     checkIfServerIsUpRunning.start()       
      
     flaskServerThread.start() 
-    print "wait for finish"
+    logger.info("Starting Flask and wait")
     checkIfServerIsUpRunning.join()
+    logger.info("Flask is running")
     # create an instance of the fiware ocb handler
     
 
     # few things commented due to the damn airplane mode 
     # publish first the needed entities before subscribing ot it
-    ocbHandler.create_entity(currentTaskSpecState) 
+    retVal = ocbHandler.create_entity(currentTaskSpecState) 
+    if (retVal == 0):
+        logger.info("Orion Connection is working - created TaskSpecState Entity")
+        logger.info("Orion Address: " + parsedConfigFile.getFiwareServerAddress())
     #ocbHandler.create_entity(currenTaskDesc) 
 
     # subscribe to entities
 
     #globals.subscriptionDict[subscriptionId] = task.Task.Type()
-    subscriptionId = ocbHandler.subscribe2Entity( _description = "SAN Updates Notification",
-            _entities = obj2JsonArray(san.San.getEntity()),  
-            _notification = parsedConfigFile.getTaskPlannerAddress() +"/san",)     
-    globals.subscriptionDict[subscriptionId] ="SensorAgent"       
+    # subscriptionId = ocbHandler.subscribe2Entity( _description = "SAN Updates Notification",
+    #         _entities = obj2JsonArray(san.San.getEntity()),  
+    #         _notification = parsedConfigFile.getTaskPlannerAddress() +"/san",)     
+    # globals.subscriptionDict[subscriptionId] ="SensorAgent"       
      
       
     # subscriptionId = ocbHandler.subscribe2Entity( _description = "subscriber",
@@ -425,36 +426,25 @@ if __name__ == '__main__':
 
     logger.info("Setting up taskDealer, sanDealer and workTaskScheduler")
     workerTask = Thread(target=taskDealer, args=(globals.taskQueue,))
-    workerSan = Thread(target=sanDealer, args=(globals.sanQueue,))
+    #workerSan = Thread(target=sanDealer, args=(globals.sanQueue,))
     workerTaskScheduler = Thread(target=taskSchedulerDealer, args=(globals.taskSchedulerQueue,))
     #workerRan = Thread(target=ranDealer, args=(globals.ranQueue,))
     
     logger.info("Starting taskDealer, sanDealer and workTaskScheduler")
     workerTask.start()
-    workerSan.start()
+    #workerSan.start()
     workerTaskScheduler.start()
     #workerRan.start()
     
+    objTaskSpec = TaskSpec()
     subscriptionId = ocbHandler.subscribe2Entity( _description = "notify me",
-            _entities = obj2JsonArray(taskSpec.TaskSpec.getEntity()),  
+            _entities = obj2JsonArray(objTaskSpec.getEntity()),  
             _notification = parsedConfigFile.getTaskPlannerAddress() +"/task",_generic=True)
     globals.subscriptionDict[subscriptionId] ="TaskSpec"     
-
- 
-    # currentTaskState.taskId = taskState.getCurrentTaskId()
-    # currentTaskState.state = taskState.State.Idle
-    # currentTaskState.userAction = taskState.UserAction.Idle
-    # ocbHandler.update_entity(currentTaskState)
- 
+  
 
     logger.info("Push Ctrl+C to exit()")
-
-
-    # original_sigint = signal.getsignal(signal.SIGINT)
-    # signal.signal(signal.SIGINT, original_sigint)
-
-    # checkForProgrammEnd.start()
-    # checkForProgrammEnd.join()
+ 
 
     while terminate == False:
         try:
@@ -462,21 +452,17 @@ if __name__ == '__main__':
         except Exception:
             pass        
         pass
-    user_input = ""
-    # while user_input!= "exit" or terminate==False:
-    #     try:
-    #         user_input = raw_input('Input please ?').strip('\n')
-    #         user_input = user_input.replace('\r','')
-    #     except KeyboardInterrupt:
-    #         pass
-    #     except:
-    #         global terminate
-    #         terminate = False
+    user_input = "" 
+
+    
+    # clean up means, delete 
+    #   - all subscriptions
+    #   - all created entities
 
     logger.info("Shutting down TaskPlanner") 
     logger.info("Unsubscribing from Subscriptions")
-    for item in globals.subscriptionDict:
-        deleteSubscriptionById(item)
+    for subId in globals.subscriptionDict:
+        ocbHandler.deleteSubscriptionById(subId)
         
     logger.info("Unsubscribing from Subscriptions_done")
     
@@ -484,9 +470,6 @@ if __name__ == '__main__':
     ocbHandler.shutDown()
     logger.info("Deleting all created Entities_done")
 
-    # todo: delete subscriptions
-    # ocbHandler.unregister_entities()
-    # #SubscribtionHandler.unsubscribeContext(parsedConfigFile)
-
+ 
     logger.info("EndOf TaskPlanner")   
     os._exit(0)
