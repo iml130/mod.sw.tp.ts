@@ -31,18 +31,6 @@ def obj2JsonArray(_obj):
     print json.dumps(tempArray)
     return (tempArray)
 
-
-def LoadData(myJson):
-    sa = SensorAgent()
-    try:
-        ObjectFiwareConverter.fiware2Obj(myJson, sa, setAttr=True)
-        for i in range(len(sa.sensorData)):
-            print sa.sensorData[i] 
-            sa.sensorData[i] = SensorData(**sa.sensorData[i])
-    except Exception as identifier:
-        return None
-    
-    return sa
 class Task():
     def __init__(self, _taskInfo, _taskManagerUuid):
         #threading.Thread.__init__(self)
@@ -127,7 +115,7 @@ class Task():
         try:
             a = self._q.get(timeout = tempVal)
             if (a): 
-                dd = LoadData(a["data"][0])
+                dd = SensorAgent.CreateObjectFromJson(a["data"][0])
                 logger.info("Just a small timeout of 10secs")
                # dd.findSensorById(self._taskInfo.triggers[0].left)
                 time.sleep(10)
