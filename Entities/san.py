@@ -2,6 +2,7 @@
 from enum import IntEnum
 
 from entity import FiwareEntity
+from FiwareObjectConverter.objectFiwareConverter import ObjectFiwareConverter
 
 class SensorData(object):
    def __init__(self, **entries):
@@ -18,6 +19,19 @@ class SensorAgent(FiwareEntity):
         self.sensorData = [] # List of SensorData
         self.type = "SAN_demo"
         self.modifiedTime = "" # ISO8601
+
+    @classmethod
+    def CreateObjectFromJson(cls, myJson):
+        sa = SensorAgent()
+        try:
+            ObjectFiwareConverter.fiware2Obj(myJson, sa, setAttr=True)
+            for i in range(len(sa.sensorData)):
+                print sa.sensorData[i] 
+                sa.sensorData[i] = SensorData(**sa.sensorData[i])
+        except Exception as identifier:
+            return None
+        
+        return sa
 
 # class San(FiwareEntity): 
 #     def __init__(self):  
