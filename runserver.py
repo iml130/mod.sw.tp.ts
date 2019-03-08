@@ -99,18 +99,6 @@ RAN_IS_DONE = 0
 RAN_IS_MOVING = 1
 RAN_IN_ACTION = 2
 
-def deleteSubscriptionById(id):
-    if(len(id)>1):
-        try:
-            logger.info("Deleting Subsciption: " + id) 
-            #print parsedConfigFile.getFiwareServerAddress()+"/v2/subscriptions/"+ id
-            response = requests.request("DELETE", parsedConfigFile.getFiwareServerAddress()+"/v2/subscriptions/"+ id)  
-            if(response.status_code // httplib.OK == 1):
-                logger.info("Unsubscribed: " + id) 
-        except Exception as expression:
-            logger.error("Failed Subsciption: " + id + expression) 
-            return False
-        return True
 
 def signal_handler(sig, frame):
     global terminate
@@ -119,7 +107,6 @@ def signal_handler(sig, frame):
     logger.info("cleaning up")
 
     
-
 def flaskThread(): 
     logger.info("Starting flaskServerThread")
     app.run(host= parsedConfigFile.FLASK_HOST, port= parsedConfigFile.TASKPLANNER_PORT, threaded=True,use_reloader=False, debug = True)
@@ -272,12 +259,16 @@ def sanDealer(q):
 #     return retVal
 
 def taskSchedulerDealer(taskSchedulerQueue):
-    
+    ts = None
     logger.info("taskSchedulerDealer started")
     while True: 
+        
         dmp = taskSchedulerQueue.get()
-        ts = taskScheduler("feinfacherTest", dmp)
-        ts.start()
+        if(ts is None):
+            ts = taskScheduler("feinfacherTest", dmp)
+            ts.start()
+        else:
+            print "Already running, not able to accept any others"
         print "Is Running"
     
     logger.info("taskSchedulerDealer ended")        
@@ -295,14 +286,8 @@ def taskDealer(q):
         jsonReq, entityType = q.get()
         jsonReq = jsonReq[0]
     
-        objTaskSpec = TaskSpec()
-        try:
-            objectFiwareConverter.ObjectFiwareConverter.fiware2Obj(jsonReq, objTaskSpec, setAttr=True)
-        except expression as Exception:
-            logger.info("Error in Converting JSON to Object "+ expression)
-             
-        objTaskSpec.TaskSpec = urllib.unquote_plus(objTaskSpec.TaskSpec)
-        
+        objTaskSpec = TaskSpec.CreateObjectFromJson(jsonReq)
+
         retVal, message = checkTaskLanguage(objTaskSpec.TaskSpec)
         currentTaskSpecState.message = message
         if(retVal == 0):
@@ -315,13 +300,6 @@ def taskDealer(q):
         ocbHandler.update_entity(currentTaskSpecState)
     
     logger.info("taskDealer ended")
-
-        
-def obj2JsonArray(_obj):
-    tempArray = []
-    tempArray.append(_obj)
-    print json.dumps(tempArray)
-    return (tempArray)
  
 
 def waitForEnd():
@@ -438,7 +416,7 @@ if __name__ == '__main__':
     
     objTaskSpec = TaskSpec()
     subscriptionId = ocbHandler.subscribe2Entity( _description = "notify me",
-            _entities = obj2JsonArray(objTaskSpec.getEntity()),  
+            _entities = objTaskSpec.obj2JsonArray(),  
             _notification = parsedConfigFile.getTaskPlannerAddress() +"/task",_generic=True)
     globals.subscriptionDict[subscriptionId] ="TaskSpec"     
   
