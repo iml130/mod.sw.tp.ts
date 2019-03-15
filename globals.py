@@ -2,10 +2,10 @@ import Queue
 
 import threading
 
-from dictQueue import DictQueue
+from helpers.dictQueue import DictQueue
 
 from contextbrokerhandler import ContextBrokerHandler
-from configParser import Config
+from helpers.configParser import Config
 
 
 taskQueue = Queue.Queue()

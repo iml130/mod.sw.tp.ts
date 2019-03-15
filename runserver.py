@@ -3,6 +3,7 @@ __maintainer__ = "Peter Detzner"
 __version__ = "0.0.1a"
 __status__ = "Developement"
 
+# system imports
 import signal
 import sys
 import os
@@ -19,6 +20,7 @@ from threading import Event, Thread
 from Queue import Queue
 import json
 
+# external lib imports
 from flask import g 
 from flask import render_template,Response
 
@@ -27,14 +29,14 @@ from jinja2 import Environment, FileSystemLoader
 
 # local imports
 import globals 
-from configParser import Config
+from helpers.configParser import Config
 from contextbrokerhandler import ContextBrokerHandler
 from FiwareObjectConverter import objectFiwareConverter
 from Entities import task, taskState, taskSpec, taskSpecState
 from Entities.san import SensorAgent
 from Entities import ran
 from icent import IcentDemo
-import servercheck
+from helpers.servercheck import checkServerRunning
 
 from Entities.taskSpec import TaskSpec
 from TaskLanguage.checkGrammarTreeCreation import checkTaskLanguage
@@ -70,6 +72,8 @@ SERVER_ADDRESS = "localhost"
 
 CONFIG_FILE = "./fiware_config.ini"
 parsedConfigFile = Config(CONFIG_FILE)
+if(parsedConfigFile.FLASK_HOST):
+    PORT = int(parsedConfigFile.TASKPLANNER_PORT)
 #globals.initOcbHandler(parsedConfigFile.getFiwareServerAddress())
 ocbHandler = globals.ocbHandler
 # ContextBrokerHandler(parsedConfigFile.getFiwareServerAddress())
@@ -294,7 +298,7 @@ def taskDealer(q):
             logger.info("newTaskSpec:\n"+ str(objTaskSpec.TaskSpec))
             globals.taskSchedulerQueue.put(objTaskSpec.TaskSpec)
  
-        
+        currentTaskSpecState.message = message
         currentTaskSpecState.state = retVal
         currentTaskSpecState.refId = jsonReq["id"]
         ocbHandler.update_entity(currentTaskSpecState)
@@ -335,12 +339,12 @@ if __name__ == '__main__':
     
     logger.info("Setting up Singal_Handler")
     signal.signal(signal.SIGINT, signal_handler)
-    signal.signal(signal.SIGTERM, signal_handler)
+    signal.signal(signal.SIGTERM, signal_handler) 
 
 
     logger.info("Setting up checkIfServerIsUpRunning")
     checkIfServerIsUpRunning = threading.Thread(name='checkServerRunning', 
-                                                target=servercheck.checkServerRunning, 
+                                                target=checkServerRunning, 
                                                 args=(SERVER_ADDRESS, parsedConfigFile.TASKPLANNER_PORT,))
 
     logger.info("Setting up checkForProgrammEnd")
@@ -439,6 +443,8 @@ if __name__ == '__main__':
 
     logger.info("Shutting down TaskPlanner") 
     logger.info("Unsubscribing from Subscriptions")
+    # TODO: error with threads, size of dict might change:
+    # better: get keys and iterate overy keys
     for subId in globals.subscriptionDict:
         ocbHandler.deleteSubscriptionById(subId)
         
