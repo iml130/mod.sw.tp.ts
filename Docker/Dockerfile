@@ -31,7 +31,7 @@ RUN mkdir app
 RUN cd app && git clone https://atlassian.iml.fraunhofer.de/bitbucket/scm/sof/taskplanner.git
 RUN pip install -r app/taskplanner/requirements.txt
 
-EXPOSE 5555
+EXPOSE 2906
 
 #RUN cd ./taskplanner
 # run the application
