@@ -18,3 +18,9 @@ class FiwareEntity():
 
     def getId(self):
         return self.id
+    
+    def obj2JsonArray(self):
+        tempArray = []
+        tempArray.append(self.getEntity())
+         
+        return (tempArray)
