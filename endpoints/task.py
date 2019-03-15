@@ -35,10 +35,10 @@ def task():
             jsonschema.validate(jsonReq['data'][0], json.loads(schema))
         except jsonschema.ValidationError as e:
             logger.error("task Endpoint ValidationError: " + str(e.message))
-            return httplib.BAD_REQUEST, e.message
+            return e.message, httplib.BAD_REQUEST
         except jsonschema.SchemaError as e:
             logger.error("task Endpoint SchemaError: " + str(e.message))
-            return httplib.INTERNAL_SERVER_ERROR, e.message
+            return e.message, httplib.INTERNAL_SERVER_ERROR
             
         if(globals.FI_SUB_ID in jsonReq and globals.FI_DATA in jsonReq):
             subId =jsonReq[globals.FI_SUB_ID] 
