@@ -2,11 +2,7 @@ import ConfigParser
 import io
 import sys
 
-class Area(object):
-    def __init(self):
-        self.point_x = 0
-        self.point_y = 0
-        self.theta = 0
+ 
 
 class Config(object):
     """description of class"""

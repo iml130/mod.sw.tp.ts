@@ -1,3 +1,9 @@
+__author__ = "Peter Detzner" 
+__maintainer__ = "Peter Detzner"
+__version__ = "0.0.1a"
+__status__ = "Developement"
+
+
 import requests
 import urllib2
 import httplib
