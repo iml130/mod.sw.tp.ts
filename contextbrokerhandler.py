@@ -29,7 +29,7 @@ class ContextBrokerHandler:
         "Accept": "application/json"
     }
 
-    TIMEOUT = 0.5
+    TIMEOUT = 1.5
     NGSI_VERSION = "v2"
 
     def __init__(self, fiwareAddress):
@@ -53,8 +53,8 @@ class ContextBrokerHandler:
             # if(self.delete_entity(entityInstance.getId())):
             #     print "error"
 
-            json = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4)     
-            response = self._request("POST",self._getUrl(ENTITIES), data = json, headers = self.HEADER)
+            jsonObj = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4)     
+            response = self._request("POST",self._getUrl(ENTITIES), data = jsonObj, headers = self.HEADER)
             statusCode = response.status_code
             if(not isResponseOk(statusCode)):
                 return json.loads(response.content)
@@ -106,6 +106,10 @@ class ContextBrokerHandler:
             response = requests.request(method, url, data = data, headers = kwargs['headers'], timeout = self.TIMEOUT)      
         except requests.exceptions.Timeout:
             print "pass"
+        except Exception as exp:
+            print "another exception"
+        except requests.exceptions.RequestException as e:
+            print "except requests.exceptions.RequestException as e:"
         return response
 
     def getEntities(self, _entityId = None , _entityType=None):
