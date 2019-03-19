@@ -29,12 +29,12 @@ def checkServerRunning(SERVER_ADDRESS, PORT):
       
             request = urllib2.Request(tmpUrl) 
             response = urllib2.urlopen(request)        
-            logger.info("CheckServerRunning is avalable " + tmpUrl) 
+            logger.info("CheckServerRunning is available " + tmpUrl) 
             doForever = False
         except urllib2.HTTPError, err:
             logger.error("CheckServerRunning HTTPError" + str(err.code)) 
         except urllib2.URLError, err:
-            logger.error("CheckServerRunning URLError" + str(err.code)) 
+            logger.error("CheckServerRunning URLError") 
         except httplib.HTTPException, err:
             logger.error("CheckServerRunning HTTPException" + str(err.code)) 
         finally: 
