@@ -7,9 +7,12 @@ from helpers.dictQueue import DictQueue
 from contextbrokerhandler import ContextBrokerHandler
 from helpers.configParser import Config
 
+# Receives all the message and forwards it
+rosMessageDispatcher = DictQueue() 
 
 taskQueue = Queue.Queue()
-sanDictQueue = DictQueue()
+# Handling the temporary SAN EPs
+sanDictQueue = DictQueue() 
 sanQueue = Queue.Queue()
 ranQueue = Queue.Queue()
 taskSchedulerQueue = Queue.Queue()
