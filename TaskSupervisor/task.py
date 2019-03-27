@@ -18,10 +18,10 @@ import sys
 
 import rospy
 from mars_agent_logical_srvs.srv import AddMoveOrder, AddMoveOrderRequest
-from mars_agent_logical_msgs.msg import MoveOrder
+from mars_agent_logical_msgs.msg import MoveOrder, OrderStatus
 from mars_topology_msgs.msg import TopologyEntity, TopologyEntityType
 from mars_common.Id import Id, IdType
-from std_msgs.msg import Duration, Time 
+from std_msgs.msg import Duration, Time
 
 # IMPORT LOCAL libs
 from globals import sanDictQueue, rosMessageDispatcher
@@ -32,6 +32,9 @@ from taskInfo import TaskInfo
 from FiwareObjectConverter.objectFiwareConverter import ObjectFiwareConverter
 from Entities.entity import FiwareEntity
 from Entities.san import SensorAgent, SensorData
+
+
+from ROS.OrderState import OrderState
 
 ocbHandler = globals.ocbHandler
 
@@ -45,12 +48,16 @@ def obj2JsonArray(_obj):
     return (tempArray)
 
 
+toggle = True
+
+
 class Task():
     def __init__(self, _taskInfo, _taskManagerUuid):
         # threading.Thread.__init__(self)
         logger.info("Task init")
 
         # only these attribues will be published
+ 
 
         self.id = str(uuid.uuid4())
         self.taskManagerId = _taskManagerUuid
@@ -71,7 +78,7 @@ class Task():
         self._q = sanDictQueue.getQueue(self.id)
         self._rosQ = rosMessageDispatcher.getQueue(self.id)
 
-        #self.transportOrder = TransportOrder(self.name)
+        # self.transportOrder = TransportOrder(self.name)
         logger.info("Task init_done")
 
 # thread imitation
@@ -117,6 +124,47 @@ class Task():
     def __repr__(self):
         return self.__str__()
 
+    def sendMoveOrder(self, destination = None):
+        rospy.wait_for_service('/mars_agent_logical_robot_0/add_move_order')
+        try:
+                            
+            global toggle
+            if(destination):
+                newId = uuid.uuid3(uuid.NAMESPACE_DNS, destination)
+            
+            if(toggle):
+               # id_str = "00000000000000000000000000000003"
+                id_str = "moldingArea_palletPlace"
+                
+            else:
+                id_str = str('00000000000000000000000000000010')
+                #toggle = True
+
+            task_id = Id(self.id, IdType.ID_TYPE_UUID)
+            dest_id = Id(id_str, IdType.ID_TYPE_STRING_NAME)
+            
+            dura = Duration()
+            # SIMPLY THE BEST
+            dura.data.secs = 5 
+
+            add_move_order_srv_req = rospy.ServiceProxy(
+                '/mars_agent_logical_robot_0/add_move_order', AddMoveOrder)
+            move_order = MoveOrder(move_order_id=task_id.to_msg(), destination_entity=TopologyEntity(
+                id=dest_id.to_msg(), entity_type=TopologyEntityType(10)), destination_reservation_time=dura.data)
+            add_move_order_req = AddMoveOrderRequest(move_order=move_order)
+
+            if(toggle):
+                toggle = False
+                result = add_move_order_srv_req(move_order)
+
+                print result
+
+        except rospy.ServiceException, e:
+            print "Service call failed: %s" % e
+        except Exception as ex:
+            print ex
+
+        
     def run(self):
         self.state = State.Running
         self.updateEntity()
@@ -132,34 +180,11 @@ class Task():
         print "\nrunning " + self.taskName + ", sleep " + str(tempVal)
         # time.sleep(tempVal)
         try:
-            rospy.wait_for_service(
-                '/mars_agent_logical_robot_0/add_move_order')
-            try:
-                id_str = str('00000000000000000000000000000003')
-                task_id = Id(self.id, IdType.ID_TYPE_UUID)
-                dest_id = Id(id_str, IdType.ID_TYPE_UUID)
-                
-                dura = Duration()
-                # SIMPLY THE BEST
-                dura.data.secs = 5
-                print dura.data
-   
-                add_move_order_srv_req = rospy.ServiceProxy(
-                    '/mars_agent_logical_robot_0/add_move_order', AddMoveOrder)
-                move_order = MoveOrder(move_order_id=task_id.to_msg(), destination_entity=TopologyEntity(
-                    id=dest_id.to_msg(), entity_type=TopologyEntityType(10)), destination_reservation_time=dura.data)
-                add_move_order_req = AddMoveOrderRequest(move_order=move_order)
-
-                result = add_move_order_srv_req(move_order)
-
-                print result
-
-            except rospy.ServiceException, e:
-                print "Service call failed: %s" % e
-            except Exception as ex:
-                print ex
-
+            
             # TODO / ROS / Disabling while ROS implementation
+            self.sendMoveOrder()
+            bb = self._rosQ.get()
+
             a = self._q.get(timeout=tempVal)
             if (a):
                 dd = SensorAgent.CreateObjectFromJson(a["data"][0])
@@ -169,6 +194,7 @@ class Task():
 
         except Queue.Empty:
             pass
+        rosMessageDispatcher.removeThread(self.id)
         sanDictQueue.removeThread(self.id)
         ocbHandler.deleteSubscriptionById(subscriptionId)
         self.state = State.Finished
@@ -186,7 +212,7 @@ class TaskState(FiwareEntity):
         self.state = State.Idle
         self.taskId = _task.id
         self.taskManagerId = _task.taskManagerId
-        #self.taskSpecUuid = None
+        # self.taskSpecUuid = None
         self.errorMessage = ""
 
 # TASK

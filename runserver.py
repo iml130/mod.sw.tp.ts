@@ -27,12 +27,18 @@ from flask import render_template,Response
 from datetime import datetime 
 from jinja2 import Environment, FileSystemLoader
 
+import rospy
+from mars_agent_logical_msgs.msg import OrderStatus
+
+
 # local imports
 import globals 
 from helpers.configParser import Config
 from contextbrokerhandler import ContextBrokerHandler
 from FiwareObjectConverter import objectFiwareConverter
+
 from Entities import task, taskState, taskSpec, taskSpecState
+
 from Entities.san import SensorAgent
 from Entities import ran
 from icent import IcentDemo
@@ -41,6 +47,8 @@ from helpers.servercheck import checkServerRunning
 from Entities.taskSpec import TaskSpec
 from TaskLanguage.checkGrammarTreeCreation import checkTaskLanguage
 from TaskSupervisor.taskScheduler import taskScheduler
+
+from ROS.OrderState import OrderState
 # from Entities import task.Task
 # from Entities import taskstate.TaskState
 
@@ -323,6 +331,15 @@ def waitForEnd():
             global terminate
             terminate = False
 
+def callback_ros_order_state(data):
+    #rospy.loginfo(data.order_id)  
+    os  = OrderState.CreateObjectRosMsg(data)
+    if(os):
+        if(os.status == 30):
+            logger.info("Received callback_ros_order_state --> FIN")
+            globals.rosMessageDispatcher.putData(os.uuid,os)
+           
+            
 if __name__ == '__main__': 
     global subscriptionDict
     global stateQueue 
@@ -331,7 +348,12 @@ if __name__ == '__main__':
     #global currentTaskState
     global currentTaskSpecState
 
- 
+    logger.info("Setting up ROS")
+    rospy.init_node('task_supervisor') 
+    
+    logger.info("Subscriptions to /order_status")
+    rospy.Subscriber("/order_status", OrderStatus, callback_ros_order_state)
+
     logger.info("Starting TaskPlanner")
     if(os.path.isfile('./images/task.png')):
         os.remove('./images/task.png')
