@@ -39,7 +39,8 @@ def task():
         except jsonschema.SchemaError as e:
             logger.error("task Endpoint SchemaError: " + str(e.message))
             return e.message, httplib.INTERNAL_SERVER_ERROR
-            
+     
+
         if(globals.FI_SUB_ID in jsonReq and globals.FI_DATA in jsonReq):
             subId =jsonReq[globals.FI_SUB_ID] 
             if(subId in globals.subscriptionDict): 
