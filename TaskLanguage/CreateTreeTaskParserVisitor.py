@@ -26,6 +26,12 @@ class Instance(object):
         self.templateName = None # String of the Instances origin Template
         self.keyval = {} # Dictionary of attributes with set value
 
+    def getPositionByKey(self, key):
+        if(key in self.keyval):
+            return self.keyval[key]
+        
+        return None
+
  
 class CreateTreeTaskParserVisitor(TaskParserVisitor):
 
@@ -130,6 +136,7 @@ class CreateTreeTaskParserVisitor(TaskParserVisitor):
 
     # Visit a parse tree produced by TaskParser#transportOrder.
     def visitTransportOrder(self, ctx):
+
         to = TransportOrder()
         l = []
         # Create the List
@@ -141,6 +148,7 @@ class CreateTreeTaskParserVisitor(TaskParserVisitor):
         l = l[:-1]
         to.fromm = l
         to.to = dst
+       
         return to
 
     ### Expression parsing:
