@@ -63,6 +63,8 @@ class taskScheduler():
         self.taskGraph = G
 
         self.taskInfos = printer.taskInfos
+        for key, taskInfo in self.taskInfos.iteritems():
+            taskInfo.instances = printer.instances
         self.name = name
         
         self.runningTasks = []

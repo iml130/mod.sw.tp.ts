@@ -12,6 +12,7 @@ class TaskInfo(object):
         self.triggers = [] # List of Triggers
         self.transportOrders = [] # List of Transport Order (from|to)
         self.onDone = [] # Reference to the next Tasks
+        self.instances = None
         logger.info("TaskInfo init_done")
 
     def addChild(self, _child):
@@ -27,3 +28,9 @@ class TaskInfo(object):
      
     def __repr__(self):
         return self.__str__()
+
+    def findPositionByName(self, positionName):
+        if self.instances:
+            if(positionName in self.instances):
+                return self.instances[positionName].keyval["position"].replace('"',"")
+                

@@ -14,15 +14,6 @@ import json
 import sys
 
 
-# IMPORT 3rd party libs
-
-import rospy
-from mars_agent_logical_srvs.srv import AddMoveOrder, AddMoveOrderRequest
-from mars_agent_logical_msgs.msg import MoveOrder, OrderStatus
-from mars_topology_msgs.msg import TopologyEntity, TopologyEntityType
-from mars_common.Id import Id, IdType
-from std_msgs.msg import Duration, Time
-
 # IMPORT LOCAL libs
 from globals import sanDictQueue, rosMessageDispatcher
 import globals
@@ -33,8 +24,7 @@ from FiwareObjectConverter.objectFiwareConverter import ObjectFiwareConverter
 from Entities.entity import FiwareEntity
 from Entities.san import SensorAgent, SensorData
 
-
-from ROS.OrderState import OrderState
+from ROS.moveOrder import rMoveOrder
 
 ocbHandler = globals.ocbHandler
 
@@ -78,7 +68,7 @@ class Task():
         self._q = sanDictQueue.getQueue(self.id)
         self._rosQ = rosMessageDispatcher.getQueue(self.id)
 
-        # self.transportOrder = TransportOrder(self.name)
+        self._transportOrder = TransportOrder(self.taskName)
         logger.info("Task init_done")
 
 # thread imitation
@@ -123,77 +113,54 @@ class Task():
 
     def __repr__(self):
         return self.__str__()
-
-    def sendMoveOrder(self, destination = None):
-        rospy.wait_for_service('/mars_agent_logical_robot_0/add_move_order')
-        try:
-                            
-            global toggle
-            if(destination):
-                newId = uuid.uuid3(uuid.NAMESPACE_DNS, destination)
-            
-            if(toggle):
-               # id_str = "00000000000000000000000000000003"
-                id_str = "moldingArea_palletPlace"
-                
-            else:
-                id_str = str('00000000000000000000000000000010')
-                #toggle = True
-
-            task_id = Id(self.id, IdType.ID_TYPE_UUID)
-            dest_id = Id(id_str, IdType.ID_TYPE_STRING_NAME)
-            
-            dura = Duration()
-            # SIMPLY THE BEST
-            dura.data.secs = 5 
-
-            add_move_order_srv_req = rospy.ServiceProxy(
-                '/mars_agent_logical_robot_0/add_move_order', AddMoveOrder)
-            move_order = MoveOrder(move_order_id=task_id.to_msg(), destination_entity=TopologyEntity(
-                id=dest_id.to_msg(), entity_type=TopologyEntityType(10)), destination_reservation_time=dura.data)
-            add_move_order_req = AddMoveOrderRequest(move_order=move_order)
-
-            if(toggle):
-                toggle = False
-                result = add_move_order_srv_req(move_order)
-
-                print result
-
-        except rospy.ServiceException, e:
-            print "Service call failed: %s" % e
-        except Exception as ex:
-            print ex
-
         
     def run(self):
         self.state = State.Running
         self.updateEntity()
-        ts = SensorAgent()
-        subscriptionId = ocbHandler.subscribe2Entity(_description="Individual blabla",
-                                                     _entities=obj2JsonArray(
-                                                         ts.getEntity()),
-                                                     _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id, _generic=True)
-        globals.subscriptionDict[subscriptionId] = "SAN"
+
+        while(self._transportOrder.state != "finished" and self._transportOrder.state != "error"):
+            
+            state = self._transportOrder.state
+            print state
+            if(state == "init"):
+                # subscribe to trigger events
+                ts = SensorAgent()
+                subscriptionId = ocbHandler.subscribe2Entity(_description="Individual blabla",_entities=obj2JsonArray(ts.getEntity()), _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id, _generic=True)
+                globals.subscriptionDict[subscriptionId] = "SAN"
+                self._transportOrder.Initialized()
+            elif(state == "waitForTrigger"):
+                self._transportOrder.TriggerReceived()
+                print "recv trigger"
+            elif(state == "moveOrder"):
+                self._transportOrder.DestinationReached()
+                print "destination reached"
+                destinationName =  self._taskInfo.findPositionByName(self._taskInfo.transportOrders[0].fromm[0])
+                if(destinationName):
+                    try:
+                        rMo = rMoveOrder(self.id, destinationName)
+                     
+                        ##self.sendMoveOrder(destinationName)
+                        bb = self._rosQ.get()
+
+                        # a = self._q.get()
+                        # if (a):
+                        #     dd = SensorAgent.CreateObjectFromJson(a["data"][0])
+                        #     logger.info("Just a small timeout of 10secs")
+                        # # dd.findSensorById(self._taskInfo.triggers[0].left)
+                        #     time.sleep(10)
+
+                    except Queue.Empty:
+                        pass
+            print state
+
+        
+        
 
         tempVal = 15  # (randint(2,7))
         logger.info("Task running, " + str(self))
         print "\nrunning " + self.taskName + ", sleep " + str(tempVal)
-        # time.sleep(tempVal)
-        try:
-            
-            # TODO / ROS / Disabling while ROS implementation
-            self.sendMoveOrder()
-            bb = self._rosQ.get()
+        # time.sleep(tempVal) 
 
-            a = self._q.get(timeout=tempVal)
-            if (a):
-                dd = SensorAgent.CreateObjectFromJson(a["data"][0])
-                logger.info("Just a small timeout of 10secs")
-               # dd.findSensorById(self._taskInfo.triggers[0].left)
-                time.sleep(10)
-
-        except Queue.Empty:
-            pass
         rosMessageDispatcher.removeThread(self.id)
         sanDictQueue.removeThread(self.id)
         ocbHandler.deleteSubscriptionById(subscriptionId)

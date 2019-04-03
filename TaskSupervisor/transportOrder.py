@@ -15,7 +15,7 @@ class TransportOrder(object):
 
     # Define some states. Most of the time, narcoleptic superheroes are just like
     # everyone else. Except for...
-    states = ['init', 'idle', 'waitForTrigger', 'goToPosA', "atPosAArived","goToPosB", "atPosBArived", 'finished', 'error']
+    states = ['init', 'waitForTrigger', 'moveOrder', 'finished', 'error']
     
     def __init__(self, name):
         self.name = name
@@ -30,19 +30,15 @@ class TransportOrder(object):
         # the Machine initializer as the transitions= argument.
 
         # At some point, every superhero must rise and shine.
-        self.machine.add_transition(trigger='Init', source='init', dest='idle', after='registerForTrigger')
-        self.machine.add_transition(trigger='SubscribeToTrigger', source='idle', dest='waitForTrigger', before='registerForTrigger')
-        self.machine.add_transition(trigger='GoToA', source='waitForTrigger', dest='goToPosA')
-        self.machine.add_transition(trigger='AtPosAArived', source='goToPosA', dest='atPosAArived')
-        self.machine.add_transition(trigger='GoToB', source='atPosAArived', dest='goToPosB')
-        self.machine.add_transition(trigger='AtPosBArived', source='goToPosB', dest='atPosBArived')
-        self.machine.add_transition(trigger='Finished', source='atPosBArived', dest='finished')
+        self.machine.add_transition(trigger='Initialized', source='init', dest='waitForTrigger')
+        self.machine.add_transition(trigger='TriggerReceived', source='waitForTrigger', dest='moveOrder') 
+        self.machine.add_transition(trigger='DestinationReached', source='moveOrder', dest='finished')
         self.machine.add_transition(trigger='Panic', source='*', dest='idle')
         self.machine.add_transition('Panic', '*', 'error')
         self.machine.add_transition('Init', 'error', 'init')
 
-    def registerForTrigger(self):
-        print "reigstererd for Trigger"
+    # def registerForTrigger(self):
+    #     print "reigstererd for Trigger"
 
     def getUuid(self):
         return self.uuid
