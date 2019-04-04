@@ -25,10 +25,17 @@ Sensor buttonPalletIsReady
     type = "Boolean"
 end
 
+task Refill
+    Transport
+    from warehouse_pos1
+    to moldingPallet 
+end
+
 #### 
 task Transport_moldingPallet
     Transport
     from moldingPallet
     to warehouse_pos1
     TriggeredBy	buttonPalletIsReady.value == True
+    OnDone Refill
 end
