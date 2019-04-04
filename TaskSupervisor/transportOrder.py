@@ -15,7 +15,7 @@ class TransportOrder(object):
 
     # Define some states. Most of the time, narcoleptic superheroes are just like
     # everyone else. Except for...
-    states = ['init', 'waitForTrigger', 'moveOrder', 'finished', 'error']
+    states = ['init', 'waitForTrigger', 'moveOrderStart', 'moveOrder', 'moveOrderFinished', 'finished', 'error']
     
     def __init__(self, name):
         self.name = name
@@ -31,8 +31,11 @@ class TransportOrder(object):
 
         # At some point, every superhero must rise and shine.
         self.machine.add_transition(trigger='Initialized', source='init', dest='waitForTrigger')
-        self.machine.add_transition(trigger='TriggerReceived', source='waitForTrigger', dest='moveOrder') 
-        self.machine.add_transition(trigger='DestinationReached', source='moveOrder', dest='finished')
+        self.machine.add_transition(trigger='TriggerReceived', source='waitForTrigger', dest='moveOrderStart') 
+        self.machine.add_transition(trigger='OrderStart', source='moveOrderStart', dest='moveOrder') 
+        self.machine.add_transition(trigger='OrderFinished', source='moveOrder', dest='moveOrderFinished') 
+        self.machine.add_transition(trigger='DestinationReached', source='moveOrderFinished', dest='finished')
+
         self.machine.add_transition(trigger='Panic', source='*', dest='idle')
         self.machine.add_transition('Panic', '*', 'error')
         self.machine.add_transition('Init', 'error', 'init')

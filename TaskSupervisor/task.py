@@ -17,14 +17,19 @@ import sys
 # IMPORT LOCAL libs
 from globals import sanDictQueue, rosMessageDispatcher
 import globals
-from transportOrder import TransportOrder
-from taskInfo import TaskInfo
+
 
 from FiwareObjectConverter.objectFiwareConverter import ObjectFiwareConverter
 from Entities.entity import FiwareEntity
 from Entities.san import SensorAgent, SensorData
 
 from ROS.moveOrder import rMoveOrder
+from ROS.OrderState import OrderState, rosOrderStatus
+
+from TaskSupervisor.transportOrder import TransportOrder
+from TaskSupervisor.taskInfo import TaskInfo
+from TaskSupervisor.taskState import State, TaskState
+
 
 ocbHandler = globals.ocbHandler
 
@@ -37,18 +42,13 @@ def obj2JsonArray(_obj):
     print json.dumps(tempArray)
     return (tempArray)
 
-
-toggle = True
-
-
+ 
 class Task():
     def __init__(self, _taskInfo, _taskManagerUuid):
         # threading.Thread.__init__(self)
         logger.info("Task init")
 
         # only these attribues will be published
- 
-
         self.id = str(uuid.uuid4())
         self.taskManagerId = _taskManagerUuid
         self.taskName = str(_taskInfo.name)
@@ -62,6 +62,7 @@ class Task():
 
         logger.info("Task name: " + self.taskName + ", uuid:" + str(self.id))
         self._taskInfo = _taskInfo
+        # 
         sanDictQueue.addThread(self.id)
         rosMessageDispatcher.addThread(self.id)
 
@@ -94,12 +95,6 @@ class Task():
         ocbHandler.create_entity(self)
         logger.info("Task publishEntity_done")
 
-    def deleteEntity(self):
-        global ocbHandler
-        logger.info("Task deleteEntity " + self.taskName)
-        self.time = str(datetime.datetime.now())
-        ocbHandler.delete_entity(self.id)
-        logger.info("Task deleteEntity_done")
 
     def updateEntity(self):
         global ocbHandler
@@ -107,6 +102,14 @@ class Task():
         self.time = str(datetime.datetime.now())
         ocbHandler.update_entity(self)
         logger.info("Task updateEntity")
+
+    def deleteEntity(self):
+        global ocbHandler
+        logger.info("Task deleteEntity " + self.taskName)
+        self.time = str(datetime.datetime.now())
+        ocbHandler.delete_entity(self.id)
+        logger.info("Task deleteEntity_done")
+
 
     def __str__(self):
         return "Task name: " + self.taskName + ",uuid: " + str(self.id)
@@ -121,39 +124,50 @@ class Task():
         while(self._transportOrder.state != "finished" and self._transportOrder.state != "error"):
             
             state = self._transportOrder.state
-            print state
+            #print state
             if(state == "init"):
+                print state
                 # subscribe to trigger events
                 ts = SensorAgent()
                 subscriptionId = ocbHandler.subscribe2Entity(_description="Individual blabla",_entities=obj2JsonArray(ts.getEntity()), _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id, _generic=True)
                 globals.subscriptionDict[subscriptionId] = "SAN"
                 self._transportOrder.Initialized()
             elif(state == "waitForTrigger"):
+                print state
                 self._transportOrder.TriggerReceived()
                 print "recv trigger"
-            elif(state == "moveOrder"):
-                self._transportOrder.DestinationReached()
-                print "destination reached"
+            elif(state == "moveOrderStart"):
+                print state
+                
                 destinationName =  self._taskInfo.findPositionByName(self._taskInfo.transportOrders[0].fromm[0])
+                print self.id + " MO to: " + destinationName
                 if(destinationName):
                     try:
-                        rMo = rMoveOrder(self.id, destinationName)
-                     
-                        ##self.sendMoveOrder(destinationName)
+                        rMo = rMoveOrder(self.id, destinationName)  
                         bb = self._rosQ.get()
-
-                        # a = self._q.get()
-                        # if (a):
-                        #     dd = SensorAgent.CreateObjectFromJson(a["data"][0])
-                        #     logger.info("Just a small timeout of 10secs")
-                        # # dd.findSensorById(self._taskInfo.triggers[0].left)
-                        #     time.sleep(10)
-
-                    except Queue.Empty:
+                        print bb.status
+                        if(bb.status == rosOrderStatus.STARTED or  bb.status == rosOrderStatus.WAITING ):
+                            print "recv something"
+                            self._transportOrder.OrderStart()                    
+ 
+                    except Exception:
                         pass
-            print state
+            elif(state == "moveOrder"):
+                #print state
+                try: 
+                        ##self.sendMoveOrder(destinationName)
+                    bb = self._rosQ.get()
+                    if(bb.status == rosOrderStatus.FINISHED):
+                        self._transportOrder.OrderFinished()
+                        print "finished"
+                except Queue.Empty:
+                    pass
+            elif(state == "moveOrderFinished"):
+                print state
+                self._transportOrder.DestinationReached()
 
-        
+            #print state
+ 
         
 
         tempVal = 15  # (randint(2,7))
@@ -169,30 +183,9 @@ class Task():
         logger.info("Task finished, " + str(self))
 
 
-class TaskState(FiwareEntity):
-
-    def __init__(self, _task):
-        if(not isinstance(_task, Task)):
-            raise Exception("TypeMissmatch")
-        FiwareEntity.__init__(self, id=_task.id)
-        self.name = _task.taskName
-        self.state = State.Idle
-        self.taskId = _task.id
-        self.taskManagerId = _task.taskManagerId
-        # self.taskSpecUuid = None
-        self.errorMessage = ""
-
 # TASK
 # 0= No-Task, 1 = Start, 2 = Pause, 3 = Cancel, 4 = EmergencyStop, 5 = Reset"
 # TASK_STATE
 # Idle : 0, Running : 1, Waiting : 2, Active : 3, Finished : 4, Aborted : 5, Error : 6
 
 
-class State():
-    Idle = 0
-    Running = 1
-    Waiting = 2
-    Active = 3
-    Finished = 4
-    Aborted = 5
-    Error = 6
