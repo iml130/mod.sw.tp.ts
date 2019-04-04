@@ -48,7 +48,7 @@ from Entities.taskSpec import TaskSpec
 from TaskLanguage.checkGrammarTreeCreation import checkTaskLanguage
 from TaskSupervisor.taskScheduler import taskScheduler
 
-from ROS.OrderState import OrderState
+from ROS.OrderState import OrderState, rosOrderStatus
 # from Entities import task.Task
 # from Entities import taskstate.TaskState
 
@@ -261,9 +261,9 @@ def callback_ros_order_state(data):
     #rospy.loginfo(data.order_id)  
     os  = OrderState.CreateObjectRosMsg(data)
     if(os):
-        if(os.status == 30):
+        if(os.status == rosOrderStatus.FINISHED):
             logger.info("Received callback_ros_order_state --> FIN")
-            globals.rosMessageDispatcher.putData(os.uuid,os)
+        globals.rosMessageDispatcher.putData(os.uuid,os)
            
             
 if __name__ == '__main__': 
