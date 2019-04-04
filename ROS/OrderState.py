@@ -12,14 +12,15 @@ class OrderState(object):
         os = OrderState() 
         try: 
             os.uuid = uuid.UUID(bytes= msg.order_id.uuid)
-            os.state = msg.order_state
             os.status = msg.order_status
             os.type = msg.order_type
+            os.state = msg.order_state
+            
         except:
             return None
         return os
 
-class OrderStatus():
+class rosOrderStatus():
     UNKNOWN = 0
     STARTED = 10
     ONGOING = 20
@@ -27,13 +28,13 @@ class OrderStatus():
     WAITING = 40
     ERROR = 255
 
-class OrderType():
+class rosOrderType():
     UNKNOWN = 0
     MOVE_ORDER = 10
     TRANSPORT_ORDER_STEP = 20
     TRANSPORT_ORDER  = 30
 
-class MoveOrderStates():
+class rosMoveOrderStates():
     MOVE_ORDER_UNAVAILABLE=10
     MOVE_ORDER_START=11
     MOVE_ORDER_ONGOING=12
@@ -41,7 +42,7 @@ class MoveOrderStates():
     MOVE_ORDER_ERROR=14
 
 
-class TransportOrderStepStates():
+class rosTransportOrderStepStates():
     TOS_MOVE_ORDER_START=20
     TOS_MOVE_ORDER_ONGOING=21
     TOS_MOVE_ORDER_FINISHED=22
@@ -51,7 +52,7 @@ class TransportOrderStepStates():
     TOS_ACTION_FINISHED=26
     TOS_ACTION_ERROR=27
 
-class TransportOrderStates():
+class rosTransportOrderStates():
 ## Transport order
     TO_LOAD_MOVE_ORDER_START=40
     TO_LOAD_MOVE_ORDER_ONGOING=41
