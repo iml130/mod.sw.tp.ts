@@ -11,7 +11,7 @@ class OrderState(object):
     def CreateObjectRosMsg(cls, msg):
         os = OrderState() 
         try: 
-            os.uuid = uuid.UUID(bytes= msg.order_id.uuid)
+            os.uuid = str(uuid.UUID(bytes= msg.order_id.uuid))
             os.status = msg.order_status
             os.type = msg.order_type
             os.state = msg.order_state
