@@ -12,6 +12,7 @@ import logging
 import datetime
 import json
 import sys
+import ast
 
 
 # IMPORT LOCAL libs
@@ -41,7 +42,6 @@ def obj2JsonArray(_obj):
     tempArray.append(_obj)
     print json.dumps(tempArray)
     return (tempArray)
-
  
 class Task():
     def __init__(self, _taskInfo, _taskManagerUuid):
@@ -68,9 +68,12 @@ class Task():
 
         self._q = sanDictQueue.getQueue(self.id)
         self._rosQ = rosMessageDispatcher.getQueue(self.id)
-
+        self._subscriptionId = None
         self._transportOrder = TransportOrder(self.taskName)
         logger.info("Task init_done")
+
+    def subscriptionDescription(self):
+        return self.taskName + "_" + self.id
 
 # thread imitation
     def start(self):
@@ -116,11 +119,57 @@ class Task():
 
     def __repr__(self):
         return self.__str__()
+
+    def validateTrigger(self, expectedType, sensorData, trigger):
+        retVal, actualType = self.checkForType(expectedType, sensorData)
+        if retVal:
+            return self.checkForValue(actualType, sensorData, trigger)
+            # expected value is true, now check if the real value is also correct
+
+    def checkForValue(self, actualType, realValue, trigger):
+        realValue = realValue.readings[0]["reading"]
         
+        if(actualType == 0):
+            if(trigger["binOp"] == "=="):
+                if(ast.literal_eval(trigger["right"]) == realValue):
+                    return True
+                else:
+                    return False
+            else:
+                return False
+            # boolean
+        elif(actualType == 1):
+            # integer
+            pass
+        elif(actualType == 2):
+            # float
+            pass
+        elif(actualType == 3):
+            # str
+            pass
+        pass
+
+    def checkForType(self, expectedType, sensorData):
+        expectedType = expectedType.lower()
+        if(expectedType == "boolean" or expectedType == "bool"):
+            if(isinstance(sensorData.readings[0]["reading"], bool)):
+                return True, 0
+        elif(expectedType == "integer" or expectedType == "int"):
+            if(isinstance(sensorData.readings[0]["reading"], int)):
+                return True, 1
+        elif(expectedType == "float"):
+            if(isinstance(sensorData.readings[0]["reading"],float)):
+                return True, 2
+        elif(expectedType == "str"):
+            if(isinstance(sensorData.readings[0]["reading"], str)):
+                return True,3
+        return False, None
+
     def run(self):
         self.state = State.Running
         self.updateEntity()
-
+        bResendOrder = True
+        oldValue = 0
         while(self._transportOrder.state != "finished" and self._transportOrder.state != "error"):
             
             state = self._transportOrder.state
@@ -128,38 +177,60 @@ class Task():
             if(state == "init"):
                 print state
                 # subscribe to trigger events
-                ts = SensorAgent()
-                subscriptionId = ocbHandler.subscribe2Entity(_description="Individual blabla",_entities=obj2JsonArray(ts.getEntity()), _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id, _generic=True)
-                globals.subscriptionDict[subscriptionId] = "SAN"
+                if(self._taskInfo.triggers):
+                    ts = SensorAgent()
+                    self._subscriptionId = ocbHandler.subscribe2Entity(_description=self.subscriptionDescription(), _entities=obj2JsonArray(ts.getEntity()), _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id, _generic=True)
+                    globals.subscriptionDict[self._subscriptionId] = "SAN"
                 self._transportOrder.Initialized()
             elif(state == "waitForTrigger"):
                 print state
-                self._transportOrder.TriggerReceived()
+                if(self._taskInfo.triggers):
+                    sensorEntityData = self._q.get()
+                    if (sensorEntityData):
+                        dd = SensorAgent.CreateObjectFromJson(sensorEntityData["data"][0])
+                        sensorData =  dd.findSensorById(self._taskInfo.triggers[0]["left"])
+                        if(sensorData):
+                            #checkForType() 
+                            excpectedType = self._taskInfo.findSensorById(self._taskInfo.triggers[0]["left"])
+                            if(self.validateTrigger(excpectedType, sensorData,self._taskInfo.triggers[0])):
+                                self._transportOrder.TriggerReceived()
+                else:
+                    # no trigger :-) 
+                    self._transportOrder.TriggerReceived()
+                        
+
                 print "recv trigger"
             elif(state == "moveOrderStart"):
                 print state
                 
                 destinationName =  self._taskInfo.findPositionByName(self._taskInfo.transportOrders[0].fromm[0])
-                print self.id + " MO to: " + destinationName
                 if(destinationName):
                     try:
-                        rMo = rMoveOrder(self.id, destinationName)  
-                        bb = self._rosQ.get()
-                        print bb.status
-                        if(bb.status == rosOrderStatus.STARTED or  bb.status == rosOrderStatus.WAITING ):
-                            print "recv something"
-                            self._transportOrder.OrderStart()                    
+                        if(bResendOrder):
+                            rMo = rMoveOrder(self.id, destinationName)
+                            if(rMo.status ==0): # no need to resend it...
+                                bResendOrder = False   
+                        rosPacketOrderState = self._rosQ.get(5)
+                        if(rosPacketOrderState):
+                            tempUuid = rosPacketOrderState.uuid              
+                            if((rosPacketOrderState.status == rosOrderStatus.STARTED or rosPacketOrderState.status==rosOrderStatus.ONGOING) and tempUuid==self.id and bResendOrder == False):
+                                print "Robot is moving" + str(rosPacketOrderState.status)
+                                self._transportOrder.OrderStart()                    
  
                     except Exception:
                         pass
-            elif(state == "moveOrder"):
+            elif(state == "moveOrder"): 
                 #print state
                 try: 
                         ##self.sendMoveOrder(destinationName)
-                    bb = self._rosQ.get()
-                    if(bb.status == rosOrderStatus.FINISHED):
+                    rosPacketOrderState = self._rosQ.get()
+                    tempUuid = rosPacketOrderState.uuid
+                    if(rosPacketOrderState.status == rosOrderStatus.FINISHED and tempUuid ==self.id):
                         self._transportOrder.OrderFinished()
+                        bResendOrder = True
                         print "finished"
+                    elif(rosPacketOrderState.status == rosOrderStatus.ERROR or rosPacketOrderState.status == rosOrderStatus.WAITING or rosPacketOrderState.status == rosOrderStatus.UNKNOWN):
+                        print rosPacketOrderState.status
                 except Queue.Empty:
                     pass
             elif(state == "moveOrderFinished"):
@@ -177,7 +248,13 @@ class Task():
 
         rosMessageDispatcher.removeThread(self.id)
         sanDictQueue.removeThread(self.id)
-        ocbHandler.deleteSubscriptionById(subscriptionId)
+
+        try:
+            if(self._subscriptionId):
+                ocbHandler.deleteSubscriptionById(self._subscriptionId)
+        except Exception as ex:
+            pass
+        
         self.state = State.Finished
         self.updateEntity()
         logger.info("Task finished, " + str(self))

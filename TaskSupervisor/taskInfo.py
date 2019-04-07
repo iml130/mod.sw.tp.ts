@@ -33,4 +33,13 @@ class TaskInfo(object):
         if self.instances:
             if(positionName in self.instances):
                 return self.instances[positionName].keyval["position"].replace('"',"")
-                
+    
+    def findSensorById(self, sensorId):
+        sensorId = sensorId.split(".")[0]
+        if self.instances:
+            for value in self.instances:
+                if "sensorId" in self.instances[value].keyval:
+                    print self.instances[value].keyval["sensorId"]
+                    if(self.instances[value].keyval["sensorId"].replace('"', '') == sensorId):
+                        return self.instances[value].keyval["type"].replace('"', '')
+        return None

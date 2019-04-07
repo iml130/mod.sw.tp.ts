@@ -32,6 +32,13 @@ class SensorAgent(FiwareEntity):
             return None
         
         return sa
+    
+    def findSensorById(self, _triggerName):
+        _triggerName = _triggerName.split(".")[0]
+        for sdata in self.sensorData:
+            if(sdata.sensorId == _triggerName):
+                return sdata
+        return None
 
 # class San(FiwareEntity): 
 #     def __init__(self):  
