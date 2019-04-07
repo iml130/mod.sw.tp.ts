@@ -11,6 +11,7 @@ from ROS.OrderState import OrderState
 
 class rMoveOrder():
     def __init__(self, _id, _destinationName):
+        self.status = -1
         rospy.wait_for_service('/mars_agent_logical_robot_0/add_move_order')
         try:
                              
@@ -35,8 +36,9 @@ class rMoveOrder():
 
           
             result = add_move_order_srv_req(move_order)
-
-            print result
+            self.status = result.result.result
+            print "addMoveOrderResult"
+            print self.status
 
         except rospy.ServiceException, e:
             print "Service call failed: %s" % e
