@@ -30,11 +30,17 @@ from ROS.OrderState import OrderState, rosOrderStatus
 from TaskSupervisor.transportOrder import TransportOrder
 from TaskSupervisor.taskInfo import TaskInfo
 from TaskSupervisor.taskState import State, TaskState
-
+from TaskSupervisor.triggerValidator import validateTrigger
 
 ocbHandler = globals.ocbHandler
 
 logger = logging.getLogger(__name__)
+
+
+# defines
+ROS_CALL_ERROR = -1
+ROS_CALL_SUCCESS = 0
+WAITING_AT_DESTINATION_IN_SECONDS = 5
 
 
 def obj2JsonArray(_obj):
@@ -120,51 +126,6 @@ class Task():
     def __repr__(self):
         return self.__str__()
 
-    def validateTrigger(self, expectedType, sensorData, trigger):
-        retVal, actualType = self.checkForType(expectedType, sensorData)
-        if retVal:
-            return self.checkForValue(actualType, sensorData, trigger)
-            # expected value is true, now check if the real value is also correct
-
-    def checkForValue(self, actualType, realValue, trigger):
-        realValue = realValue.readings[0]["reading"]
-        
-        if(actualType == 0):
-            if(trigger["binOp"] == "=="):
-                if(ast.literal_eval(trigger["right"]) == realValue):
-                    return True
-                else:
-                    return False
-            else:
-                return False
-            # boolean
-        elif(actualType == 1):
-            # integer
-            pass
-        elif(actualType == 2):
-            # float
-            pass
-        elif(actualType == 3):
-            # str
-            pass
-        pass
-
-    def checkForType(self, expectedType, sensorData):
-        expectedType = expectedType.lower()
-        if(expectedType == "boolean" or expectedType == "bool"):
-            if(isinstance(sensorData.readings[0]["reading"], bool)):
-                return True, 0
-        elif(expectedType == "integer" or expectedType == "int"):
-            if(isinstance(sensorData.readings[0]["reading"], int)):
-                return True, 1
-        elif(expectedType == "float"):
-            if(isinstance(sensorData.readings[0]["reading"],float)):
-                return True, 2
-        elif(expectedType == "str"):
-            if(isinstance(sensorData.readings[0]["reading"], str)):
-                return True,3
-        return False, None
-
     def run(self):
         self.state = State.Running
         self.updateEntity()
@@ -192,7 +153,7 @@ class Task():
                         if(sensorData):
                             #checkForType() 
                             excpectedType = self._taskInfo.findSensorById(self._taskInfo.triggers[0]["left"])
-                            if(self.validateTrigger(excpectedType, sensorData,self._taskInfo.triggers[0])):
+                            if(validateTrigger(excpectedType, sensorData,self._taskInfo.triggers[0])):
                                 self._transportOrder.TriggerReceived()
                 else:
                     # no trigger :-) 
@@ -208,9 +169,9 @@ class Task():
                     try:
                         if(bResendOrder):
                             rMo = rMoveOrder(self.id, destinationName)
-                            if(rMo.status ==0): # no need to resend it...
+                            if(rMo.status == ROS_CALL_SUCCESS): # no need to resend it...
                                 bResendOrder = False   
-                        rosPacketOrderState = self._rosQ.get(5)
+                        rosPacketOrderState = self._rosQ.get(WAITING_AT_DESTINATION_IN_SECONDS)
                         if(rosPacketOrderState):
                             tempUuid = rosPacketOrderState.uuid              
                             if((rosPacketOrderState.status == rosOrderStatus.STARTED or rosPacketOrderState.status==rosOrderStatus.ONGOING) and tempUuid==self.id and bResendOrder == False):
@@ -239,12 +200,7 @@ class Task():
 
             #print state
  
-        
-
-        tempVal = 15  # (randint(2,7))
         logger.info("Task running, " + str(self))
-        print "\nrunning " + self.taskName + ", sleep " + str(tempVal)
-        # time.sleep(tempVal) 
 
         rosMessageDispatcher.removeThread(self.id)
         sanDictQueue.removeThread(self.id)
