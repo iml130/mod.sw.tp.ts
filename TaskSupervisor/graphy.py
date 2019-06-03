@@ -39,16 +39,19 @@ def displayGraph(G, save = False):
             color_map.append('skyblue')    
         else:
             color_map.append('green')  
-    nx.draw(G,  node_color=color_map ,node_size=1500, with_labels = True)
+    nx.draw(G, node_color=color_map ,node_size=1500, with_labels = True)
     if(save):
         plt.savefig("./images/task.png")
     #plt.show()
 
-def createGraph(taskInfos):
+def createGraph(taskInfos): 
     G = nx.DiGraph(day="Tasks")
+
+    #create the start task
     for task in taskInfos.itervalues():
         G.add_node(task)
 
+    # add Vertices and create also Edge
     for task in taskInfos.itervalues():
         for child in task.onDone:
             G.add_edge(task, taskInfos[child])

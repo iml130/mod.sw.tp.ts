@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.0 r1840935">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.1.1 r1855137">
   <hashTree>
     <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="SAN widgets data update" enabled="true">
       <stringProp name="TestPlan.comments">Simulate sensors sending data</stringProp>
@@ -30,7 +30,7 @@
           <collectionProp name="Arguments.arguments">
             <elementProp name="OCB_Address" elementType="Argument">
               <stringProp name="Argument.name">OCB_Address</stringProp>
-              <stringProp name="Argument.value">10.64.10.144</stringProp>
+              <stringProp name="Argument.value">localhost</stringProp>
               <stringProp name="Argument.metadata">=</stringProp>
             </elementProp>
             <elementProp name="OCB_Port" elementType="Argument">
@@ -155,7 +155,7 @@
 	&quot;id&quot;: &quot;TaskSpec1&quot;,&#xd;
 	&quot;type&quot;: &quot;TaskSpec&quot;,&#xd;
 	&quot;TaskSpec&quot;: {&#xd;
-		&quot;value&quot;: &quot;template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0A++++value%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22moldingArea_palletPlace%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonMoldingArea%22%0A++++type+%3D+%22Boolean%22%0A++++value+%3D+TRUE%0Aend%0A%0A%23%23%23%23%0A%0A%0Atask+Charge%0A++++Transport+%0A++++from+warehouse_pos1%0A++++to+moldingPallet+%0Aend%0A%0Atask+AnotherTask%0A++++Transport%0A++++from+warehouse_pos1%0A++++to+moldingPallet%0A++++OnDone+Charge%0Aend%0A%0Atask+Refill%0A++++Transport+%0A%09from+warehouse_pos1%0A%09to+moldingPallet%0A++++OnDone+Charge%0Aend%0A%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++TriggeredBy+buttonPalletIsReady.value+%3D%3D+TRUE%0A++++OnDone+Refill%0Aend%0A%0A%0A&quot;,&#xd;
+		&quot;value&quot;: &quot;template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22moldingArea_palletPlace%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonMoldingArea%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0A%23%23%23%23+%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++TriggeredBy%09buttonPalletIsReady.value+%3D%3D+True%0Aend%0A&quot;,&#xd;
 		&quot;type&quot;: &quot;Text&quot;&#xd;
 	}&#xd;
 }</stringProp>
@@ -169,6 +169,545 @@
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/v2/entities/</stringProp>
           <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="NewTask_Complex_Refill_Boolean" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;TaskSpec1&quot;,&#xd;
+	&quot;type&quot;: &quot;TaskSpec&quot;,&#xd;
+	&quot;TaskSpec&quot;: {&#xd;
+		&quot;value&quot;: &quot;template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22moldingArea_palletPlace%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonPalletIsReady%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0Atask+Refill%0A++++Transport%0A++++from+warehouse_pos1%0A++++to+moldingPallet+%0Aend%0A%0A%23%23%23%23+%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++TriggeredBy%09buttonPalletIsReady.value+%3D%3D+True%0A++++OnDone+Refill%0Aend%0A&quot;,&#xd;
+		&quot;type&quot;: &quot;Text&quot;&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="NewTask_Complex_Refill_Int" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;TaskSpec1&quot;,&#xd;
+	&quot;type&quot;: &quot;TaskSpec&quot;,&#xd;
+	&quot;TaskSpec&quot;: {&#xd;
+		&quot;value&quot;: &quot;template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22moldingArea_palletPlace%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonPalletIsReady%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0Atask+Refill%0A++++Transport%0A++++from+warehouse_pos1%0A++++to+moldingPallet+%0Aend%0A%0A%23%23%23%23+%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++TriggeredBy%09buttonPalletIsReady.value+%3D%3D+True%0A++++OnDone+Refill%0Aend%0A&quot;,&#xd;
+		&quot;type&quot;: &quot;Text&quot;&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="NewTask_Complex_Float_Patch" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{ &#xd;
+	&quot;TaskSpec&quot;: {&#xd;
+		&quot;value&quot;: &quot;template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22moldingArea_palletPlace%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonPalletIsReady%22%0A++++type+%3D+%22Integer%22%0Aend%0A%0Atask+Refill%0A++++Transport%0A++++from+warehouse_pos1%0A++++to+moldingPallet+%0Aend%0A%0A%23%23%23%23+%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++TriggeredBy%09buttonPalletIsReady.value+%3D%3D+5%0A++++OnDone+Refill%0Aend%0A&quot;,&#xd;
+		&quot;type&quot;: &quot;Text&quot;&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/TaskSpec1/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="NewTask_Complex_Integer_Patch" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{ &#xd;
+	&quot;TaskSpec&quot;: {&#xd;
+		&quot;value&quot;: &quot;template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22moldingArea_palletPlace%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonPalletIsReady%22%0A++++type+%3D+%22Integer%22%0Aend%0A%0Atask+Refill%0A++++Transport%0A++++from+warehouse_pos1%0A++++to+moldingPallet+%0Aend%0A%0A%23%23%23%23+%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++TriggeredBy%09buttonPalletIsReady.value+%3C%3D+6%0A++++OnDone+Refill%0Aend%0A&quot;,&#xd;
+		&quot;type&quot;: &quot;Text&quot;&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">${OCB_Port}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/TaskSpec1/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SensorValueInteger6" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{	 &#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:36:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+    &quot;sensorData&quot;: {&#xd;
+        &quot;type&quot;: &quot;array&quot;,&#xd;
+        &quot;value&quot;: [&#xd;
+            {&#xd;
+                &quot;type&quot;: &quot;SensorDataEntry&quot;,&#xd;
+                &quot;value&quot;: {&#xd;
+                    &quot;measurementType&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;cartesian&quot;&#xd;
+                    },&#xd;
+                    &quot;modifiedTime&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;2019-03-05T15:41:14.985275&quot;&#xd;
+                    },&#xd;
+                    &quot;readings&quot;: {&#xd;
+                        &quot;type&quot;: &quot;array&quot;,&#xd;
+                        &quot;value&quot;: [&#xd;
+                            {&#xd;
+                                &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
+                                &quot;value&quot;: {&#xd;
+                                    &quot;reading&quot;: {&#xd;
+                                        &quot;type&quot;: &quot;integer&quot;,&#xd;
+                                        &quot;value&quot;: 5&#xd;
+                                    }&#xd;
+                                }&#xd;
+                            }&#xd;
+                        ]&#xd;
+                    },&#xd;
+                    &quot;sensorId&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;buttonPalletIsReady&quot;&#xd;
+                    },&#xd;
+                    &quot;sensorManufacturer&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;DummyCorp&quot;&#xd;
+                    },&#xd;
+                    &quot;sensorType&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;mouse&quot;&#xd;
+                    }&#xd;
+                }&#xd;
+            }&#xd;
+        ]&#xd;
+    }&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">1026</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo1/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SensorValueInteger5" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{	 &#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:36:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+    &quot;sensorData&quot;: {&#xd;
+        &quot;type&quot;: &quot;array&quot;,&#xd;
+        &quot;value&quot;: [&#xd;
+            {&#xd;
+                &quot;type&quot;: &quot;SensorDataEntry&quot;,&#xd;
+                &quot;value&quot;: {&#xd;
+                    &quot;measurementType&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;cartesian&quot;&#xd;
+                    },&#xd;
+                    &quot;modifiedTime&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;2019-03-05T15:41:14.985275&quot;&#xd;
+                    },&#xd;
+                    &quot;readings&quot;: {&#xd;
+                        &quot;type&quot;: &quot;array&quot;,&#xd;
+                        &quot;value&quot;: [&#xd;
+                            {&#xd;
+                                &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
+                                &quot;value&quot;: {&#xd;
+                                    &quot;reading&quot;: {&#xd;
+                                        &quot;type&quot;: &quot;integer&quot;,&#xd;
+                                        &quot;value&quot;: 5&#xd;
+                                    }&#xd;
+                                }&#xd;
+                            }&#xd;
+                        ]&#xd;
+                    },&#xd;
+                    &quot;sensorId&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;buttonPalletIsReady&quot;&#xd;
+                    },&#xd;
+                    &quot;sensorManufacturer&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;DummyCorp&quot;&#xd;
+                    },&#xd;
+                    &quot;sensorType&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;mouse&quot;&#xd;
+                    }&#xd;
+                }&#xd;
+            }&#xd;
+        ]&#xd;
+    }&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">1026</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo1/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Create San_demo" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;SAN_demo1&quot;,&#xd;
+	&quot;type&quot;: &quot;SAN_demo&quot;,&#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:34:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+    &quot;sensorData&quot;: {&#xd;
+        &quot;type&quot;: &quot;array&quot;,&#xd;
+        &quot;value&quot;: [&#xd;
+            {&#xd;
+                &quot;type&quot;: &quot;SensorDataEntry&quot;,&#xd;
+                &quot;value&quot;: {&#xd;
+                    &quot;measurementType&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;cartesian&quot;&#xd;
+                    },&#xd;
+                    &quot;modifiedTime&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;2019-03-05T15:41:14.985275&quot;&#xd;
+                    },&#xd;
+                    &quot;readings&quot;: {&#xd;
+                        &quot;type&quot;: &quot;array&quot;,&#xd;
+                        &quot;value&quot;: [&#xd;
+                            {&#xd;
+                                &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
+                                &quot;value&quot;: {&#xd;
+                                    &quot;reading&quot;: {&#xd;
+                                        &quot;type&quot;: &quot;boolean&quot;,&#xd;
+                                        &quot;value&quot;: false&#xd;
+                                    }&#xd;
+                                }&#xd;
+                            }&#xd;
+                        ]&#xd;
+                    },&#xd;
+                    &quot;sensorId&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;buttonPalletIsReady&quot;&#xd;
+                    },&#xd;
+                    &quot;sensorManufacturer&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;DummyCorp&quot;&#xd;
+                    },&#xd;
+                    &quot;sensorType&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;mouse&quot;&#xd;
+                    }&#xd;
+                }&#xd;
+            }&#xd;
+        ]&#xd;
+    }&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">1026</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SensorValueTrue" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{	 &#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:36:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+    &quot;sensorData&quot;: {&#xd;
+        &quot;type&quot;: &quot;array&quot;,&#xd;
+        &quot;value&quot;: [&#xd;
+            {&#xd;
+                &quot;type&quot;: &quot;SensorDataEntry&quot;,&#xd;
+                &quot;value&quot;: {&#xd;
+                    &quot;measurementType&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;cartesian&quot;&#xd;
+                    },&#xd;
+                    &quot;modifiedTime&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;2019-03-05T15:41:14.985275&quot;&#xd;
+                    },&#xd;
+                    &quot;readings&quot;: {&#xd;
+                        &quot;type&quot;: &quot;array&quot;,&#xd;
+                        &quot;value&quot;: [&#xd;
+                            {&#xd;
+                                &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
+                                &quot;value&quot;: {&#xd;
+                                    &quot;reading&quot;: {&#xd;
+                                        &quot;type&quot;: &quot;boolean&quot;,&#xd;
+                                        &quot;value&quot;: true&#xd;
+                                    }&#xd;
+                                }&#xd;
+                            }&#xd;
+                        ]&#xd;
+                    },&#xd;
+                    &quot;sensorId&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;buttonPalletIsReady&quot;&#xd;
+                    },&#xd;
+                    &quot;sensorManufacturer&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;DummyCorp&quot;&#xd;
+                    },&#xd;
+                    &quot;sensorType&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;mouse&quot;&#xd;
+                    }&#xd;
+                }&#xd;
+            }&#xd;
+        ]&#xd;
+    }&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">1026</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo1/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SensorValueFalse" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">	{	 &#xd;
+	&quot;modifiedTime&quot;: {&#xd;
+		&quot;type&quot;: &quot;String&quot;,&#xd;
+		&quot;value&quot;: &quot;2018-08-25T19:36:00&quot;,&#xd;
+		&quot;metadata&quot;: {&#xd;
+			&quot;timeFormat&quot;: {&#xd;
+				&quot;value&quot;: &quot;ISO8601&quot;,&#xd;
+				&quot;type&quot;: &quot;String&quot;&#xd;
+			}&#xd;
+		}&#xd;
+	},&#xd;
+    &quot;sensorData&quot;: {&#xd;
+        &quot;type&quot;: &quot;array&quot;,&#xd;
+        &quot;value&quot;: [&#xd;
+            {&#xd;
+                &quot;type&quot;: &quot;SensorDataEntry&quot;,&#xd;
+                &quot;value&quot;: {&#xd;
+                    &quot;measurementType&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;cartesian&quot;&#xd;
+                    },&#xd;
+                    &quot;modifiedTime&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;2019-03-05T15:41:14.985275&quot;&#xd;
+                    },&#xd;
+                    &quot;readings&quot;: {&#xd;
+                        &quot;type&quot;: &quot;array&quot;,&#xd;
+                        &quot;value&quot;: [&#xd;
+                            {&#xd;
+                                &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
+                                &quot;value&quot;: {&#xd;
+                                    &quot;reading&quot;: {&#xd;
+                                        &quot;type&quot;: &quot;boolean&quot;,&#xd;
+                                        &quot;value&quot;: false&#xd;
+                                    }&#xd;
+                                }&#xd;
+                            }&#xd;
+                        ]&#xd;
+                    },&#xd;
+                    &quot;sensorId&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;buttonPalletIsReady&quot;&#xd;
+                    },&#xd;
+                    &quot;sensorManufacturer&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;DummyCorp&quot;&#xd;
+                    },&#xd;
+                    &quot;sensorType&quot;: {&#xd;
+                        &quot;type&quot;: &quot;string&quot;,&#xd;
+                        &quot;value&quot;: &quot;mouse&quot;&#xd;
+                    }&#xd;
+                }&#xd;
+            }&#xd;
+        ]&#xd;
+    }&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${OCB_Address}</stringProp>
+          <stringProp name="HTTPSampler.port">1026</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SAN_demo1/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
           <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
@@ -211,7 +750,7 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete Entity Task" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Delete Entity Task" enabled="false">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
