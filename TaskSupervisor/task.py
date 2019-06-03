@@ -167,7 +167,7 @@ class Task():
                 destinationName =  self._taskInfo.findPositionByName(self._taskInfo.transportOrders[0].pickupFrom[0])
                 if(destinationName):
                     try:
-                        if(bResendOrder):
+                        if(bResendOrder): 
                             rMo = rMoveOrder(self.id, destinationName)
                             if(rMo.status == ROS_CALL_SUCCESS): # no need to resend it...
                                 bResendOrder = False   
