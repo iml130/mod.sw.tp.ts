@@ -21,7 +21,7 @@ Position warehouse_pos1
 end
 
 Sensor buttonPalletIsReady
-    sensorId = "buttonMoldingArea"
+    sensorId = "buttonPalletIsReady"
     type = "Boolean"
 end
 
@@ -36,6 +36,6 @@ task Transport_moldingPallet
     Transport
     from moldingPallet
     to warehouse_pos1
-    TriggeredBy	buttonPalletIsReady.value == True
+    TriggeredBy	buttonPalletIsReady.value <= 6
     OnDone Refill
 end
