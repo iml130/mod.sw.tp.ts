@@ -21,7 +21,7 @@ class rMoveOrder():
             else: 
                 return  
 
-            self.task_id = Id(_id, IdType.ID_TYPE_UUID)
+            self.task_id = Id(_id, IdType.ID_TYPE_STRING_NAME)
             self.dest_id = Id(_destinationName, IdType.ID_TYPE_STRING_NAME)
             
             dura = Duration()
