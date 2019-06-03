@@ -17,12 +17,12 @@ from TaskLanguage.TaskParserListener import TaskParserListener
 from TaskLanguage.TaskParser import TaskParser
 
 from TaskSupervisor import graphy
-from TaskSupervisor.taskManager import taskManager
+from TaskSupervisor.taskSet import taskSet
 from TaskSupervisor.task import Task
 
 logger = logging.getLogger(__name__)
 
-def createPrinter(_taskLanguage):
+def createLoTLan(_taskLanguage):
     try:
         lexer = TaskLexer(InputStream(_taskLanguage))
         stream = CommonTokenStream(lexer)
@@ -50,21 +50,25 @@ def createPrinter(_taskLanguage):
     
 #     return child
 
-
+INDEGREE_ZERO = 0
+SUCCESS_TASK = 1
+END_TASK = 2
 
 class taskScheduler():
     def __init__(self, name, taskLanguage):
         logger.info("taskSchedular init")
         self.tasklanguage = taskLanguage
-        printer = createPrinter(taskLanguage)
-        G = graphy.createGraph(printer.taskInfos)
-        graphy.printGraphInfo(G)
-        graphy.displayGraph(G, True)
-        self.taskGraph = G
+        LoTLan = createLoTLan(taskLanguage)
 
-        self.taskInfos = printer.taskInfos
+        taskGraph = graphy.createGraph(LoTLan.taskInfos)
+        graphy.printGraphInfo(taskGraph)
+        graphy.displayGraph(taskGraph, True)
+
+        self.taskGraph = taskGraph
+        self.taskInfos = LoTLan.taskInfos
+
         for key, taskInfo in self.taskInfos.iteritems():
-            taskInfo.instances = printer.instances
+            taskInfo.instances = LoTLan.instances
         self.name = name
         
         self.runningTasks = []
@@ -82,8 +86,8 @@ class taskScheduler():
     def start(self):
         logger.info("taskSchedular start")
         for node in self.taskGraph.nodes:
-            if(self.taskGraph.in_degree(node) == 0): # get all starting points from the graph
-                tM = taskManager(node.name, self.queue)
+            if(self.taskGraph.in_degree(node) == INDEGREE_ZERO): # get all starting points from the graph
+                tM = taskSet(node.name, self.queue)
                 tM.addTask(node) # add the starting task
                 successors = nx.dfs_successors(self.taskGraph, source = node).values()
                 if(successors):
@@ -92,8 +96,7 @@ class taskScheduler():
                         tM.addTask(successor[0])
                     self.taskManager.append(tM)
                 else:
-                    # no successor, single task, reocurrent
-                    
+                    # no successor, single task, reocurrent                    
                     self.taskManager.append(tM)
                     
         for tm in self.taskManager:
@@ -115,11 +118,8 @@ class taskScheduler():
                     
             for tM in self.taskManager:
                 if(tM.taskManagerName == res):
-                    temp = taskManager.newTm(tM, self.queue)
+                    temp = taskSet.newTaskSet(tM, self.queue) 
 
-                    # temp = taskManager(tM.taskManagerName, self.queue)
-                    # temp._taskInfoList = tM._taskInfoList
-                    # temp.taskList = tM.taskList
                     self.runningTasks.append(temp)
                     logger.info("taskSchedular, taskManager respawn: " + res)
                     temp.publishEntity()

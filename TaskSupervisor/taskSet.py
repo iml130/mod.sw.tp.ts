@@ -14,7 +14,8 @@ from TaskSupervisor.task import Task
 logger = logging.getLogger(__name__)
 ocbHandler = globals.ocbHandler
 
-class taskManager(threading.Thread):
+# this represents a set of tasks
+class taskSet(threading.Thread):
     def __init__(self, name, q):
         threading.Thread.__init__(self) 
         logger.info("taskManager init")
@@ -31,8 +32,8 @@ class taskManager(threading.Thread):
         logger.info("taskManager init_done")
 
     @classmethod
-    def newTm(self, _object, _queue):
-        tM = taskManager(_object.taskManagerName, _queue)
+    def newTaskSet(self, _object, _queue):
+        tM = taskSet(_object.taskManagerName, _queue)
         tM.taskList = _object.taskList
         tM._taskInfoList = _object._taskInfoList
         return tM
