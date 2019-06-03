@@ -178,7 +178,7 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="NewTask_Complex_Refill_Boolean" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="NewTask_Complex_Refill_Boolean" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -188,7 +188,7 @@
 	&quot;id&quot;: &quot;TaskSpec1&quot;,&#xd;
 	&quot;type&quot;: &quot;TaskSpec&quot;,&#xd;
 	&quot;TaskSpec&quot;: {&#xd;
-		&quot;value&quot;: &quot;template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22moldingArea_palletPlace%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonPalletIsReady%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0Atask+Refill%0A++++Transport%0A++++from+warehouse_pos1%0A++++to+moldingPallet+%0Aend%0A%0A%23%23%23%23+%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++TriggeredBy%09buttonPalletIsReady.value+%3D%3D+True%0A++++OnDone+Refill%0Aend%0A&quot;,&#xd;
+		&quot;value&quot;: &quot;template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22vertex_156%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22warehouse_destination_pos%22%0Aend%0A%0ASensor+buttonPalletIsReady%0A++++sensorId+%3D+%22buttonPalletIsReady%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0Atask+Refill%0A++++Transport%0A++++from+warehouse_pos1%0A++++to+moldingPallet+%0Aend%0A%0A%23%23%23%23+%0Atask+Transport_moldingPallet%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++TriggeredBy%09buttonPalletIsReady.value+%3D%3D+True%0A++++OnDone+Refill%0Aend%0A&quot;,&#xd;
 		&quot;type&quot;: &quot;Text&quot;&#xd;
 	}&#xd;
 }</stringProp>
@@ -553,7 +553,7 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SensorValueTrue" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SensorValueTrue" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
