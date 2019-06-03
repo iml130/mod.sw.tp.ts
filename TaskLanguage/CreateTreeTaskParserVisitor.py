@@ -12,8 +12,8 @@ class CompleteProgram(object):
 
 class TransportOrder(object):
     def __init__(self):
-        self.fromm = [] # From many Instances
-        self.to = None # Target Instance
+        self.pickupFrom = [] # From many Instances
+        self.deliverTo = None # Target Instance
 
 class Template(object):
     def __init__(self):
@@ -146,8 +146,8 @@ class CreateTreeTaskParserVisitor(TaskParserVisitor):
         # Extract From/To
         dst = l[-1]
         l = l[:-1]
-        to.fromm = l
-        to.to = dst
+        to.pickupFrom = l
+        to.deliverTo = dst
        
         return to
 

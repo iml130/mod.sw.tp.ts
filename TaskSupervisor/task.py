@@ -164,7 +164,7 @@ class Task():
             elif(state == "moveOrderStart"):
                 print state
                 
-                destinationName =  self._taskInfo.findPositionByName(self._taskInfo.transportOrders[0].fromm[0])
+                destinationName =  self._taskInfo.findPositionByName(self._taskInfo.transportOrders[0].pickupFrom[0])
                 if(destinationName):
                     try:
                         if(bResendOrder):

@@ -10,7 +10,7 @@ class TaskInfo(object):
         logger.info("TaskInfo init")
         self.name = None # String Name of Task
         self.triggers = [] # List of Triggers
-        self.transportOrders = [] # List of Transport Order (from|to)
+        self.transportOrders = [] # List of Transport Order (pickupFrom|deliverTo)
         self.onDone = [] # Reference to the next Tasks
         self.instances = None
         logger.info("TaskInfo init_done")

@@ -37,14 +37,14 @@ def _validate(givenTree, retreivedInfo):
         # Check TransportOrders
         for i in range(len(task.transportOrders)):
             # Fromm check
-            for j in range(len(task.transportOrders[i].fromm)):
-                print task.transportOrders[i].fromm[j]
-                if _checkIfInstancePresent(givenTree, task.transportOrders[i].fromm[j]) is False:
-                    raise Exception("Task: {} refers to an unknown Instance in TransportOrder: {}".format(task.name, task.transportOrders[i].fromm[j]))
+            for j in range(len(task.transportOrders[i].pickupFrom)):
+                print task.transportOrders[i].pickupFrom[j]
+                if _checkIfInstancePresent(givenTree, task.transportOrders[i].pickupFrom[j]) is False:
+                    raise Exception("Task: {} refers to an unknown Instance in TransportOrder: {}".format(task.name, task.transportOrders[i].pickupFrom[j]))
             
             # To check
-            if _checkIfInstancePresent(givenTree, task.transportOrders[i].to) is False:
-                    raise Exception("Task: {} refers to an unknown Instance in TransportOrder: {}".format(task.name, task.transportOrders[i].to))
+            if _checkIfInstancePresent(givenTree, task.transportOrders[i].deliverTo) is False:
+                    raise Exception("Task: {} refers to an unknown Instance in TransportOrder: {}".format(task.name, task.transportOrders[i].deliverTo))
 
 
         # TODO Trigger Semantic-Checking
