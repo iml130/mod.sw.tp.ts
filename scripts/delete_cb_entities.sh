@@ -1,5 +1,5 @@
-python ./killTs.py
-python ./deleteEntitiesByType.py taskManager
+python ./killTs.py 
+python ./deleteEntitiesByType.py taskSet
 python ./deleteEntitiesByType.py TaskSpecState
-python ./deleteEntitiesByType.py Task
+python ./deleteEntitiesByType.py TaskSpec
 python ./deleteSubscriptions.py

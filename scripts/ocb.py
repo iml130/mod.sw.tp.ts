@@ -4,7 +4,7 @@ __status__ = "Dev"
 
 
 NGSI_VERSION_V2 = "v2"
-OCB_SERVER_ADDRESS = "10.64.10.144"
+OCB_SERVER_ADDRESS = "localhost"
 OCB_POST = "1026"
 
 SUBSCRIPTIONS = "subscriptions"
