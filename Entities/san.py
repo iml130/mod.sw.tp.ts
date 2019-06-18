@@ -17,7 +17,7 @@ class SensorAgent(FiwareEntity):
     def __init__(self):
         FiwareEntity.__init__(self)
         self.sensorData = [] # List of SensorData
-        self.type = "SAN_demo"
+        self.type = "SensorAgent"
         self.modifiedTime = "" # ISO8601
 
     @classmethod
