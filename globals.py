@@ -10,6 +10,7 @@ from helpers.configParser import Config
 # Receives all the message and forwards it
 rosMessageDispatcher = DictQueue() 
 
+
 taskQueue = Queue.Queue()
 # Handling the temporary SAN EPs
 sanDictQueue = DictQueue() 

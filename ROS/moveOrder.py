@@ -12,7 +12,7 @@ from ROS.OrderState import OrderState
 class rMoveOrder():
     def __init__(self, _id, _destinationName):
         self.status = -1
-        rospy.wait_for_service('/mars/agent/logical/ran_fb3d75a1a82550ffb3e6e4b2bcae482e/add_move_order')
+        rospy.wait_for_service('/mars/agent/logical/robot_00000000000000000000000000000100/add_move_order')
         try:
                              
             if(_destinationName):
@@ -21,7 +21,7 @@ class rMoveOrder():
             else: 
                 return  
 
-            self.task_id = Id(_id, IdType.ID_TYPE_STRING_NAME)
+            self.task_id = Id(_id, IdType.ID_TYPE_STRING_UUID)
             self.dest_id = Id(_destinationName, IdType.ID_TYPE_STRING_NAME)
             
             dura = Duration()
@@ -29,7 +29,7 @@ class rMoveOrder():
             dura.data.secs = 5 
 
             add_move_order_srv_req = rospy.ServiceProxy(
-                '/mars/agent/logical/ran_fb3d75a1a82550ffb3e6e4b2bcae482e/add_move_order', AddMoveOrder)
+                '/mars/agent/logical/robot_00000000000000000000000000000100/add_move_order', AddMoveOrder)
             move_order = MoveOrder(move_order_id=self.task_id.to_msg(), destination_entity=TopologyEntity(
                 id=self.dest_id.to_msg(), entity_type=TopologyEntityType(10)), destination_reservation_time=dura.data)
             add_move_order_req = AddMoveOrderRequest(move_order=move_order)

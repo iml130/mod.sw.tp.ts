@@ -1,10 +1,17 @@
 {
+	"files.exclude":{
+		"**/.pyc" : true
+
+	},
 	"folders": [
 		{
 			"path": "."
 		}
 	],
 	"settings": {
-		"editor.fontSize": 12
+		"editor.fontSize": 12,
+		"files.exclude": {
+			"**/*.pyc": true
+		}
 	}
 }

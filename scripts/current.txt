@@ -12,30 +12,17 @@ end
 
 Position moldingPallet
     type = "pallet"
-    position = "moldingArea_palletPlace"
+    position = "Tag10_11"
 end
 
 Position warehouse_pos1
     type = "pallet"
-    position = "warehouse_destination_pos"
-end
-
-Sensor buttonPalletIsReady
-    sensorId = "buttonPalletIsReady"
-    type = "Boolean"
-end
-
-task Refill
-    Transport
-    from warehouse_pos1
-    to moldingPallet 
+    position = "Tag12"
 end
 
 #### 
-task Transport_moldingPallet
+task Transport_Start
     Transport
     from moldingPallet
     to warehouse_pos1
-    TriggeredBy	buttonPalletIsReady.value <= 6
-    OnDone Refill
 end

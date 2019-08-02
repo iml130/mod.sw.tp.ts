@@ -40,7 +40,7 @@ logger = logging.getLogger(__name__)
 # defines
 ROS_CALL_ERROR = -1
 ROS_CALL_SUCCESS = 0
-WAITING_AT_DESTINATION_IN_SECONDS = 5
+QUEUE_WAIT_TIME_IN_SECONDS = 5
 
 
 def obj2JsonArray(_obj):
@@ -61,6 +61,10 @@ class Task():
         self.state = State.Idle
         self.time = str(datetime.datetime.now())
 
+        # temporary ids
+        self.fromId = str(uuid.uuid4())
+        self.toId = str(uuid.uuid4())
+
         # setting up the thread
         self._threadRunner = threading.Thread(target=self.run)
         self._threadRunner.setDaemon(True)
@@ -70,10 +74,14 @@ class Task():
         self._taskInfo = _taskInfo
         # 
         sanDictQueue.addThread(self.id)
-        rosMessageDispatcher.addThread(self.id)
+
+        rosMessageDispatcher.addThread(self.fromId)
+        rosMessageDispatcher.addThread(self.toId)
 
         self._q = sanDictQueue.getQueue(self.id)
-        self._rosQ = rosMessageDispatcher.getQueue(self.id)
+        self._rosQ = rosMessageDispatcher.getQueue(self.fromId)
+        self._rosQTo = rosMessageDispatcher.getQueue(self.toId)
+        
         self._subscriptionId = None
         self._transportOrder = TransportOrder(self.taskName)
         logger.info("Task init_done")
@@ -129,7 +137,7 @@ class Task():
     def run(self):
         self.state = State.Running
         self.updateEntity()
-        bResendOrder = True
+        bResendOrder = 1
         oldValue = 0
         while(self._transportOrder.state != "finished" and self._transportOrder.state != "error"):
             
@@ -165,16 +173,27 @@ class Task():
                 print state
                 
                 destinationName =  self._taskInfo.findPositionByName(self._taskInfo.transportOrders[0].pickupFrom[0])
+                deliverToName = self._taskInfo.findPositionByName(self._taskInfo.transportOrders[0].deliverTo)
                 if(destinationName):
                     try:
-                        if(bResendOrder): 
-                            rMo = rMoveOrder(self.id, destinationName)
+                        if(bResendOrder == 1): 
+                            rMo = rMoveOrder(self.fromId, destinationName)
                             if(rMo.status == ROS_CALL_SUCCESS): # no need to resend it...
-                                bResendOrder = False   
-                        rosPacketOrderState = self._rosQ.get(WAITING_AT_DESTINATION_IN_SECONDS)
+                                bResendOrder = 2 # send also the "deliverTo" destination
+                            else:
+                                bResendOrder = 1 
+
+                        if(bResendOrder == 2): 
+                            rMo = rMoveOrder(self.toId, deliverToName)
+                            if(rMo.status == ROS_CALL_SUCCESS): # no need to resend it...
+                                bResendOrder = 0   
+                            else:
+                                bResendOrder = 2 # resend deliverTo destination
+                                
+                        rosPacketOrderState = self._rosQ.get(QUEUE_WAIT_TIME_IN_SECONDS)
                         if(rosPacketOrderState):
                             tempUuid = rosPacketOrderState.uuid              
-                            if((rosPacketOrderState.status == rosOrderStatus.STARTED or rosPacketOrderState.status==rosOrderStatus.ONGOING) and tempUuid==self.id and bResendOrder == False):
+                            if((rosPacketOrderState.status == rosOrderStatus.STARTED or rosPacketOrderState.status==rosOrderStatus.ONGOING) and tempUuid==self.fromId and bResendOrder == 0):
                                 print "Robot is moving" + str(rosPacketOrderState.status)
                                 self._transportOrder.OrderStart()                    
  
@@ -184,9 +203,9 @@ class Task():
                 #print state
                 try: 
                         ##self.sendMoveOrder(destinationName)
-                    rosPacketOrderState = self._rosQ.get()
+                    rosPacketOrderState = self._rosQTo.get()
                     tempUuid = rosPacketOrderState.uuid
-                    if(rosPacketOrderState.status == rosOrderStatus.FINISHED and tempUuid ==self.id):
+                    if(rosPacketOrderState.status == rosOrderStatus.FINISHED and tempUuid ==self.toId):
                         self._transportOrder.OrderFinished()
                         bResendOrder = True
                         print "finished"
