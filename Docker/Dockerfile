@@ -72,10 +72,11 @@ RUN rm -rf /catkin_ws/src/mars_common/src/Result.cpp
 RUN rm -rf /catkin_ws/src/mars_common/src/TimeInterval.cpp
 RUN rm -rf /catkin_ws/src/mars_common/src/Tuple.cpp
 RUN rm -rf /catkin_ws/src/mars_common/src/Value.cpp
-RUN rm -rf /catkin_ws/src/src/taskplanner/Docker/Dockerfile
+RUN rm -rf /catkin_ws/src/taskplanner/Docker/Dockerfile
 
 #RUN cd ./taskplanner
 # run the application
 WORKDIR /catkin_ws/src/taskplanner
 COPY start.sh /catkin_ws/src/taskplanner/start.sh
+RUN chmod +x start.sh
 CMD "./start.sh"
