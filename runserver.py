@@ -52,6 +52,7 @@ from ROS.OrderState import OrderState, rosOrderStatus
 # from Entities import task.Task
 # from Entities import taskstate.TaskState
 
+ 
 
 def setup_logging(
     default_path='logging.json',
@@ -62,6 +63,7 @@ def setup_logging(
     """
     path = default_path
     value = os.getenv(env_key, None)
+   
     if value:
         path = value
     if os.path.exists(path):
@@ -70,6 +72,12 @@ def setup_logging(
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
+    
+
+
+#reconnect logging calls which are children of this to the ros log system
+
+
 
 setup_logging()
 logger = logging.getLogger(__name__)
@@ -274,11 +282,13 @@ if __name__ == '__main__':
     #global currentTaskState
     global currentTaskSpecState
 
-    logger.info("Setting up ROS")
-    rospy.init_node('task_supervisor') 
-    
     logger.info("Subscriptions to /order_status")
+    
+
+    logger.info("Setting up ROS")
+    rospy.init_node('task_supervisor' ) 
     rospy.Subscriber("/order_status", OrderStatus, callback_ros_order_state)
+    setup_logging()
 
     logger.info("Starting TaskPlanner")
     if(os.path.isfile('./images/task.png')):
@@ -367,7 +377,7 @@ if __name__ == '__main__':
     #workerRan.start()
     
     objTaskSpec = TaskSpec()
-    subscriptionId = ocbHandler.subscribe2Entity( _description = "notify me",
+    subscriptionId = ocbHandler.subscribe2Entity( _description = "TaskSpec subscription",
             _entities = objTaskSpec.obj2JsonArray(),  
             _notification = parsedConfigFile.getTaskPlannerAddress() +"/task",_generic=True)
     globals.subscriptionDict[subscriptionId] ="TaskSpec"     
@@ -405,3 +415,4 @@ if __name__ == '__main__':
  
     logger.info("EndOf TaskPlanner")   
     os._exit(0)
+  

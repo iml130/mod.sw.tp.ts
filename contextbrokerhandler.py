@@ -46,7 +46,7 @@ class ContextBrokerHandler:
 
     def create_entity(self, entityInstance):
         with self.lock:
-            print "Create Entity"
+            print "Create Entity id:" + entityInstance.id
             statusCode = httplib.OK
 
             # check maybe to delete:
@@ -128,6 +128,7 @@ class ContextBrokerHandler:
         # based upon http://telefonicaid.github.io/fiware-orion/api/v2/stable/
 
         with self.lock:
+            subscriptionId = ""
             msg = {}
             msg["description"] = _description
             condition = {}
@@ -144,8 +145,8 @@ class ContextBrokerHandler:
                     del item['id']
             if(condition):
                 subject["condition"]  = (condition)
-            print condition
-            print subject
+            #print condition
+            print "Subscribe to " + str(subject)
             msg["subject"] = subject
 
             notification = {}
@@ -158,19 +159,20 @@ class ContextBrokerHandler:
             if _throttling:
                 subscription["throttling"] = _throttling
 
-            print json.dumps(msg) 
+            #print json.dumps(msg) 
             try:            
                 #response = requests.post(self._getUrl(SUBSCRIPTIONS), data=json.dumps(msg), headers= self.HEADERS, timeout = self.TIMEOUT)
                 response = self._request("POST",self._getUrl(SUBSCRIPTIONS), data =json.dumps(msg), headers = self.HEADER)
-                print response.headers.get('Location')
+                subscriptionId = response.headers.get('Location').replace("/v2/subscriptions/","")
+                print "Subscriptions Id: " + subscriptionId
 
             except requests.exceptions.Timeout:
                 pass
                 
             statusCode = response.status_code
             if(isResponseOk(statusCode)): # everything is fine 
-                print "Status OK"            
-            return response.headers.get('Location').replace("/v2/subscriptions/","")
+                print "Subscriptions - Status OK"            
+            return subscriptionId
 
     def deleteSubscriptionById(self, id):
         with self.lock:
