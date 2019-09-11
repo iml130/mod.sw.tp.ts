@@ -72,6 +72,7 @@ RUN rm -rf /catkin_ws/src/mars_common/src/Result.cpp
 RUN rm -rf /catkin_ws/src/mars_common/src/TimeInterval.cpp
 RUN rm -rf /catkin_ws/src/mars_common/src/Tuple.cpp
 RUN rm -rf /catkin_ws/src/mars_common/src/Value.cpp
+RUN rm -rf /catkin_ws/src/src/taskplanner/Docker/Dockerfile
 
 #RUN cd ./taskplanner
 # run the application
