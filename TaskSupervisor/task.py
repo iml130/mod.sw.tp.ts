@@ -157,12 +157,14 @@ class Task():
                     sensorEntityData = self._q.get()
                     if (sensorEntityData):
                         dd = SensorAgent.CreateObjectFromJson(sensorEntityData["data"][0])
-                        sensorData =  dd.findSensorById(self._taskInfo.triggers[0]["left"])
-                        if(sensorData):
+                        taskTrigger =  self._taskInfo.triggers[0]["left"]
+                        #if(dd.sensorID == self._taskInfo.triggers[0]["left"].split(".")[0] ):
+                        if(taskTrigger):
                             #checkForType() 
-                            excpectedType = self._taskInfo.findSensorById(self._taskInfo.triggers[0]["left"])
-                            if(validateTrigger(excpectedType, sensorData,self._taskInfo.triggers[0])):
-                                self._transportOrder.TriggerReceived()
+                            if(dd.readings):
+                                excpectedType = self._taskInfo.findSensorById(self._taskInfo.triggers[0]["left"])
+                                if(validateTrigger(excpectedType, dd.readings,self._taskInfo.triggers[0])):
+                                    self._transportOrder.TriggerReceived()
                 else:
                     # no trigger :-) 
                     self._transportOrder.TriggerReceived()

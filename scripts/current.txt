@@ -10,6 +10,11 @@ end
 
 ####
 
+Sensor opticalSensor1
+    sensorId = "optical_sensor1"
+    type = "Boolean"
+end
+
 Position moldingPallet
     type = "pallet"
     position = "Tag10_11"
@@ -25,4 +30,5 @@ task Transport_Start
     Transport
     from moldingPallet
     to warehouse_pos1
+    TriggeredBy optical_sensor1.value == True
 end

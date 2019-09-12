@@ -15,7 +15,7 @@ def validateTrigger(expectedType, sensorData, trigger):
         # expected value is true, now check if the real value is also correct
 
 def checkForValue(actualType, realValue, trigger):
-    receivedValue = realValue.readings[0]["reading"]
+    receivedValue = realValue[0]["reading"]
     #receivedValue = False
     triggerValue = trigger["right"]
     print type(triggerValue)
@@ -47,17 +47,18 @@ def checkForValue(actualType, realValue, trigger):
 
 def checkForType(expectedType, sensorData):
     expectedType = expectedType.lower()
+    sensorReadingType = sensorData[0]["reading"]
     if(expectedType == "boolean" or expectedType == "bool"):
-        if(isinstance(sensorData.readings[0]["reading"], bool)):
+        if(isinstance(sensorReadingType, bool)):
             return True, 0
     elif(expectedType == "integer" or expectedType == "int"):
-        if(isinstance(sensorData.readings[0]["reading"], (long, int))):
+        if(isinstance(sensorReadingType, (long, int))):
             return True, 1
     elif(expectedType == "float"):
-        if(isinstance(sensorData.readings[0]["reading"],float)):
+        if(isinstance(sensorReadingType,float)):
             return True, 2
     elif(expectedType == "str"):
-        if(isinstance(sensorData.readings[0]["reading"], str)):
+        if(isinstance(sensorReadingType, str)):
             return True,3
     return False, None
 
