@@ -152,7 +152,7 @@ class Task():
                     globals.subscriptionDict[self._subscriptionId] = "SAN"
                 self._transportOrder.Initialized()
             elif(state == "waitForTrigger"):
-                print state
+                print state + ": Task " + self.taskName + ", id: " + self.id 
                 if(self._taskInfo.triggers):
                     sensorEntityData = self._q.get()
                     if (sensorEntityData):
@@ -162,15 +162,16 @@ class Task():
                         if(taskTrigger):
                             #checkForType() 
                             if(dd.readings):
-                                excpectedType = self._taskInfo.findSensorById(self._taskInfo.triggers[0]["left"])
-                                if(validateTrigger(excpectedType, dd.readings,self._taskInfo.triggers[0])):
-                                    self._transportOrder.TriggerReceived()
+                                #match if Sensor is valid
+                                #excpectedType = self._taskInfo.findSensorById(self._taskInfo.triggers[0]["left"])
+                                excpectedType = self._taskInfo.findSensorById(dd.sensorID)
+                                if excpectedType:
+                                    if(validateTrigger(excpectedType, dd.readings,self._taskInfo.triggers[0])):
+                                        self._transportOrder.TriggerReceived()
                 else:
                     # no trigger :-) 
-                    self._transportOrder.TriggerReceived()
-                        
-
-                print "recv trigger"
+                    self._transportOrder.TriggerReceived()                   
+                    print "recv trigger"
             elif(state == "moveOrderStart"):
                 print state
                 

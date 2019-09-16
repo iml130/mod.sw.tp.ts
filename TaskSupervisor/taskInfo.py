@@ -39,7 +39,8 @@ class TaskInfo(object):
         if self.instances:
             for value in self.instances:
                 if "sensorId" in self.instances[value].keyval:
-                    print self.instances[value].keyval["sensorId"]
+                    print "Looking for : " + sensorId + ", found so far SensorId: "  + self.instances[value].keyval["sensorId"].replace('"', '')
                     if(self.instances[value].keyval["sensorId"].replace('"', '') == sensorId):
+                        print "SENSOR MATCH"
                         return self.instances[value].keyval["type"].replace('"', '')
         return None
