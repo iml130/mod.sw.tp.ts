@@ -144,7 +144,7 @@ class Task():
             state = self._transportOrder.state
             #print state
             if(state == "init"):
-                print state
+                print state + ": Task " + self.taskName + ", id: " + self.id
                 # subscribe to trigger events
                 if(self._taskInfo.triggers):
                     ts = SensorAgent()
@@ -168,12 +168,13 @@ class Task():
                                 if excpectedType:
                                     if(validateTrigger(excpectedType, dd.readings,self._taskInfo.triggers[0])):
                                         self._transportOrder.TriggerReceived()
+                                        print state + "_received: Task " + self.taskName + ", id: " + self.id 
                 else:
                     # no trigger :-) 
                     self._transportOrder.TriggerReceived()                   
-                    print "recv trigger"
+                    print state + "_received: Task " + self.taskName + ", id: " + self.id 
             elif(state == "moveOrderStart"):
-                print state
+                print state + ": Task " + self.taskName + ", id: " + self.id 
                 
                 destinationName =  self._taskInfo.findPositionByName(self._taskInfo.transportOrders[0].pickupFrom[0])
                 deliverToName = self._taskInfo.findPositionByName(self._taskInfo.transportOrders[0].deliverTo)
@@ -198,6 +199,7 @@ class Task():
                             tempUuid = rosPacketOrderState.uuid              
                             if((rosPacketOrderState.status == rosOrderStatus.STARTED or rosPacketOrderState.status==rosOrderStatus.ONGOING) and tempUuid==self.fromId and bResendOrder == 0):
                                 print "Robot is moving" + str(rosPacketOrderState.status)
+                                print state + "_Robot_Is_Moving()"+ str(rosPacketOrderState.status)+  "): Task " + self.taskName + ", id: " + self.id
                                 self._transportOrder.OrderStart()                    
  
                     except Exception:
@@ -211,13 +213,13 @@ class Task():
                     if(rosPacketOrderState.status == rosOrderStatus.FINISHED and tempUuid ==self.toId):
                         self._transportOrder.OrderFinished()
                         bResendOrder = True
-                        print "finished"
+                        
                     elif(rosPacketOrderState.status == rosOrderStatus.ERROR or rosPacketOrderState.status == rosOrderStatus.WAITING or rosPacketOrderState.status == rosOrderStatus.UNKNOWN):
                         print rosPacketOrderState.status
                 except Queue.Empty:
                     pass
             elif(state == "moveOrderFinished"):
-                print state
+                print state + "_finished: Task " + self.taskName + ", id: " + self.id
                 self._transportOrder.DestinationReached()
 
             #print state

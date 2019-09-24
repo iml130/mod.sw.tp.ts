@@ -15,12 +15,14 @@ def validateTrigger(expectedType, sensorData, trigger):
         # expected value is true, now check if the real value is also correct
 
 def checkForValue(actualType, realValue, trigger):
+    
     receivedValue = realValue[0]["reading"]
     #receivedValue = False
     triggerValue = trigger["right"]
     print type(triggerValue)
     print ast.literal_eval(triggerValue)
     compareOperator = trigger["binOp"]
+    print "checkForValue: receivedValue: " + str(receivedValue) + ", expectedValue: " + str(triggerValue)
 
     if(actualType >= 0 and actualType <=2 ):
         # 0 = boolean, 1 = integer, 2 = float
