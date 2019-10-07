@@ -12,9 +12,9 @@ from ROS.OrderState import OrderState
 class rMoveOrder():
     def __init__(self, _id, _destinationName):
         self.status = -1
+        print "ROS service (MoveOder)" 
         rospy.wait_for_service('/mars/agent/logical/robot_00000000000000000000000000000100/add_move_order')
-        try:
-                             
+        try:           
             if(_destinationName):
                 id_str = _destinationName
                 # uuid.uuid3(uuid.NAMESPACE_DNS, destinationName)
@@ -22,8 +22,10 @@ class rMoveOrder():
                 return  
 
             self.task_id = Id(_id, IdType.ID_TYPE_STRING_UUID)
-            self.dest_id = Id(_destinationName, IdType.ID_TYPE_STRING_NAME)
             
+            self.dest_id = Id(_destinationName, IdType.ID_TYPE_STRING_NAME)
+            print("Converting Name: " +  str(_destinationName) + " to UUID: ")
+            print (self.dest_id)
             dura = Duration()
             # SIMPLY THE BEST
             dura.data.secs = 5 
@@ -41,7 +43,7 @@ class rMoveOrder():
             print self.status
 
         except rospy.ServiceException, e:
-            print "Service call failed: %s" % e
+            print "ROS Service (MoveOrder) call failed: %s" % e
         except Exception as ex:
             print ex
 

@@ -222,8 +222,8 @@ class Task():
                 print state + "_finished: Task " + self.taskName + ", id: " + self.id
                 self._transportOrder.DestinationReached()
 
-            #print state
- 
+            #print state 
+            
         logger.info("Task running, " + str(self))
 
         rosMessageDispatcher.removeThread(self.id)

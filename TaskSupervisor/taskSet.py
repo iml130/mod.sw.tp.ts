@@ -25,6 +25,8 @@ class taskSet(threading.Thread):
         self.time = str(datetime.datetime.now())
         self.taskList = []
 
+        
+
         logger.info("taskMakanger name: " + self.taskManagerName + ", uuid: " + str(self.id))
         self._taskInfoList = []
         #self.runningTask= None
