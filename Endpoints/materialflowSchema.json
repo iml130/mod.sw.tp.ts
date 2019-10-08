@@ -1,0 +1,97 @@
+{
+  "definitions": {},
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "http://example.com/root.json",
+  "type": "object",
+  "title": "The Root Schema",
+  "required": [
+    "id",
+    "type",
+    "specification",
+    "ownerId"
+  ],
+  "properties": {
+    "id": {
+      "$id": "#/properties/id",
+      "type": "string",
+      "title": "The Id Schema",
+      "default": "",
+      "examples": [
+        "Materialflow1"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "type": {
+      "$id": "#/properties/type",
+      "type": "string",
+      "title": "The Type Schema",
+      "default": "",
+      "examples": [
+        "Materialflow"
+      ],
+      "pattern": "^(.*)$"
+    },
+    "specification": {
+      "$id": "#/properties/specification",
+      "type": "object",
+      "title": "The Specification Schema",
+      "required": [
+        "value",
+        "type"
+      ],
+      "properties": {
+        "value": {
+          "$id": "#/properties/specification/properties/value",
+          "type": "string",
+          "title": "The Value Schema",
+          "default": "",
+          "examples": [
+            "template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22Tag10_11%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22Tag12%22%0Aend%0A%0A%23%23%23%23+%0Atask+Transport_Start%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0Aend%0A"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "type": {
+          "$id": "#/properties/specification/properties/type",
+          "type": "string",
+          "title": "The Type Schema",
+          "default": "",
+          "examples": [
+            "Text"
+          ],
+          "pattern": "^(.*)$"
+        }
+      }
+    },
+    "owner": {
+      "$id": "#/properties/ownerId",
+      "type": "object",
+      "title": "The Owner Schema",
+      "required": [
+        "type",
+        "value"
+      ],
+      "properties": {
+        "type": {
+          "$id": "#/properties/owner/properties/type",
+          "type": "string",
+          "title": "The Type Schema",
+          "default": "",
+          "examples": [
+            "Text"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "value": {
+          "$id": "#/properties/owner/properties/value",
+          "type": "string",
+          "title": "The Value Schema",
+          "default": "",
+          "examples": [
+            "reviewers hmi"
+          ],
+          "pattern": "^(.*)$"
+        }
+      }
+    }
+  }
+}
