@@ -10,17 +10,18 @@ idHistory = []
 
 from FiwareObjectConverter.objectFiwareConverter import ObjectFiwareConverter
 
-class TaskSpec(FiwareEntity): 
+class Materialflow(FiwareEntity): 
     def __init__(self): 
         FiwareEntity.__init__(self)
-        self.TaskSpec = ""
+        self.specification = ""
+        self.ownerId = ""
 
     @classmethod
     def CreateObjectFromJson(cls, myJson):
-        ts = TaskSpec()
+        ts = Materialflow()
         try:
             ObjectFiwareConverter.fiware2Obj(myJson, ts, setAttr=True)
-            ts.TaskSpec = urllib.unquote_plus(ts.TaskSpec)
+            ts.specification = urllib.unquote_plus(ts.specification)
         except Exception as identifier:
             return None
         

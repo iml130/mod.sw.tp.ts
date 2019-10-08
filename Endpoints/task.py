@@ -17,7 +17,7 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-schema = open("./Endpoints/taskSchema.json").read()
+schema = open("./Endpoints/materialflowSchema.json").read()
 
 @task_bp.route('', methods=['GET', 'POST']) 
 def task():

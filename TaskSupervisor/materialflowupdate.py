@@ -9,22 +9,22 @@ import datetime
 import uuid
 import logging 
 import globals 
-from TaskSupervisor.task import Task
+from TaskSupervisor.transportOrder import TransportOrder
 
 logger = logging.getLogger(__name__)
 ocbHandler = globals.ocbHandler
 
 # this represents a set of tasks
-class taskSet(threading.Thread):
-    def __init__(self, name, q):
+class MaterialflowUpdate(threading.Thread):
+    def __init__(self, ownerId, name, q):
         threading.Thread.__init__(self) 
         logger.info("taskManager init")
         
         self.id = str(uuid.uuid1())
         self.taskManagerName = name
         self.time = str(datetime.datetime.now())
-        self.taskList = []
-
+        self.transportOrderList = []
+        self.refOwnerId = ownerId
         
 
         logger.info("taskMakanger name: " + self.taskManagerName + ", uuid: " + str(self.id))
@@ -34,16 +34,16 @@ class taskSet(threading.Thread):
         logger.info("taskManager init_done")
 
     @classmethod
-    def newTaskSet(self, _object, _queue):
-        tM = taskSet(_object.taskManagerName, _queue)
-        tM.taskList = _object.taskList
+    def newMaterialflowUpdate(self, _object, _queue):
+        tM = MaterialflowUpdate(_object.refOwnerId, _object.taskManagerName, _queue)
+        tM.transportOrderList = _object.transportOrderList
         tM._taskInfoList = _object._taskInfoList
         return tM
 
     def addTask(self, taskInfo):
         if(taskInfo not in self._taskInfoList):
             self._taskInfoList.append(taskInfo)
-            self.taskList.append(taskInfo.name)
+            self.transportOrderList.append(taskInfo.name)
     
     def publishEntity(self):
         global ocbHandler
@@ -64,7 +64,7 @@ class taskSet(threading.Thread):
         
         for taskInfo in self._taskInfoList:
             logger.info("tM " + self.taskManagerName  + " starting Task" + str(taskInfo))
-            t = Task(taskInfo, self.id)
+            t = TransportOrder(taskInfo, self.id, self.refOwnerId)
             #t.publishEntity()
             t.start()
             t.join()            

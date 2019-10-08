@@ -17,9 +17,10 @@ from TaskLanguage.TaskParserListener import TaskParserListener
 from TaskLanguage.TaskParser import TaskParser
 
 from TaskSupervisor import graphy
-from TaskSupervisor.taskSet import taskSet
+from TaskSupervisor.materialflowupdate import MaterialflowUpdate
 from TaskSupervisor.task import Task
 
+from Entities.materialflow import Materialflow
 logger = logging.getLogger(__name__)
 
 def createLoTLan(_taskLanguage):
@@ -54,11 +55,13 @@ INDEGREE_ZERO = 0
 SUCCESS_TASK = 1
 END_TASK = 2
 
-class taskScheduler():
-    def __init__(self, name, taskLanguage):
+class Schedular():
+    def __init__(self, _materialflow, ): # name, taskLanguage):
         logger.info("taskSchedular init")
-        self.tasklanguage = taskLanguage
-        LoTLan = createLoTLan(taskLanguage)
+        self.tasklanguage = _materialflow.specification
+        LoTLan = createLoTLan(self.tasklanguage)
+
+# todo: check if it is parsable and create an own state
 
         taskGraph = graphy.createGraph(LoTLan.taskInfos)
         graphy.printGraphInfo(taskGraph)
@@ -69,8 +72,10 @@ class taskScheduler():
 
         for key, taskInfo in self.taskInfos.iteritems():
             taskInfo.instances = LoTLan.instances
-        self.name = name
+        self.name = _materialflow.ownerId
         
+        self.owner = _materialflow.ownerId
+
         self.runningTasks = []
         self.historyTasks = [] 
         self.taskManager = []
@@ -87,7 +92,7 @@ class taskScheduler():
         logger.info("taskSchedular start")
         for node in self.taskGraph.nodes:
             if(self.taskGraph.in_degree(node) == INDEGREE_ZERO): # get all starting points from the graph
-                tM = taskSet(node.name, self.queue)
+                tM = MaterialflowUpdate(self.owner,node.name, self.queue)
                 tM.addTask(node) # add the starting task
                 successors = nx.dfs_successors(self.taskGraph, source = node).values()
                 if(successors):
@@ -100,7 +105,7 @@ class taskScheduler():
                     self.taskManager.append(tM)
                     
         for tm in self.taskManager:
-            logger.info("taskSchedular, taskManager spawn: " + tm.taskManagerName)
+            logger.info("taskSchedular, MaterialflowUpdate spawn: " + tm.taskManagerName)
             self.runningTasks.append(tm)
             tm.publishEntity()
             tm.start()
@@ -108,7 +113,7 @@ class taskScheduler():
         # respawn finished taskManager 
         while (True):
             res = self.queue.get()
-            logger.info("taskSchedular, TaskManager finished: " + res)
+            logger.info("taskSchedular, taskSMaterialflowUpdateet finished: " + res)
             for tR in self.runningTasks:
                 if(tR.taskManagerName == res):
                     tR.join()
@@ -118,10 +123,10 @@ class taskScheduler():
                     
             for tM in self.taskManager:
                 if(tM.taskManagerName == res):
-                    temp = taskSet.newTaskSet(tM, self.queue) 
+                    temp = MaterialflowUpdate.newMaterialflowUpdate(tM, self.queue) 
 
                     self.runningTasks.append(temp)
-                    logger.info("taskSchedular, taskManager respawn: " + res)
+                    logger.info("taskSchedular, MaterialflowUpdate respawn: " + res)
                     temp.publishEntity()
                     temp.start()
         logger.info("taskSchedular start_end")

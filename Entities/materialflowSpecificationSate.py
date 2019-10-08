@@ -7,7 +7,7 @@ id = 0
 idHistory = []
 
 
-class TaskSpecState(FiwareEntity): 
+class MaterialflowSpecificationState(FiwareEntity): 
     def __init__(self): 
         FiwareEntity.__init__(self)
         self.refId = ""

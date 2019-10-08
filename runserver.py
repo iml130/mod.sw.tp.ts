@@ -37,16 +37,18 @@ from helpers.configParser import Config
 from contextbrokerhandler import ContextBrokerHandler
 from FiwareObjectConverter import objectFiwareConverter
 
-from Entities import task, taskState, taskSpec, taskSpecState
+from Entities import task, taskState
 
 from Entities.san import SensorAgent
 from Entities import ran
 from icent import IcentDemo
 from helpers.servercheck import checkServerRunning
 
-from Entities.taskSpec import TaskSpec
+from Entities.materialflow import Materialflow
+from Entities.materialflowSpecificationSate import MaterialflowSpecificationState
+
 from TaskLanguage.checkGrammarTreeCreation import checkTaskLanguage
-from TaskSupervisor.taskScheduler import taskScheduler
+from TaskSupervisor.schedular import Schedular
 
 from ROS.OrderState import OrderState, rosOrderStatus
 # from Entities import task.Task
@@ -77,8 +79,6 @@ def setup_logging(
 
 #reconnect logging calls which are children of this to the ros log system
 
-
-
 setup_logging()
 logger = logging.getLogger(__name__)
 HOST = '0.0.0.0'
@@ -97,7 +97,7 @@ icentStateMachine = IcentDemo("Anda")
  
 currenTaskDesc = task.Task()
 # currentTaskState = taskState.TaskState("1a","2b", "3c")
-currentTaskSpecState = taskSpecState.TaskSpecState()
+currentMaterialFlowSpecState = MaterialflowSpecificationState()
 ran_task_id = 0  
 terminate = False 
     
@@ -204,20 +204,20 @@ def sanDealer(q):
 #     retVal = retVal.replace('\t', '').replace('\n', '')
 #     return retVal
 
-def taskSchedulerDealer(taskSchedulerQueue):
+def schedularDealer(schedularQueue):
     ts = None
-    logger.info("taskSchedulerDealer started")
+    logger.info("SchedularDealer started")
     while True: 
         
-        dmp = taskSchedulerQueue.get()
+        dmp = schedularQueue.get()
         if(ts is None):
-            ts = taskScheduler("feinfacherTest", dmp)
+            ts = Schedular(dmp)
             ts.start()
         else:
             print "Already running, not able to accept any others"
         print "Is Running"
     
-    logger.info("taskSchedulerDealer ended")        
+    logger.info("SchedularDealer ended")        
 
 
 def taskDealer(q):    
@@ -225,25 +225,25 @@ def taskDealer(q):
     global currentTaskState
     global ocbHandler
     global currenTaskDesc
-    global currentTaskSpecState
+    global currentMaterialFlowSpecState
     
     logger.info("taskDealer started")
     while True: 
         jsonReq, entityType = q.get()
         jsonReq = jsonReq[0]
     
-        objTaskSpec = TaskSpec.CreateObjectFromJson(jsonReq)
+        objTaskSpec = Materialflow.CreateObjectFromJson(jsonReq)
 
-        retVal, message = checkTaskLanguage(objTaskSpec.TaskSpec)
-        currentTaskSpecState.message = message
+        retVal, message = checkTaskLanguage(objTaskSpec.specification)
+        currentMaterialFlowSpecState.message = message
         if(retVal == 0):
-            logger.info("newTaskSpec:\n"+ str(objTaskSpec.TaskSpec))
-            globals.taskSchedulerQueue.put(objTaskSpec.TaskSpec)
+            logger.info("newTaskSpec:\n"+ str(objTaskSpec.specification))
+            globals.taskSchedulerQueue.put(objTaskSpec)
  
-        currentTaskSpecState.message = message
-        currentTaskSpecState.state = retVal
-        currentTaskSpecState.refId = jsonReq["id"]
-        ocbHandler.update_entity(currentTaskSpecState)
+        currentMaterialFlowSpecState.message = message
+        currentMaterialFlowSpecState.state = retVal
+        currentMaterialFlowSpecState.refId = jsonReq["id"]
+        ocbHandler.update_entity(currentMaterialFlowSpecState)
     
     logger.info("taskDealer ended")
  
@@ -280,7 +280,7 @@ if __name__ == '__main__':
     global ocbHandler
     global currenTaskDesc
     #global currentTaskState
-    global currentTaskSpecState
+    global currentMaterialFlowSpecState
 
     logger.info("Subscriptions to /order_status")
     
@@ -324,7 +324,7 @@ if __name__ == '__main__':
 
     # few things commented due to the damn airplane mode 
     # publish first the needed entities before subscribing ot it
-    retVal = ocbHandler.create_entity(currentTaskSpecState) 
+    retVal = ocbHandler.create_entity(currentMaterialFlowSpecState) 
     if (retVal == 0):
         logger.info("Orion Connection is working - created TaskSpecState Entity")
         logger.info("Orion Address: " + parsedConfigFile.getFiwareServerAddress())
@@ -367,7 +367,7 @@ if __name__ == '__main__':
     logger.info("Setting up taskDealer, sanDealer and workTaskScheduler")
     workerTask = Thread(target=taskDealer, args=(globals.taskQueue,))
     #workerSan = Thread(target=sanDealer, args=(globals.sanQueue,))
-    workerTaskScheduler = Thread(target=taskSchedulerDealer, args=(globals.taskSchedulerQueue,))
+    workerTaskScheduler = Thread(target=schedularDealer, args=(globals.taskSchedulerQueue,))
     #workerRan = Thread(target=ranDealer, args=(globals.ranQueue,))
     
     logger.info("Starting taskDealer, sanDealer and workTaskScheduler")
@@ -376,11 +376,11 @@ if __name__ == '__main__':
     workerTaskScheduler.start()
     #workerRan.start()
     
-    objTaskSpec = TaskSpec()
-    subscriptionId = ocbHandler.subscribe2Entity( _description = "TaskSpec subscription",
-            _entities = objTaskSpec.obj2JsonArray(),  
+    objMaterialflow = Materialflow()
+    subscriptionId = ocbHandler.subscribe2Entity( _description = "Materialflow subscription",
+            _entities = objMaterialflow.obj2JsonArray(),  
             _notification = parsedConfigFile.getTaskPlannerAddress() +"/task",_generic=True)
-    globals.subscriptionDict[subscriptionId] ="TaskSpec"     
+    globals.subscriptionDict[subscriptionId] ="Materialflow"     
   
 
     logger.info("Push Ctrl+C to exit()")
