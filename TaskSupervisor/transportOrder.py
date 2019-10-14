@@ -163,26 +163,33 @@ class TransportOrder():
                 if(self._taskInfo.triggers):
                     ts = SensorAgent()
                     self._subscriptionId = ocbHandler.subscribe2Entity(_description=self.subscriptionDescription(), _entities=obj2JsonArray(ts.getEntity()), _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id, _generic=True)
-                    globals.subscriptionDict[self._subscriptionId] = "SAN"
+                    globals.subscriptionDict[self._subscriptionId] = self.id
                 self._transportOrderStateMachine.Initialized()
             elif(state == "waitForTrigger"):
                 print state + ": Task " + self.taskName + ", id: " + self.id 
                 if(self._taskInfo.triggers):
                     sensorEntityData = self._q.get()
+                    
                     if (sensorEntityData):
-                        dd = SensorAgent.CreateObjectFromJson(sensorEntityData["data"][0])
-                        taskTrigger =  self._taskInfo.triggers[0]["left"]
-                        #if(dd.sensorID == self._taskInfo.triggers[0]["left"].split(".")[0] ):
-                        if(taskTrigger):
-                            #checkForType() 
-                            if(dd.readings):
-                                #match if Sensor is valid
-                                #excpectedType = self._taskInfo.findSensorById(self._taskInfo.triggers[0]["left"])
-                                excpectedType = self._taskInfo.findSensorById(dd.sensorID)
-                                if excpectedType:
-                                    if(validateTrigger(excpectedType, dd.readings,self._taskInfo.triggers[0])):
-                                        self._transportOrderStateMachine.TriggerReceived()
-                                        print state + "_received: Task " + self.taskName + ", id: " + self.id 
+                        
+                        if("subscriptionId" in sensorEntityData): 
+                            print "Expected subid: " + self._subscriptionId
+                            print "Received subid: " + sensorEntityData["subscriptionId"]
+                            
+                            if(sensorEntityData["subscriptionId"] == self._subscriptionId):
+                                dd = SensorAgent.CreateObjectFromJson(sensorEntityData["data"][0])
+                                taskTrigger =  self._taskInfo.triggers[0]["left"]
+                                #if(dd.sensorID == self._taskInfo.triggers[0]["left"].split(".")[0] ):
+                                if(taskTrigger):
+                                    #checkForType() 
+                                    if(dd.readings):
+                                        #match if Sensor is valid
+                                        #excpectedType = self._taskInfo.findSensorById(self._taskInfo.triggers[0]["left"])
+                                        excpectedType = self._taskInfo.findSensorById(dd.sensorID)
+                                        if excpectedType:
+                                            if(validateTrigger(excpectedType, dd.readings,self._taskInfo.triggers[0])):
+                                                self._transportOrderStateMachine.TriggerReceived()
+                                                print state + "_received: Task " + self.taskName + ", id: " + self.id 
                 else:
                     # no trigger :-) 
                     self._transportOrderStateMachine.TriggerReceived()                   
