@@ -6,6 +6,7 @@ import Queue
 import datetime 
 import copy
 import logging
+import threading
 
 from antlr4 import *
 import networkx as nx
@@ -17,8 +18,7 @@ from TaskLanguage.TaskParserListener import TaskParserListener
 from TaskLanguage.TaskParser import TaskParser
 
 from TaskSupervisor import graphy
-from TaskSupervisor.materialflowupdate import MaterialflowUpdate
-from TaskSupervisor.task import Task
+from TaskSupervisor.materialflowupdate import MaterialflowUpdate 
 
 from Entities.materialflow import Materialflow
 logger = logging.getLogger(__name__)
@@ -55,8 +55,9 @@ INDEGREE_ZERO = 0
 SUCCESS_TASK = 1
 END_TASK = 2
 
-class Schedular():
+class Schedular(threading.Thread):
     def __init__(self, _materialflow, ): # name, taskLanguage):
+        threading.Thread.__init__(self) 
         logger.info("taskSchedular init")
         self.tasklanguage = _materialflow.specification
         LoTLan = createLoTLan(self.tasklanguage)
@@ -88,7 +89,7 @@ class Schedular():
             self.runningTasks.append(task)        
         logger.info("taskSchedular addTask_end")
 
-    def start(self):
+    def run(self):
         logger.info("taskSchedular start")
         for node in self.taskGraph.nodes:
             if(self.taskGraph.in_degree(node) == INDEGREE_ZERO): # get all starting points from the graph
