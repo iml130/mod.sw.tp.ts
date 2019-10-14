@@ -50,6 +50,8 @@ from Entities.materialflowSpecificationSate import MaterialflowSpecificationStat
 from TaskLanguage.checkGrammarTreeCreation import checkTaskLanguage
 from TaskSupervisor.schedular import Schedular
 
+from tasksupervisor import TasksuperVisorInfo
+
 from ROS.OrderState import OrderState, rosOrderStatus
 # from Entities import task.Task
 # from Entities import taskstate.TaskState
@@ -97,6 +99,7 @@ icentStateMachine = IcentDemo("Anda")
  
 currenTaskDesc = task.Task()
 # currentTaskState = taskState.TaskState("1a","2b", "3c")
+listCurrentMaterialFlowSpecState = []
 currentMaterialFlowSpecState = MaterialflowSpecificationState()
 ran_task_id = 0  
 terminate = False 
@@ -104,6 +107,8 @@ terminate = False
 import requests
 import httplib
 
+
+tsInfo = TasksuperVisorInfo()
 # todos: 
 # updating the task id; actually HMI sets a task and the taskState represents a task
 # taskLanguage
@@ -205,14 +210,20 @@ def sanDealer(q):
 #     return retVal
 
 def schedularDealer(schedularQueue):
+    global tsInfo
+    global ocbHandler
     ts = None
     logger.info("SchedularDealer started")
+    threads = []
     while True: 
-        
+        ts = None
         dmp = schedularQueue.get()
         if(ts is None):
             ts = Schedular(dmp)
             ts.start()
+            tsInfo.appendMaterielflow(dmp.id)
+            ocbHandler.update_entity(tsInfo)
+            #ts.join()
         else:
             print "Already running, not able to accept any others"
         print "Is Running"
@@ -220,30 +231,42 @@ def schedularDealer(schedularQueue):
     logger.info("SchedularDealer ended")        
 
 
-def taskDealer(q):    
+
+def taskDealer(taskQueue): 
+
+    lock = threading.Lock()
+    
     global icentStateMachine  
     global currentTaskState
     global ocbHandler
     global currenTaskDesc
-    global currentMaterialFlowSpecState
+    global listCurrentMaterialFlowSpecState
+     
     
     logger.info("taskDealer started")
     while True: 
-        jsonReq, entityType = q.get()
-        jsonReq = jsonReq[0]
-    
-        objTaskSpec = Materialflow.CreateObjectFromJson(jsonReq)
-
-        retVal, message = checkTaskLanguage(objTaskSpec.specification)
-        currentMaterialFlowSpecState.message = message
-        if(retVal == 0):
-            logger.info("newTaskSpec:\n"+ str(objTaskSpec.specification))
-            globals.taskSchedulerQueue.put(objTaskSpec)
- 
-        currentMaterialFlowSpecState.message = message
-        currentMaterialFlowSpecState.state = retVal
-        currentMaterialFlowSpecState.refId = jsonReq["id"]
-        ocbHandler.update_entity(currentMaterialFlowSpecState)
+        jsonReq, entityType = taskQueue.get()
+        with lock:
+            for tempJsonReq in jsonReq:
+               
+                currentMaterialFlowSpecState = MaterialflowSpecificationState()
+                objTaskSpec = Materialflow.CreateObjectFromJson(tempJsonReq)
+                if(objTaskSpec.active): # check if the materialflow shall be processed - or not
+                    retVal, message = checkTaskLanguage(objTaskSpec.specification)
+                    currentMaterialFlowSpecState.message = message
+                    if(retVal == 0):
+                        logger.info("newTaskSpec:\n"+ str(objTaskSpec.specification))
+                        globals.taskSchedulerQueue.put(objTaskSpec)
+            
+                    currentMaterialFlowSpecState.message = message
+                    currentMaterialFlowSpecState.state = retVal
+                    currentMaterialFlowSpecState.refId = tempJsonReq["id"]
+                    retVal = ocbHandler.create_entity(currentMaterialFlowSpecState)
+                    if(retVal == 0):
+                        listCurrentMaterialFlowSpecState.append(currentMaterialFlowSpecState)
+                else:
+                    print("TODO: Disable the Materialflow or ignore it...but first... lets make it easy")
+        #ocbHandler.update_entity(currentMaterialFlowSpecState)
     
     logger.info("taskDealer ended")
  
@@ -324,8 +347,8 @@ if __name__ == '__main__':
 
     # few things commented due to the damn airplane mode 
     # publish first the needed entities before subscribing ot it
-    retVal = ocbHandler.create_entity(currentMaterialFlowSpecState) 
-    if (retVal == 0):
+    retVal = ocbHandler.create_entity(tsInfo) 
+    if (retVal == 0):   
         logger.info("Orion Connection is working - created TaskSpecState Entity")
         logger.info("Orion Address: " + parsedConfigFile.getFiwareServerAddress())
     #ocbHandler.create_entity(currenTaskDesc) 

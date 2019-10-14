@@ -8,7 +8,8 @@
     "id",
     "type",
     "specification",
-    "ownerId"
+    "ownerId",
+    "active"
   ],
   "properties": {
     "id": {
@@ -17,7 +18,7 @@
       "title": "The Id Schema",
       "default": "",
       "examples": [
-        "Materialflow1"
+        "MaterialflowTrigger2"
       ],
       "pattern": "^(.*)$"
     },
@@ -46,7 +47,7 @@
           "title": "The Value Schema",
           "default": "",
           "examples": [
-            "template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22Tag10_11%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22Tag12%22%0Aend%0A%0A%23%23%23%23+%0Atask+Transport_Start%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0Aend%0A"
+            "template+Position%0A++++position%0A++++type%0Aend%0A%0Atemplate+Sensor%0A++++sensorId%0A++++type%0Aend%0A%0A%23%23%23%23%0A%0ASensor+opticalSensor%0A++++sensorId+%3D+%22optical_sensor2%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0APosition+moldingPallet%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22Tag10_11%22%0Aend%0A%0APosition+warehouse_pos1%0A++++type+%3D+%22pallet%22%0A++++position+%3D+%22Tag12%22%0Aend%0A%0A%23%23%23%23+%0Atask+Transport_Start%0A++++Transport%0A++++from+moldingPallet%0A++++to+warehouse_pos1%0A++++TriggeredBy+opticalSensor.value+%3D%3D+True%0Aend%0A"
           ],
           "pattern": "^(.*)$"
         },
@@ -62,17 +63,17 @@
         }
       }
     },
-    "owner": {
+    "ownerId": {
       "$id": "#/properties/ownerId",
       "type": "object",
-      "title": "The Owner Schema",
+      "title": "The Ownerid Schema",
       "required": [
         "type",
         "value"
       ],
       "properties": {
         "type": {
-          "$id": "#/properties/owner/properties/type",
+          "$id": "#/properties/ownerId/properties/type",
           "type": "string",
           "title": "The Type Schema",
           "default": "",
@@ -82,7 +83,7 @@
           "pattern": "^(.*)$"
         },
         "value": {
-          "$id": "#/properties/owner/properties/value",
+          "$id": "#/properties/ownerId/properties/value",
           "type": "string",
           "title": "The Value Schema",
           "default": "",
@@ -90,6 +91,37 @@
             "reviewers hmi"
           ],
           "pattern": "^(.*)$"
+        }
+      }
+    },
+    "active": {
+      "$id": "#/properties/active",
+      "type": "object",
+      "title": "The Active Schema",
+      "default": null,
+      "required": [
+        "type",
+        "value"
+      ],
+      "properties": {
+        "type": {
+          "$id": "#/properties/active/properties/type",
+          "type": "string",
+          "title": "The Type Schema",
+          "default": "",
+          "examples": [
+            "Boolean"
+          ],
+          "pattern": "^(.*)$"
+        },
+        "value": {
+          "$id": "#/properties/active/properties/value",
+          "type": "boolean",
+          "title": "The Value Schema",
+          "default": false,
+          "examples": [
+            true
+          ]
         }
       }
     }

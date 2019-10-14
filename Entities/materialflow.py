@@ -15,6 +15,7 @@ class Materialflow(FiwareEntity):
         FiwareEntity.__init__(self)
         self.specification = ""
         self.ownerId = ""
+        self.active = False
 
     @classmethod
     def CreateObjectFromJson(cls, myJson):
