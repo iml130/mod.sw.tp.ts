@@ -30,6 +30,16 @@ class TaskParserVisitor(ParseTreeVisitor):
         return self.visitChildren(ctx)
 
 
+    # Visit a parse tree produced by TaskParser#transportOrderStep.
+    def visitTransportOrderStep(self, ctx):
+        return self.visitChildren(ctx)
+
+
+    # Visit a parse tree produced by TaskParser#innerTransportOrderStep.
+    def visitInnerTransportOrderStep(self, ctx):
+        return self.visitChildren(ctx)
+
+
     # Visit a parse tree produced by TaskParser#task.
     def visitTask(self, ctx):
         return self.visitChildren(ctx)
@@ -63,4 +73,5 @@ class TaskParserVisitor(ParseTreeVisitor):
     # Visit a parse tree produced by TaskParser#con.
     def visitCon(self, ctx):
         return self.visitChildren(ctx)
+
 

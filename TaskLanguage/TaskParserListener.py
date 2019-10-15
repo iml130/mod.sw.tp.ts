@@ -49,6 +49,24 @@ class TaskParserListener(ParseTreeListener):
         pass
 
 
+    # Enter a parse tree produced by TaskParser#transportOrderStep.
+    def enterTransportOrderStep(self, ctx):
+        pass
+
+    # Exit a parse tree produced by TaskParser#transportOrderStep.
+    def exitTransportOrderStep(self, ctx):
+        pass
+
+
+    # Enter a parse tree produced by TaskParser#innerTransportOrderStep.
+    def enterInnerTransportOrderStep(self, ctx):
+        pass
+
+    # Exit a parse tree produced by TaskParser#innerTransportOrderStep.
+    def exitInnerTransportOrderStep(self, ctx):
+        pass
+
+
     # Enter a parse tree produced by TaskParser#task.
     def enterTask(self, ctx):
         pass

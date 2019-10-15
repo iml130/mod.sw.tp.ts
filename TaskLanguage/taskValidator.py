@@ -1,5 +1,6 @@
 from CreateTreeTaskParserVisitor import CompleteProgram
-from CreateTreeTaskParserVisitor import Instance 
+from CreateTreeTaskParserVisitor import Instance
+from CreateTreeTaskParserVisitor import TaskInfo
 from CreateTreeTaskParserVisitor import Template
 from CreateTreeTaskParserVisitor import TransportOrder
 
@@ -23,9 +24,9 @@ def _validate(givenTree, retreivedInfo):
         # Check if Attrs are set.
         # NOTE Instance can set more like specified in template here
         t = givenTree.templates[instance.templateName]
-        for i in range(len(t.attributes)):
-            if t.attributes[i] not in instance.keyval:
-                raise Exception("Instace: {} does not set the Attribute: {}".format(instance.templateName, t.attributes[i]))
+        for i in t.keyval:
+            if i not in instance.keyval:
+                raise Exception("Instace: {} does not set the Attribute: {}".format(instance.templateName, i))
 
 
     for taskName, task in givenTree.taskInfos.iteritems():
@@ -37,20 +38,20 @@ def _validate(givenTree, retreivedInfo):
         # Check TransportOrders
         for i in range(len(task.transportOrders)):
             # Fromm check
-            for j in range(len(task.transportOrders[i].pickupFrom)):
-                print task.transportOrders[i].pickupFrom[j]
-                if _checkIfInstancePresent(givenTree, task.transportOrders[i].pickupFrom[j]) is False:
-                    raise Exception("Task: {} refers to an unknown Instance in TransportOrder: {}".format(task.name, task.transportOrders[i].pickupFrom[j]))
+            if _checkIfTransportOrderStepsPresent(givenTree, task.transportOrders[i].pickupFrom) is False:
+                raise Exception("Task: {} refers to an unknown TransportOrderStep in TransportOrder: {}".format(task.name, task.transportOrders[i].fromm))
             
             # To check
-            if _checkIfInstancePresent(givenTree, task.transportOrders[i].deliverTo) is False:
-                    raise Exception("Task: {} refers to an unknown Instance in TransportOrder: {}".format(task.name, task.transportOrders[i].deliverTo))
+            if _checkIfTransportOrderStepsPresent(givenTree, task.transportOrders[i].deliverTo) is False:
+                    raise Exception("Task: {} refers to an unknown TransportOrderStep in TransportOrder: {}".format(task.name, task.transportOrders[i].to))
 
 
         # TODO Trigger Semantic-Checking
  
     return True
- 
+
+
+
 
 def _checkIfTaskPresent(givenTree, taskName):
     for _tN, _t in givenTree.taskInfos.iteritems():
@@ -58,8 +59,8 @@ def _checkIfTaskPresent(givenTree, taskName):
             return True
     return False
 
-def _checkIfInstancePresent(givenTree, instanceName):
-    for _iN, _t in givenTree.instances.iteritems():
+def _checkIfTransportOrderStepsPresent(givenTree, instanceName):
+    for _iN, _t in givenTree.transportOrderSteps.iteritems():
         if instanceName == _iN:
             return True
     return False
