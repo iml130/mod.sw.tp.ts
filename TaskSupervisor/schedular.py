@@ -70,9 +70,13 @@ class Schedular(threading.Thread):
 
         self.taskGraph = taskGraph
         self.taskInfos = LoTLan.taskInfos
+        self.transportOrderStepInfos = LoTLan.transportOrderSteps
 
         for key, taskInfo in self.taskInfos.iteritems():
             taskInfo.instances = LoTLan.instances
+
+        for key, taskInfo in self.taskInfos.iteritems():
+            taskInfo.transportOrderStepInfos = LoTLan.transportOrderSteps    
         self.name = _materialflow.ownerId
         
         self.owner = _materialflow.ownerId

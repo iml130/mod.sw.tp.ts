@@ -9,10 +9,13 @@ class TaskInfo(object):
     def __init__(self):
         logger.info("TaskInfo init")
         self.name = None # String Name of Task
-        self.triggers = [] # List of Triggers
-        self.transportOrders = [] # List of Transport Order (pickupFrom|deliverTo)
+        self.triggeredBy = [] # List of Triggers
+        self.transportOrders = [] # List of Transport Order (from|to)
         self.onDone = [] # Reference to the next Tasks
-        self.instances = None
+        self.repeat = -1 # uninitialized
+        self.finishedBy = []
+        self.instances = {}
+        self.transportOrderStepInfos = {}
         logger.info("TaskInfo init_done")
 
     def addChild(self, _child):
@@ -29,18 +32,33 @@ class TaskInfo(object):
     def __repr__(self):
         return self.__str__()
 
+    def findLocationByTransportOrderStep(self, _toStep):
+        if(self.transportOrderStepInfos):
+            if(_toStep in self.transportOrderStepInfos):
+                for key, value in self.transportOrderStepInfos.iteritems():
+                    if(key == _toStep):                       
+                        if(value.location != ""):
+                            tempName = self.transportOrderStepInfos[_toStep].location
+                            return self.findPositionByName(tempName)
+                    print(key, value)
+                
+                    
+
+
     def findPositionByName(self, positionName):
+   
         if self.instances:
             if(positionName in self.instances):
-                return self.instances[positionName].keyval["position"].replace('"',"")
+                return self.instances[positionName].keyval["name"].replace('"',"")
     
-    def findSensorById(self, sensorId):
+    def matchEventNameBySensorId(self, sensorId, eventName):
         sensorId = sensorId.split(".")[0]
         if self.instances:
             for value in self.instances:
-                if "sensorId" in self.instances[value].keyval:
-                    print "Looking for : " + sensorId + ", found so far SensorId: "  + self.instances[value].keyval["sensorId"].replace('"', '')
-                    if(self.instances[value].keyval["sensorId"].replace('"', '') == sensorId):
-                        print "SENSOR MATCH"
-                        return self.instances[value].keyval["type"].replace('"', '')
+                if(value == eventName):
+                    if "name" in self.instances[value].keyval:
+                        print "Looking for : " + sensorId + ", found so far SensorId: "  + self.instances[value].keyval["name"].replace('"', '')
+                        if(self.instances[value].keyval["name"].replace('"', '') == sensorId):
+                            print "SENSOR MATCH"
+                            return self.instances[value].keyval["type"].replace('"', '')
         return None
