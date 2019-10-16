@@ -17,7 +17,7 @@ import views
 
 from Endpoints.san import san_bp
 from Endpoints.task import task_bp
-from Endpoints.ran import ran_bp
+#from Endpoints.ran import ran_bp
 
 logger = logging.getLogger(__name__)
 
