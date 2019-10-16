@@ -37,7 +37,7 @@ from helpers.configParser import Config
 from contextbrokerhandler import ContextBrokerHandler
 from FiwareObjectConverter import objectFiwareConverter
 
-from Entities import task, taskState
+from Entities import task 
 
 from Entities.san import SensorAgent
 from Entities import ran
