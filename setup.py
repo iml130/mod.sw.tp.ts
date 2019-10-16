@@ -10,7 +10,7 @@ from flask import Flask
 app = Flask(__name__)
 
 VERSION = """Fraunhofer IML<br />
-OPIL TaskPlanner v0.1.4 - 09.2019<br />
+OPIL TaskPlanner v0.1.5 - 10.2019 (#42)<br />
 Running...<br />
 """
 import views 
@@ -24,7 +24,6 @@ logger = logging.getLogger(__name__)
 logger.info("Registering Blueprints")
 
 app.register_blueprint(san_bp, url_prefix='/san')
-app.register_blueprint(task_bp, url_prefix='/task')
-app.register_blueprint(ran_bp, url_prefix='/ran')
+app.register_blueprint(task_bp, url_prefix='/task') 
 #app.register_blueprint(mod_test , url_prefix='/test')
 logger.info("Registering Blueprints_done")
