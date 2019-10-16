@@ -11,42 +11,61 @@ import uuid
 def createUuid(salt):
     return uuid.uuid3(uuid.NAMESPACE_URL, salt)
 
+
 class TransportOrderStateMachine(object):
 
     # Define some states. Most of the time, narcoleptic superheroes are just like
     # everyone else. Except for...
-    states = ['init', 'waitForTrigger', 'sendAgvToPickup', 'moveOrderToPickup','waitForLoading', 'sendAgvToDelivery', 'moveOrderToDelivery', 'waitForUnloading' ,'moveOrder', 'moveOrderFinished', 'finished', 'error']
-    
+    states = ['init', 'waitForTrigger', 'startPickup', 'movingToPickup', 'waitForLoading', 'startDelivery',
+              'movingToDelivery', 'waitForUnloading',  'moveOrderFinished', 'finished', 'error']
+
     def __init__(self, name):
         self.name = name
         #self.task = task
         self.uuid = createUuid(self.name)
         print self.uuid
         # Initialize the state machine
-        self.machine = Machine(model=self, states=TransportOrderStateMachine.states, initial='init')
+        self.machine = Machine(
+            model=self, states=TransportOrderStateMachine.states, initial='init')
         self.machine.add_ordered_transitions()
         # Add some transitions. We could also define these using a static list of
         # dictionaries, as we did with states above, and then pass the list to
         # the Machine initializer as the transitions= argument.
 
         # At some point, every superhero must rise and shine.
-        self.machine.add_transition(trigger='Initialized', source='init', dest='waitForTrigger')
-        self.machine.add_transition(trigger='TriggerReceived', source='waitForTrigger', dest='sendAgvToPickup')
-
-        self.machine.add_transition(trigger='StartMovingToLoadingDestination', source='sendAgvToPickup', dest='moveOrderToPickup')
-
-
-        self.machine.add_transition(trigger='AgvArrivedAtLoadingDestination', source='moveOrderToPickup', dest='waitForLoading')
-        self.machine.add_transition(trigger='AgvIsLoaded', source='waitForLoading', dest='sendAgvToDelivery')
-        self.machine.add_transition(trigger='StartMovingToUnloadingDestination', source='sendAgvToDelivery', dest='moveOrderToDelivery')
-        self.machine.add_transition(trigger='AgvArrivedAtUnloadingDestination', source='moveOrderToDelivery', dest='waitForUnloading')
-        self.machine.add_transition(trigger='AgvIsUnloaded', source='waitForUnloading', dest='moveOrderFinished')    
-         
+        self.machine.add_transition(
+            trigger='Initialized', source='init', dest='waitForTrigger')
+        self.machine.add_transition(
+            trigger='TriggerReceived', source='waitForTrigger', dest='startPickup')
 
 
-        self.machine.add_transition(trigger='OrderStart', source='moveOrderStart', dest='moveOrder') 
-        self.machine.add_transition(trigger='OrderFinished', source='moveOrder', dest='moveOrderFinished') 
-        self.machine.add_transition(trigger='DestinationReached', source='moveOrderFinished', dest='finished')
+# Pickup
+        self.machine.add_transition(
+            trigger='GotoPickupDestination', source='startPickup', dest='movingToPickup')
+
+        self.machine.add_transition(
+            trigger='ArrivedAtPickupDestination', source='movingToPickup', dest='waitForLoading')
+        self.machine.add_transition(
+            trigger='AgvIsLoaded', source='waitForLoading', dest='startDelivery')
+
+# Delivery
+        self.machine.add_transition(trigger='GotoDeliveryDestination',
+                                    source='startDelivery', dest='movingToDelivery')
+
+        self.machine.add_transition(trigger='ArrivedAtDeliveryDestination',
+                                    source='movingToDelivery', dest='waitForUnloading')
+
+        self.machine.add_transition(
+            trigger='AgvIsUnloaded', source='waitForUnloading', dest='moveOrderFinished')
+
+# Unused at the moment
+        self.machine.add_transition(
+            trigger='OrderStart', source='moveOrderStart', dest='moveOrder')
+        self.machine.add_transition(
+            trigger='OrderFinished', source='moveOrder', dest='moveOrderFinished')
+# Done
+        self.machine.add_transition(
+            trigger='DestinationReached', source='moveOrderFinished', dest='finished')
 
         self.machine.add_transition(trigger='Panic', source='*', dest='idle')
         self.machine.add_transition('Panic', '*', 'error')

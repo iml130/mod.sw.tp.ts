@@ -37,6 +37,8 @@ class TransportOrderUpdate():
         self.refOwnerId = _transportOrder.refOwnerId
         self.refMaterialflowUpdateId = _transportOrder.refMaterialflowUpdateId
         self.state = _transportOrder._transportOrderStateMachine.state
+        self.taskInfo = UserAction.Idle
+
 
 # updates orion (publish, update and delete)        
     def publishEntity(self):
@@ -61,3 +63,13 @@ class TransportOrderUpdate():
         self.updateTime = str(datetime.datetime.now())
         ocbHandler.delete_entity(self.id)
         logger.info("Task deleteEntity_done")
+
+
+class UserAction():
+    Idle = 0
+    WaitForStartTrigger = 1
+    MovingToPickupDestination = 2
+    WaitForLoading = 3
+    MovingToDeliveryDestination = 4
+    WaitForUnloading = 5
+    
