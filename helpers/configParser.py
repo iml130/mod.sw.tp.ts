@@ -23,6 +23,7 @@ class Config(object):
         
         #self.robot_id = config.get('RAN', 'robot_id')
         self.FLASK_HOST = config.get('flask', 'host')
+        self.robots = config.get("robots", "ids").split(",")
         
         # self.loadingArea = Area()
         # self.loadingArea.point_x = config.get('loadingArea', 'point_x')
