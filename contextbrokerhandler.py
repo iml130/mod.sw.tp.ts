@@ -2,6 +2,7 @@ import requests
 import json 
 import httplib
 import threading 
+import logging 
 
 from FiwareObjectConverter.objectFiwareConverter import ObjectFiwareConverter
 
@@ -10,6 +11,7 @@ def isResponseOk(statusCode):
         return True
     return False
 
+logger = logging.getLogger(__name__)
 
 ENTITIES = "entities"
 SUBSCRIPTIONS = "subscriptions"
@@ -21,6 +23,7 @@ def obj2JsonArray(_obj):
     tempArray = []
     tempArray.append(_obj)
     return (tempArray)
+
 
 class ContextBrokerHandler:
     lock = threading.Lock()
@@ -35,6 +38,7 @@ class ContextBrokerHandler:
     def __init__(self, fiwareAddress):
         self.fiwareAddress = fiwareAddress 
         self.published_entities = []
+        self.listOfSubscriptions = []        
         self.entities = []
 
     def attach_entity(self, entity):
@@ -46,7 +50,7 @@ class ContextBrokerHandler:
 
     def create_entity(self, entityInstance):
         with self.lock:
-            print "Create Entity id:" + entityInstance.id
+            logger.info("Id:" + entityInstance.id)
             statusCode = httplib.OK
 
             # check maybe to delete:
@@ -65,22 +69,22 @@ class ContextBrokerHandler:
 
     def delete_entity(self, entityId):
         with self.lock:
-            print "Delete Entity - Id: " + str (entityId) 
+            logger.info("Id: " + str (entityId))
+
             response = self._request("DELETE", self._getUrl(ENTITIES) + "/" + str(entityId), headers = self.HEADER_NO_PAYLOAD)
             statusCode = response.status_code
             
             if(isResponseOk(statusCode)): # everything is fine
-                print "Status OK"
+                logger.info("Id: " + str (entityId) + " -  Done")
                 
                 self.published_entities.remove(entityId)
                 return 0
             else:
                 content = json.loads(response.content)
-                print content
+                
                 return statusCode
 
-    def unregister_entities(self):
-         
+    def unregister_entities(self):         
         for entity in range(len(self.published_entities)):
             self.delete_entity(self.published_entities[0]) 
 
@@ -91,15 +95,9 @@ class ContextBrokerHandler:
             
             response = self._request("PATCH",self._getUrl(ENTITIES +"/"+  id + "/attrs"), data = json, headers = self.HEADER) 
             if(isResponseOk(response.status_code)): #everything is fine
-                print "Status OK"
+                logger.info("Id: " + str (entityInstance))
                 return 0
     
-    def update_entity_dirty(self, _json):
-        response = self._request("POST",self._getUrlv1(), data = _json, headers = self.HEADER) 
-        if(isResponseOk(response.status_code)): #everything is fine
-            print "Status OK"
-            return 0
-
     def _request(self, method, url, data = None, **kwargs):
         response = None
         try:           
@@ -145,8 +143,8 @@ class ContextBrokerHandler:
                     del item['id']
             if(condition):
                 subject["condition"]  = (condition)
-            #print condition
-            print "Subscribe to " + str(subject)
+            
+            logger.info(str(subject))
             msg["subject"] = subject
 
             notification = {}
@@ -164,14 +162,19 @@ class ContextBrokerHandler:
                 #response = requests.post(self._getUrl(SUBSCRIPTIONS), data=json.dumps(msg), headers= self.HEADERS, timeout = self.TIMEOUT)
                 response = self._request("POST",self._getUrl(SUBSCRIPTIONS), data =json.dumps(msg), headers = self.HEADER)
                 subscriptionId = response.headers.get('Location').replace("/v2/subscriptions/","")
-                print "Subscriptions Id: " + subscriptionId
+                logger.info("Subscriptions Id: " + subscriptionId)
+    
 
             except requests.exceptions.Timeout:
                 pass
                 
             statusCode = response.status_code
             if(isResponseOk(statusCode)): # everything is fine 
-                print "Subscriptions - Status OK"            
+                logger.info("Subscriptions OK")
+                self.listOfSubscriptions.append(subscriptionId)
+                
+            else:
+                logger.info("Subscriptions Failed: " + statusCode)
             return subscriptionId
 
     def deleteSubscriptionById(self, id):
@@ -182,9 +185,9 @@ class ContextBrokerHandler:
                     #print parsedConfigFile.getFiwareServerAddress()+"/v2/subscriptions/"+ id
                     response = self._request("DELETE", self._getUrl(SUBSCRIPTIONS) + "/" + id , headers = self.HEADER_NO_PAYLOAD)
                     if(response.status_code // httplib.OK == 1):
-                        print "Unsubscribed: " + id
+                        logger.info("Subscriptions Deleted: " + id)
                 except Exception as expression:
-                    print "Failed Subsciption: " + id +str(expression)
+                    logger.info("Subscriptions Deleted FAILED: " + id)
                     return False
                 return True
 

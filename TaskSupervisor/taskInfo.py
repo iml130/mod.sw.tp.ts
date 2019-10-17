@@ -5,6 +5,7 @@ __status__ = "Developement"
 import logging
 
 logger= logging.getLogger(__name__)
+
 class TaskInfo(object):
     def __init__(self):
         logger.info("TaskInfo init")
@@ -40,7 +41,7 @@ class TaskInfo(object):
                         if(value.location != ""):
                             tempName = self.transportOrderStepInfos[_toStep].location
                             return self.findPositionByName(tempName)
-                    print(key, value)
+                    #rint(key, value)
                 
                     
 
@@ -57,8 +58,8 @@ class TaskInfo(object):
             for value in self.instances:
                 if(value == eventName):
                     if "name" in self.instances[value].keyval:
-                        print "Looking for : " + sensorId + ", found so far SensorId: "  + self.instances[value].keyval["name"].replace('"', '')
+                        logger.info("Looking for SensorId: " + sensorId + ", found so far SensorId: "  + self.instances[value].keyval["name"].replace('"', ''))
                         if(self.instances[value].keyval["name"].replace('"', '') == sensorId):
-                            print "SENSOR MATCH"
+                            logger.info("Sensor Match for the Event, need to check also the expected value/type against the received value/type")
                             return self.instances[value].keyval["type"].replace('"', '')
         return None

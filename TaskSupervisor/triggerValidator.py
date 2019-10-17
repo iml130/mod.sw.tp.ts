@@ -1,4 +1,7 @@
 import ast 
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 COMPARISON_OPERATOR_EQUAL = "=="
@@ -22,7 +25,7 @@ def checkForValue(actualType, realValue, trigger):
     print type(triggerValue)
     print ast.literal_eval(triggerValue)
     compareOperator = trigger["binOp"]
-    print "checkForValue: receivedValue: " + str(receivedValue) + ", expectedValue: " + str(triggerValue)
+    logger.info("receivedValue: " + str(receivedValue) + ", expectedValue: " + str(triggerValue))
 
     if(actualType >= 0 and actualType <=2 ):
         # 0 = boolean, 1 = integer, 2 = float
@@ -52,15 +55,19 @@ def checkForType(expectedType, sensorData):
     sensorReadingType = sensorData[0]["reading"]
     if(expectedType == "boolean" or expectedType == "bool"):
         if(isinstance(sensorReadingType, bool)):
+            logger.info("ExpectedType: " + expectedType + ", receivedType: Bool")
             return True, 0
     elif(expectedType == "integer" or expectedType == "int"):
         if(isinstance(sensorReadingType, (long, int))):
+            logger.info("ExpectedType: " + expectedType + ", receivedType: Integer")
             return True, 1
     elif(expectedType == "float"):
         if(isinstance(sensorReadingType,float)):
+            logger.info("ExpectedType: " + expectedType + ", receivedType: Float")
             return True, 2
     elif(expectedType == "str"):
         if(isinstance(sensorReadingType, str)):
+            logger.info("ExpectedType: " + expectedType + ", receivedType: Str")
             return True,3
     return False, None
 
