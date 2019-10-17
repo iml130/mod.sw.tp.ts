@@ -40,7 +40,6 @@ from FiwareObjectConverter import objectFiwareConverter
 
 from Entities import task 
 from Entities.san import SensorAgent
-
 from helpers.servercheck import checkServerRunning
 
 from Entities.materialflow import Materialflow
