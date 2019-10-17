@@ -166,7 +166,7 @@ class TransportOrder():
             state = self._transportOrderStateMachine.state
             #print state
             if(state == "init"):
-                print state + ": Task " + self.taskName + ", id: " + self.id
+                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
                 # subscribe to trigger events
                 if(self._taskInfo.triggeredBy):
                     ts = SensorAgent()
@@ -178,7 +178,7 @@ class TransportOrder():
                     globals.subscriptionDict[self._subscriptionId] = self.id
                 self._transportOrderStateMachine.Initialized()
             elif(state == "waitForTrigger"):
-                print state + ": Task " + self.taskName + ", id: " + self.id 
+                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
                 if(self._taskInfo.triggeredBy):
                     sensorEntityData = self._q.get()      
                     taskTrigger =  self._taskInfo.triggeredBy[0]
@@ -194,9 +194,9 @@ class TransportOrder():
                     self._transportOrderUpdate.taskInfo = UserAction.MovingToPickupDestination
                     self._transportOrderUpdate.updateEntity()
                     self._transportOrderStateMachine.TriggerReceived()                   
-                    print state + "_received: Task " + self.taskName + ", id: " + self.id 
+                    
             elif(state == "startPickup"):
-                print state + "_received: Task " + self.taskName + ", id: " + self.id
+                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
                 if(self.fromId):
                     try:
                         if(bResendOrder): #check if we have to resend it, 
@@ -208,14 +208,13 @@ class TransportOrder():
                         if(rosPacketOrderState):
                             tempUuid = rosPacketOrderState.uuid              
                             if((rosPacketOrderState.status == rosOrderStatus.STARTED or rosPacketOrderState.status==rosOrderStatus.ONGOING) and tempUuid==self._fromUuid and bResendOrder == 0):
-                                print "Robot is moving" + str(rosPacketOrderState.status)
-                                print state + "_Robot_Is_Moving()"+ str(rosPacketOrderState.status)+  "): Task " + self.taskName + ", id: " + self.id
+                                logger.info("TransportOrder - Robot SHOULD moving" + str(rosPacketOrderState.status) + ", Task " + self.taskName + ", id: " + self.id)
                                 self._transportOrderStateMachine.GotoPickupDestination()
  
                     except Exception:
                         pass 
             elif(state == "movingToPickup"):
-                print state + "_received: Task " + self.taskName + ", id: " + self.id 
+                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
                 try: 
                         ##self.sendMoveOrder(destinationName)
                     rosPacketOrderState = self._rosQ.get()
@@ -237,8 +236,8 @@ class TransportOrder():
                 except Queue.Empty:
                     pass
             elif(state == "waitForLoading"):
-                print state + "_received: Task " + self.taskName + ", id: " + self.id
-                print "NOW LOADDDDDDDDDDDDDDDDDDDDDDDDDDDDd"
+                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id + " - Waiting for Loading Ack")
+                
                 
                 tmpToPickUp =  self._taskInfo.transportOrderStepInfos[self._taskInfo.transportOrders[0].pickupFrom]
                 if(tmpToPickUp.finishedBy):
@@ -253,7 +252,7 @@ class TransportOrder():
 
  
             elif(state == "startDelivery"):
-                print state + "_received: Task " + self.taskName + ", id: " + self.id   
+                logger.info("TransportOrder - Robot SHOULD moving" + str(rosPacketOrderState.status) + ", Task " + self.taskName + ", id: " + self.id)
                 if(self.toId):
                     try:
                         if(bResendOrder): #check if we have to resend it, 
@@ -265,8 +264,7 @@ class TransportOrder():
                         if(rosPacketOrderState):
                             tempUuid = rosPacketOrderState.uuid              
                             if((rosPacketOrderState.status == rosOrderStatus.STARTED or rosPacketOrderState.status==rosOrderStatus.ONGOING) and tempUuid==self._toUuid and bResendOrder == 0):
-                                print "Robot is moving" + str(rosPacketOrderState.status)
-                                print state + "_Robot_Is_Moving()"+ str(rosPacketOrderState.status)+  "): Task " + self.taskName + ", id: " + self.id
+                                logger.info("TransportOrder - Robot SHOULD moving" + str(rosPacketOrderState.status) + ", Task " + self.taskName + ", id: " + self.id)
                                 
                                 self._transportOrderUpdate.taskInfo = UserAction.MovingToDeliveryDestination
                                 self._transportOrderUpdate.updateEntity()
@@ -276,7 +274,7 @@ class TransportOrder():
                     except Exception:
                         pass 
             elif(state == "movingToDelivery"):
-                print state + "_received: Task " + self.taskName + ", id: " + self.id
+                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
                 try: 
                         ##self.sendMoveOrder(destinationName)
                     rosPacketOrderState = self._rosQTo.get()
@@ -298,9 +296,7 @@ class TransportOrder():
                 except Queue.Empty:
                     pass 
             elif(state == "waitForUnloading"):
-                print state + "_received: Task " + self.taskName + ", id: " + self.id 
-                
-                print "NOW UNNNNNNNNNNNNNNNNNNNNload"
+                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id + " - Waiting for _UNLoading_ Ack")
                 tmpToDelivery =  self._taskInfo.transportOrderStepInfos[self._taskInfo.transportOrders[0].deliverTo]
                 if(tmpToDelivery.finishedBy):
                     sensorEntityData = self._q.get()
@@ -316,12 +312,12 @@ class TransportOrder():
                     self._transportOrderStateMachine.AgvIsUnloaded()
  
             elif(state == "moveOrderFinished"):
-                print state + "_finished: Task " + self.taskName + ", id: " + self.id
+                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
                 self._transportOrderStateMachine.DestinationReached()
 
             #print state 
 
-        logger.info("Task running, " + str(self))
+        logger.info("Task ist ending, " + self.taskName + ", id: " + self.id)
 
         rosMessageDispatcher.removeThread(self.id)
         sanDictQueue.removeThread(self.id)
