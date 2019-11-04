@@ -12,6 +12,7 @@ class OrderState(object):
         os = OrderState() 
         try: 
             os.uuid = str(uuid.UUID(bytes= msg.order_id.uuid))
+            #print(os.uuid)
             os.status = msg.order_status
             os.type = msg.order_type
             os.state = msg.order_state
@@ -70,3 +71,4 @@ class rosTransportOrderStates():
     TO_UNLOAD_ACTION_ONGOING=53
     TO_UNLOAD_ACTION_FINISHED=54
     TO_UNLOAD_ACTION_ERROR=55
+ 
