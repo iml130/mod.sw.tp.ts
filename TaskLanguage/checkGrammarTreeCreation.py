@@ -11,7 +11,29 @@ from CreateTreeTaskParserVisitor import CreateTreeTaskParserVisitor
 
 import taskValidator
 
-  
+
+TASK_LANG_PRELUDE = """template Location
+    name = ""
+    type = ""
+end
+
+template Event
+    name = ""
+    type = ""
+end
+
+template Location
+    name = ""
+    type = ""
+end
+
+template Event
+    name = ""
+    type = ""
+end
+
+"""
+
 class ThrowErrorListener(ErrorListener):
     def syntaxError(self, recognizer, offendingSymbol, line, column, msg, e):
         raise e
@@ -28,7 +50,7 @@ class ThrowErrorListener(ErrorListener):
 
 def checkTaskLanguage(_taskLanguage):
     try:
-        lexer = TaskLexer(InputStream(_taskLanguage))
+        lexer = TaskLexer(InputStream(TASK_LANG_PRELUDE+ _taskLanguage))
         lexer._listeners.append(ThrowErrorListener())
         stream = CommonTokenStream(lexer)
         parser = TaskParser(stream)
