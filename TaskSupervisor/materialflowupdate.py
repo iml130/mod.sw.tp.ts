@@ -14,6 +14,10 @@ from TaskSupervisor.transportOrder import TransportOrder
 logger = logging.getLogger(__name__)
 ocbHandler = globals.ocbHandler
 
+
+def getUTCtime():
+    return str(datetime.datetime.now().replace(microsecond=0).isoformat())
+
 # this represents a set of tasks
 class MaterialflowUpdate(threading.Thread):
     def __init__(self, ownerId, name, q):
@@ -22,7 +26,7 @@ class MaterialflowUpdate(threading.Thread):
         
         self.id = str(uuid.uuid1())
         self.taskManagerName = name
-        self.time = str(datetime.datetime.now())
+        self.time = getUTCtime()
         self.transportOrderList = []
         self.refOwnerId = ownerId
         
@@ -48,7 +52,7 @@ class MaterialflowUpdate(threading.Thread):
     def publishEntity(self):
         global ocbHandler
         logger.info("TaskManager publishEntity " + self.taskManagerName)
-        self.time = str(datetime.datetime.now())
+        self.time = getUTCtime()
       #  ocbHandler.create_entity(self.taskState) 
         ocbHandler.create_entity(self)
         logger.info("TaskManager publishEntity_done")
@@ -56,7 +60,7 @@ class MaterialflowUpdate(threading.Thread):
     def deleteEntity(self):
         global ocbHandler
         logger.info("TaskManager deleteEntity " + self.taskManagerName)
-        self.time = str(datetime.datetime.now())
+        self.time =  getUTCtime()
         ocbHandler.delete_entity(self.id)
         logger.info("TaskManager deleteEntity_done") 
         
