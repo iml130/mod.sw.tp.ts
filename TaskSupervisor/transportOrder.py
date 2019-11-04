@@ -24,8 +24,9 @@ from FiwareObjectConverter.objectFiwareConverter import ObjectFiwareConverter
 from Entities.entity import FiwareEntity
 from Entities.san import SensorAgent, SensorData
 
+from ROS.transportOrder import rTransportOrder, rManualActionAck
 from ROS.moveOrder import rMoveOrder
-from ROS.OrderState import OrderState, rosOrderStatus
+from ROS.OrderState import OrderState, rosOrderStatus, rosTransportOrderStates
 
 from TaskSupervisor.transportOrderStateMachine import TransportOrderStateMachine
 from TaskSupervisor.transportOrderUpdate import TransportOrderUpdate, UserAction
@@ -50,6 +51,9 @@ def obj2JsonArray(_obj):
     print json.dumps(tempArray)
     return (tempArray)
 
+
+def getUTCtime():
+    return str(datetime.datetime.now().replace(microsecond=0).isoformat())
 class TransportOrder():
     def __init__(self, _taskInfo, _refMaterialflowUpdateId, _refOwnerId):
         # threading.Thread.__init__(self)
@@ -61,7 +65,7 @@ class TransportOrder():
         self.refOwnerId = _refOwnerId
         self.taskName = str(_taskInfo.name)
         self.state = State.Idle
-        self.startTime = str(datetime.datetime.now())
+        self.startTime = getUTCtime()
 
         
 
@@ -77,7 +81,7 @@ class TransportOrder():
         self.fromId =  self._taskInfo.findLocationByTransportOrderStep(self._taskInfo.transportOrders[0].pickupFrom)
         self.toId = self._taskInfo.findLocationByTransportOrderStep(self._taskInfo.transportOrders[0].deliverTo)
         
-        # temporary uids
+        # temporary uids for the moveOrders
         self._fromUuid = str(uuid.uuid4())
         self._toUuid = str(uuid.uuid4())
 
@@ -85,12 +89,14 @@ class TransportOrder():
         # 
         sanDictQueue.addThread(self.id)
 
-        rosMessageDispatcher.addThread(self._fromUuid)
-        rosMessageDispatcher.addThread(self._toUuid)
+        rosMessageDispatcher.addThread(self.id)
+        # rosMessageDispatcher.addThread(self._fromUuid)
+        # rosMessageDispatcher.addThread(self._toUuid)
 
-        self._q = sanDictQueue.getQueue(self.id)
-        self._rosQ = rosMessageDispatcher.getQueue(self._fromUuid)
-        self._rosQTo = rosMessageDispatcher.getQueue(self._toUuid)
+        self._sanQueue = sanDictQueue.getQueue(self.id)
+        self._rosQueueTO = rosMessageDispatcher.getQueue(self.id)
+        # self._rosQueueTO_From = rosMessageDispatcher.getQueue(self._fromUuid)
+        # self._rosQueueTO_To = rosMessageDispatcher.getQueue(self._toUuid)
         
         self._subscriptionId = None
         self._transportOrderStateMachine = TransportOrderStateMachine(self.taskName)
@@ -99,7 +105,7 @@ class TransportOrder():
         logger.info("Task init_done")
 
     def subscriptionDescription(self):
-        return self.taskName + "_" + self.id
+        return self.taskName + "_" + self.id + "_"
 
 # thread imitation
     def start(self):
@@ -120,7 +126,7 @@ class TransportOrder():
         logger.info("Task publishEntity " + self.taskName)
       #  ocbHandler.create_entity(self.taskState)
 
-        self.updateTime = str(datetime.datetime.now())
+        self.updateTime = getUTCtime()
         ocbHandler.create_entity(self)
         logger.info("Task publishEntity_done")
 
@@ -128,14 +134,14 @@ class TransportOrder():
     def updateEntity(self):
         global ocbHandler
         logger.info("Task updateEntity " + self.taskName)
-        self.updateTime = str(datetime.datetime.now())
+        self.updateTime = getUTCtime()
         ocbHandler.update_entity(self)
         logger.info("Task updateEntity")
 
     def deleteEntity(self):
         global ocbHandler
         logger.info("Task deleteEntity " + self.taskName)
-        self.updateTime = str(datetime.datetime.now())
+        self.updateTime = getUTCtime()
         ocbHandler.delete_entity(self.id)
         logger.info("Task deleteEntity_done")
 
@@ -150,9 +156,13 @@ class TransportOrder():
         try:
             if(self._subscriptionId):
                 ocbHandler.deleteSubscriptionById(self._subscriptionId)
-                del globals.subscriptionDict[self._subscriptionId]  
+                if(self._subscriptionId in globals.subscriptionDict):
+                    del globals.subscriptionDict[self._subscriptionId]  
         except Exception as ex:
-            pass
+            print("Error in deleteSubscription" + str(ex))
+
+    def registerForSensor(self):
+        pass
 
     def run(self):
         self.state = State.Running
@@ -166,27 +176,27 @@ class TransportOrder():
             state = self._transportOrderStateMachine.state
             #print state
             if(state == "init"):
-                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
+                logger.info(state + ", id: " + self.id + ", Task: " + self.taskName)
                 # subscribe to trigger events
                 if(self._taskInfo.triggeredBy):
-                    ts = SensorAgent()
-                    
+                    ts = SensorAgent(self._taskInfo.findSensorIdByName(self._taskInfo.triggeredBy[0]['left']))                    
                     self._transportOrderUpdate.taskInfo = UserAction.WaitForStartTrigger
                     self._transportOrderUpdate.updateEntity()
-
-                    self._subscriptionId = ocbHandler.subscribe2Entity(_description=self.subscriptionDescription(), _entities=obj2JsonArray(ts.getEntity()), _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id, _generic=True)
+                    self._subscriptionId = ocbHandler.subscribe2Entity(_description=self.subscriptionDescription() + "WaitForTrigger", _entities=obj2JsonArray(ts.getEntity()), _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id)
                     globals.subscriptionDict[self._subscriptionId] = self.id
                 self._transportOrderStateMachine.Initialized()
             elif(state == "waitForTrigger"):
-                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
+                logger.info(state + ", id: " + self.id + ", Task: " + self.taskName)
+
+                # check if a trigger even exists or not
                 if(self._taskInfo.triggeredBy):
-                    sensorEntityData = self._q.get()      
+                    sensorEntityData = self._sanQueue.get()      
                     taskTrigger =  self._taskInfo.triggeredBy[0]
                     retVal = checkIfSensorEventTriggersNextTransportUpdate(sensorEntityData, self._subscriptionId, taskTrigger, self._taskInfo)
+                    
                     if(retVal == True):
                         self.deleteSubscription()
                         self._transportOrderStateMachine.TriggerReceived()
-
                         self._transportOrderUpdate.taskInfo = UserAction.MovingToPickupDestination
                         self._transportOrderUpdate.updateEntity()
                 else:
@@ -196,37 +206,47 @@ class TransportOrder():
                     self._transportOrderStateMachine.TriggerReceived()                   
                     
             elif(state == "startPickup"):
-                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
+                logger.info(state + ", id: " + self.id + ", Task: " + self.taskName)
                 if(self.fromId):
                     try:
                         if(bResendOrder): #check if we have to resend it, 
-                            rMo = rMoveOrder(self._fromUuid, self.fromId)
+                            # working MO
+                            #rMo = rMoveOrder(self._fromUuid, self.fromId)
+
+                            rTo = rTransportOrder(self.id, self.fromId, self.toId)
                             
-                            if(rMo.status == ROS_CALL_SUCCESS): # no need to resend it...
-                                bResendOrder = False
-                        rosPacketOrderState = self._rosQ.get(QUEUE_WAIT_TIME_IN_SECONDS)                                
+                            if(rTo.status == ROS_CALL_SUCCESS): # no need to resend it...
+                                bResendOrder = False 
+                        rosPacketOrderState = self._rosQueueTO.get(QUEUE_WAIT_TIME_IN_SECONDS)     
+                                                   
                         if(rosPacketOrderState):
-                            tempUuid = rosPacketOrderState.uuid              
-                            if((rosPacketOrderState.status == rosOrderStatus.STARTED or rosPacketOrderState.status==rosOrderStatus.ONGOING) and tempUuid==self._fromUuid and bResendOrder == 0):
+                            tempUuid = rosPacketOrderState.uuid
+                            tempState = rosPacketOrderState.state          
+                            if((tempState == rosTransportOrderStates.TO_LOAD_MOVE_ORDER_START or tempState == rosTransportOrderStates.TO_LOAD_MOVE_ORDER_ONGOING) and tempUuid == self.id and bResendOrder == 0):
                                 logger.info("TransportOrder - Robot SHOULD moving" + str(rosPacketOrderState.status) + ", Task " + self.taskName + ", id: " + self.id)
                                 self._transportOrderStateMachine.GotoPickupDestination()
  
                     except Exception:
-                        pass 
+                        print("narf, didnt work") 
             elif(state == "movingToPickup"):
-                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
+                logger.info(state + ", id: " + self.id + ", Task: " + self.taskName)
                 try: 
                         ##self.sendMoveOrder(destinationName)
-                    rosPacketOrderState = self._rosQ.get()
+                    rosPacketOrderState = self._rosQueueTO.get()
+
                     tempUuid = rosPacketOrderState.uuid
-                    if(rosPacketOrderState.status == rosOrderStatus.FINISHED and tempUuid ==self._fromUuid):
+                    tempState = rosPacketOrderState.state
+
+                    if(tempState == rosTransportOrderStates.TO_LOAD_MOVE_ORDER_FINISHED and tempUuid ==self.id):
                         
                         bResendOrder = True
                         tmpToPickUp =  self._taskInfo.transportOrderStepInfos[self._taskInfo.transportOrders[0].pickupFrom]
-                        if(tmpToPickUp.finishedBy):
-                            ts = SensorAgent()
-                            self._subscriptionId = ocbHandler.subscribe2Entity(_description=self.subscriptionDescription(), _entities=obj2JsonArray(ts.getEntity()), _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id, _generic=True)
+                        if(tmpToPickUp.finishedBy): 
+                            ts = SensorAgent(self._taskInfo.findSensorIdByName(tmpToPickUp.finishedBy[0]['left']))         
+                            self._subscriptionId = ocbHandler.subscribe2Entity(_description=self.subscriptionDescription()+ "WaitForManualLoading", _entities=obj2JsonArray(ts.getEntity()), _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id)
                             globals.subscriptionDict[self._subscriptionId] = self.id
+
+                    elif((tempState == rosTransportOrderStates.TO_LOAD_ACTION_START or tempState == rosTransportOrderStates.TO_LOAD_ACTION_ONGOING) and tempUuid ==self.id):
                         self._transportOrderUpdate.taskInfo = UserAction.WaitForLoading
                         self._transportOrderUpdate.updateEntity()
                         self._transportOrderStateMachine.ArrivedAtPickupDestination()
@@ -236,59 +256,60 @@ class TransportOrder():
                 except Queue.Empty:
                     pass
             elif(state == "waitForLoading"):
-                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id + " - Waiting for Loading Ack")
-                
+                logger.info(state + ", id: " + self.id + ", Task: " + self.taskName + " - Waiting for _Loading_ Ack")
                 
                 tmpToPickUp =  self._taskInfo.transportOrderStepInfos[self._taskInfo.transportOrders[0].pickupFrom]
                 if(tmpToPickUp.finishedBy):
-                    sensorEntityData = self._q.get()
+                    sensorEntityData = self._sanQueue.get()
                     taskTrigger =  tmpToPickUp.finishedBy[0]
                     retVal = checkIfSensorEventTriggersNextTransportUpdate(sensorEntityData, self._subscriptionId, taskTrigger, self._taskInfo)
                     if(retVal == True):
                         self.deleteSubscription()
-                        self._transportOrderStateMachine.AgvIsLoaded()
+                        status = rManualActionAck()
+                        if(status == ROS_CALL_SUCCESS): # no need to resend it...
+                            self._transportOrderStateMachine.AgvIsLoaded()
+                            self._transportOrderUpdate.updateEntity()
+
                 else:
                     self._transportOrderStateMachine.AgvIsLoaded()
-
  
             elif(state == "startDelivery"):
-                logger.info("TransportOrder - Robot SHOULD moving" + str(rosPacketOrderState.status) + ", Task " + self.taskName + ", id: " + self.id)
+                logger.info("Robot SHOULD moving" + str(rosPacketOrderState.status) + ", Task " + self.taskName + ", id: " + self.id)
                 if(self.toId):
                     try:
-                        if(bResendOrder): #check if we have to resend it, 
-                            rMo = rMoveOrder(self._toUuid, self.toId)
-                            
-                            if(rMo.status == ROS_CALL_SUCCESS): # no need to resend it...
-                                bResendOrder = False
-                        rosPacketOrderState = self._rosQTo.get(QUEUE_WAIT_TIME_IN_SECONDS)                                
+                        rosPacketOrderState = self._rosQueueTO.get()
+                        # if(bResendOrder): #check if we have to resend it, 
+                        #     rMo = rMoveOrder(self._toUuid, self.toId)
+                                         
                         if(rosPacketOrderState):
-                            tempUuid = rosPacketOrderState.uuid              
-                            if((rosPacketOrderState.status == rosOrderStatus.STARTED or rosPacketOrderState.status==rosOrderStatus.ONGOING) and tempUuid==self._toUuid and bResendOrder == 0):
+                            tempUuid = rosPacketOrderState.uuid
+                            tempState = rosPacketOrderState.state           
+                            if((tempState == rosTransportOrderStates.TO_UNLOAD_MOVE_ORDER_START or tempState ==rosTransportOrderStates.TO_UNLOAD_MOVE_ORDER_ONGOING) and tempUuid==self.id):
                                 logger.info("TransportOrder - Robot SHOULD moving" + str(rosPacketOrderState.status) + ", Task " + self.taskName + ", id: " + self.id)
-                                
                                 self._transportOrderUpdate.taskInfo = UserAction.MovingToDeliveryDestination
                                 self._transportOrderUpdate.updateEntity()
-
                                 self._transportOrderStateMachine.GotoDeliveryDestination()
  
                     except Exception:
                         pass 
             elif(state == "movingToDelivery"):
-                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
+                logger.info(state + ", id: " + self.id + ", Task: " + self.taskName)
                 try: 
                         ##self.sendMoveOrder(destinationName)
-                    rosPacketOrderState = self._rosQTo.get()
+                    rosPacketOrderState = self._rosQueueTO.get()
                     tempUuid = rosPacketOrderState.uuid
-                    if(rosPacketOrderState.status == rosOrderStatus.FINISHED and tempUuid ==self._toUuid):
-                        
+                    tempState = rosPacketOrderState.state
+                    if(tempState == rosTransportOrderStates.TO_UNLOAD_MOVE_ORDER_FINISHED and tempUuid ==self.id):                        
                         bResendOrder = True 
                         tmpToPickUp =  self._taskInfo.transportOrderStepInfos[self._taskInfo.transportOrders[0].deliverTo]
                         if(tmpToPickUp.finishedBy):
-                            ts = SensorAgent()
-                            self._subscriptionId = ocbHandler.subscribe2Entity(_description=self.subscriptionDescription(), _entities=obj2JsonArray(ts.getEntity()), _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id, _generic=True)
+                            ts = SensorAgent(self._taskInfo.findSensorIdByName(tmpToPickUp.finishedBy[0]['left']))
+                            self._subscriptionId = ocbHandler.subscribe2Entity(_description=self.subscriptionDescription()+ "WaitForManualUnLoading", _entities=obj2JsonArray(ts.getEntity()), _notification=globals.parsedConfigFile.getTaskPlannerAddress() + "/san/" + self.id)
                             globals.subscriptionDict[self._subscriptionId] = self.id
-                            self._transportOrderUpdate.taskInfo = UserAction.WaitForUnloading
-                            self._transportOrderUpdate.updateEntity()
+                            
+                    elif((tempState == rosTransportOrderStates.TO_UNLOAD_ACTION_START or tempState == rosTransportOrderStates.TO_UNLOAD_ACTION_ONGOING) and tempUuid ==self.id):
+                        self._transportOrderUpdate.taskInfo = UserAction.WaitForUnloading
+                        self._transportOrderUpdate.updateEntity()
                         self._transportOrderStateMachine.ArrivedAtDeliveryDestination()
 
                     elif(rosPacketOrderState.status == rosOrderStatus.ERROR or rosPacketOrderState.status == rosOrderStatus.WAITING or rosPacketOrderState.status == rosOrderStatus.UNKNOWN):
@@ -296,37 +317,44 @@ class TransportOrder():
                 except Queue.Empty:
                     pass 
             elif(state == "waitForUnloading"):
-                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id + " - Waiting for _UNLoading_ Ack")
+                logger.info(state + ", id: " + self.id + ", Task: " + self.taskName + " - Waiting for _UNLoading_ Ack")
                 tmpToDelivery =  self._taskInfo.transportOrderStepInfos[self._taskInfo.transportOrders[0].deliverTo]
                 if(tmpToDelivery.finishedBy):
-                    sensorEntityData = self._q.get()
+                    sensorEntityData = self._sanQueue.get()
                     
                     taskTrigger =  tmpToDelivery.finishedBy[0]
                     retVal = checkIfSensorEventTriggersNextTransportUpdate(sensorEntityData, self._subscriptionId, taskTrigger, self._taskInfo)
                     if(retVal == True):
                         self.deleteSubscription()
                         self._transportOrderUpdate.taskInfo = UserAction.Idle
-                        self._transportOrderUpdate.updateEntity()
-                        self._transportOrderStateMachine.AgvIsUnloaded()
+                        status = rManualActionAck()                      
+
+                        if(status == ROS_CALL_SUCCESS):
+                            self._transportOrderStateMachine.AgvIsUnloaded()
+                            self._transportOrderUpdate.updateEntity()
                 else:
                     self._transportOrderStateMachine.AgvIsUnloaded()
  
             elif(state == "moveOrderFinished"):
-                logger.info("TransportOrder " + state + ": Task " + self.taskName + ", id: " + self.id)
+                logger.info(state + ", id: " + self.id + ", Task: " + self.taskName)
                 self._transportOrderStateMachine.DestinationReached()
 
             #print state 
 
         logger.info("Task ist ending, " + self.taskName + ", id: " + self.id)
 
-        rosMessageDispatcher.removeThread(self.id)
+        # clean up the all not needed queus
         sanDictQueue.removeThread(self.id)
+        rosMessageDispatcher.removeThread(self.id)
+        # rosMessageDispatcher.removeThread(self._fromUuid)
+        # rosMessageDispatcher.removeThread(self._toUuid)       
 
         try:
             if(self._subscriptionId):
-                ocbHandler.deleteSubscriptionById(self._subscriptionId)
+                #ocbHandler.deleteSubscriptionById(self._subscriptionId)
+                self.deleteSubscription()
         except Exception as ex:
-            pass
+            print("another error in transportOrder " + str(ex))
         
         self.state = State.Finished
         #self.updateEntity()
