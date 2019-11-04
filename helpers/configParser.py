@@ -23,22 +23,9 @@ class Config(object):
         
         #self.robot_id = config.get('RAN', 'robot_id')
         self.FLASK_HOST = config.get('flask', 'host')
-        self.robots = config.get("robots", "ids").split(",")
         
-        # self.loadingArea = Area()
-        # self.loadingArea.point_x = config.get('loadingArea', 'point_x')
-        # self.loadingArea.point_y = config.get('loadingArea', 'point_y')
-        # self.loadingArea.theta  = config.get('loadingArea', 'theta')
-        # self.waitingArea = Area()
-        # self.waitingArea.point_x = config.get('waitingArea', 'point_x')
-        # self.waitingArea.point_y = config.get('waitingArea', 'point_y')
-        # self.waitingArea.theta  = config.get('waitingArea', 'theta')
-        # self.unloadingArea = Area()
-        # self.unloadingArea.point_x = config.get('unloadingArea', 'point_x')
-        # self.unloadingArea.point_y = config.get('unloadingArea', 'point_y')
-        # self.unloadingArea.theta  = config.get('unloadingArea', 'theta')
-
- 
+        self.robots = config.get("robots", "ids").split(",")
+          
     def getTaskPlannerAddress(self):
         return "http://"+ self.TASKPLANNER_HOST + ":" + str(self.TASKPLANNER_PORT)
     def getFiwareServerAddress(self):
