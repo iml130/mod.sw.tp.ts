@@ -116,6 +116,8 @@ class Schedular(threading.Thread):
             tm.start()
 
         # respawn finished taskManager 
+        #countDown = self.taskInfos.repeat
+        
         while (True):
             res = self.queue.get()
             logger.info("taskSchedular, taskSMaterialflowUpdateet finished: " + res)
