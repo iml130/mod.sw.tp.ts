@@ -11,8 +11,8 @@ class SensorData(object):
       self.__dict__.update(entries)  # Insert values from given dict
 
 class SensorAgent(FiwareEntity):
-    def __init__(self):
-        FiwareEntity.__init__(self)
+    def __init__(self, _id = None):
+        FiwareEntity.__init__(self, id= _id)
         self.type = "SensorAgent"
         self.measurementType = ""
         self.modifiedTime = "" # ISO8601
@@ -22,6 +22,7 @@ class SensorAgent(FiwareEntity):
         self.sensorManufacturer = ""
         self.sensorType = ""
         self.units = ""
+
 
 
 

@@ -5,7 +5,7 @@ class FiwareEntity():
         if(id is None):
             self.id = self.type + str(uuid.uuid4())
         else:
-            self.id =self.type + str(id)  
+            self.id =  str(id)  
  
     def getEntity(self): 
         print "Create Entity: id: " + self.getId() + ", type: " + self.getType()
