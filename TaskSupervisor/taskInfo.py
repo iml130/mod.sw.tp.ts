@@ -44,7 +44,10 @@ class TaskInfo(object):
                     #rint(key, value)
                 
                     
-
+    def findSensorIdByName(self, eventName):
+        if self.instances:
+            if(eventName in self.instances):
+                return self.instances[eventName].keyval["name"].replace('"',"")
 
     def findPositionByName(self, positionName):
    
