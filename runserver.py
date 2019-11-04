@@ -204,6 +204,7 @@ def waitForEnd():
 def callback_ros_order_state(data):
     #rospy.loginfo(data.order_id)  
     os  = OrderState.CreateObjectRosMsg(data)
+    #logger.info("uuid: " + str(os.uuid) + ", state: " + str(os.state) +", status:" +  str(os.status))
     if(os):
         if(os.status == rosOrderStatus.FINISHED):
             logger.info("Received callback_ros_order_state --> FIN")
@@ -211,8 +212,6 @@ def callback_ros_order_state(data):
            
             
 if __name__ == '__main__': 
-    global subscriptionDict
-    global stateQueue 
     global ocbHandler
     global currenTaskDesc
     #global currentTaskState
