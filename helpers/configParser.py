@@ -24,11 +24,19 @@ class Config(object):
         #self.robot_id = config.get('RAN', 'robot_id')
         self.FLASK_HOST = config.get('flask', 'host')
         
-        self.robots = config.get("robots", "ids").split(",")
+        self.robots = self._trimArray(config.get("robots", "ids").split(","))
+        self.robotTypes = self._trimArray(config.get("robots", "types").split(","))
+        self.robotNames = self._trimArray(config.get("robots", "names").split(","))
           
     def getTaskPlannerAddress(self):
         return "http://"+ self.TASKPLANNER_HOST + ":" + str(self.TASKPLANNER_PORT)
     def getFiwareServerAddress(self):
         return "http://"+ self.CB_HOST+":"+self.CB_PORT
 
+
+    def _trimArray(self,_array):
+        trimmedArray = []
+        for item in _array:
+            trimmedArray.append(item.strip().lower())
+        return trimmedArray
 
