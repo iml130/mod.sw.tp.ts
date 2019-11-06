@@ -1,3 +1,5 @@
+import logging 
+
 
 import rospy
 
@@ -15,13 +17,22 @@ from ROS.OrderState import OrderState
 
 from globals import parsedConfigFile
 
+NAMESPACE = "/mars/agent/logical/robot_" 
+TOPIC_ADD_TRANSPORT_ORDER = "add_transport_order"
+TOPIC_MANUAL_ACTION_DONE = "manual_action_done"
+
+logger = logging.getLogger(__name__)
+
+def createTopic(_robotid, _topic):
+    return (NAMESPACE + str(_robotid) + "/" + str(_topic))
+
 class rTransportOrder():
-    def __init__(self, _taskId, _fromId, _toId):
+    def __init__(self, _taskId, _fromId, _toId, _robotId):
         self.status = -1
         print "ROS service (TransportOrder)" 
-        robotId = parsedConfigFile.robots[0]
-
-        rospy.wait_for_service('/mars/agent/logical/' + robotId + '/add_transport_order')
+        
+        tmpService = createTopic(_robotId, TOPIC_ADD_TRANSPORT_ORDER)
+        rospy.wait_for_service(tmpService)
         try:           
       
             # create the required UUIDs based on the input names
@@ -52,40 +63,41 @@ class rTransportOrder():
             self.TransportOrder = TransportOrder(transport_order_id=self.task_id.to_msg(), start_step=self.transportOderStepFrom, destination_step = self.transportOderStepTo )
       
 
-            add_transport_order_srv_req = rospy.ServiceProxy(
-                '/mars/agent/logical/'+ robotId + '/add_transport_order', AddTransportOrder)
+            add_transport_order_srv_req = rospy.ServiceProxy(tmpService, AddTransportOrder)
             
             add_transport_order_req = AddTransportOrderRequest(transport_order=self.TransportOrder)
 
           
             result = add_transport_order_srv_req(self.TransportOrder)
             self.status = result.result.result
-            print "addTransportOrderResult"
-            print self.status
+            logger.info("addTransportOrderResult" + str(self.status))
+            
 
         except rospy.ServiceException, e:
-            print "ROS Service (TransportOrder) call failed: %s" % e
+            logger.info("ROS Service (AddTransportOrder) call failed: %s" % e)
+     
         except Exception as ex:
-            print ex
+            logger.info("ROS Exception: %s" % ex)
 
-def rManualActionAck():
+def rManualActionAck(_robotId):
  
     print "ROS service (rManualActionAck)" 
-    robotId = parsedConfigFile.robots[0]
-
-    rospy.wait_for_service('/mars/agent/logical/' + robotId + '/manual_action_done')
+    #robotId = parsedConfigFile.robots[0]
+    tmpService = createTopic(_robotId, TOPIC_MANUAL_ACTION_DONE)
+    
+    rospy.wait_for_service(tmpService)
     try:              
 
-        add_transport_order_srv_req = rospy.ServiceProxy(
-            '/mars/agent/logical/'+ robotId + '/manual_action_done', ManualActionDone)
+        add_transport_order_srv_req = rospy.ServiceProxy(tmpService, ManualActionDone)
         
         add_transport_order_req = ManualActionDoneRequest()
 
         
         result = add_transport_order_srv_req()
+        result = result.result.result
+        logger.info("rManualActionAck" + str(result))
         
-        print "rManualActionAck"
-        return result.result.result
+        return result
 
     except rospy.ServiceException, e:
         print "ROS Service (rManualActionAck) call failed: %s" % e
