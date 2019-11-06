@@ -1,0 +1,55 @@
+template Location
+    name = ""
+    type = ""
+end
+
+template Event
+    name = ""
+    type = ""
+end
+
+Location pickupItem
+    name = "vertex_5"
+    type = "pallet"
+end
+
+Location dropoffItem
+    name = "vertex_25"
+    type = "pallet"
+end
+
+Event triggetGetNewMaterial
+    name = "repeatTrigger"
+    type = "Boolean"
+end
+
+Event agvLoadadAtStorage1
+    name = "repeatLoaded"
+    type = "Boolean"
+end
+
+Event agvUnloadedAtWorkstation1
+    name = "repeatUnLoaded"
+    type = "Boolean"
+end
+
+
+TransportOrderStep loadStorage
+    Location pickupItem     # Only one Location can be defined!
+    FinishedBy agvLoadadAtStorage1 == True 
+end
+
+TransportOrderStep unloadWorkstation1
+    Location dropoffItem
+    FinishedBy agvUnloadedAtWorkstation1 == True
+end
+
+task TransportFromP0toP1
+    # Transport Order now needs TransportOrderSteps instead of regular instances
+    TriggeredBy triggetGetNewMaterial == True
+    Transport
+    from loadStorage
+    to unloadWorkstation1
+    Repeat		2
+end
+ 
