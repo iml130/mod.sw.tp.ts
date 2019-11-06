@@ -18,12 +18,13 @@ import uuid
 # IMPORT LOCAL libs
 from globals import sanDictQueue, rosMessageDispatcher
 import globals
- 
+
 
 ocbHandler = globals.ocbHandler
 
 logger = logging.getLogger(__name__)
 
+from helpers.utc import getUTCtime
 
 class TransportOrderUpdate():
     def __init__(self, _transportOrder):
@@ -38,6 +39,10 @@ class TransportOrderUpdate():
         self.refMaterialflowUpdateId = _transportOrder.refMaterialflowUpdateId
         self.state = _transportOrder._transportOrderStateMachine.state
         self.taskInfo = UserAction.Idle
+        self.robotId = _transportOrder._robotId
+        if (self.robotId is None):
+            self.robotId = "-"
+        
 
 
 # updates orion (publish, update and delete)        
@@ -46,21 +51,21 @@ class TransportOrderUpdate():
         logger.info("TransportOrderUpdate publishEntity " + self.name)
       #  ocbHandler.create_entity(self.taskState)
 
-        self.updateTime = str(datetime.datetime.now())
+        self.updateTime = getUTCtime()
         ocbHandler.create_entity(self)
         logger.info("TransportOrderUpdate publishEntity_done")
 
     def updateEntity(self):
         global ocbHandler
         logger.info("Task updateEntity " + self.name)
-        self.updateTime = str(datetime.datetime.now())
+        self.updateTime = getUTCtime()
         ocbHandler.update_entity(self)
         logger.info("Task updateEntity")
 
     def deleteEntity(self):
         global ocbHandler
         logger.info("Task deleteEntity " + self.name)
-        self.updateTime = str(datetime.datetime.now())
+        self.updateTime = getUTCtime()
         ocbHandler.delete_entity(self.id)
         logger.info("Task deleteEntity_done")
 

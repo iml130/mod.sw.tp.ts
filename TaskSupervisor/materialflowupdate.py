@@ -14,9 +14,8 @@ from TaskSupervisor.transportOrder import TransportOrder
 logger = logging.getLogger(__name__)
 ocbHandler = globals.ocbHandler
 
+from helpers.utc import getUTCtime
 
-def getUTCtime():
-    return str(datetime.datetime.now().replace(microsecond=0).isoformat())
 
 # this represents a set of tasks
 class MaterialflowUpdate(threading.Thread):
