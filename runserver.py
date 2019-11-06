@@ -96,6 +96,10 @@ ocbHandler = globals.ocbHandler
  
 currenTaskDesc = task.Task()
 listCurrentMaterialFlowSpecState = []
+ 
+currenTaskDesc = task.Task()
+listCurrentMaterialFlowSpecState = []
+runningSchedulars = []
 currentMaterialFlowSpecState = MaterialflowSpecificationState()
 ran_task_id = 0  
 terminate = False 
@@ -126,14 +130,16 @@ def flaskThread():
 def schedularDealer(schedularQueue):
     global tsInfo
     global ocbHandler
+    global runningSchedulars
     ts = None
     logger.info("SchedularDealer started")
-    threads = []
+    
     while True: 
         ts = None
         dmp = schedularQueue.get()
         if(ts is None):
             ts = Schedular(dmp)
+            runningSchedulars.append(ts)
             ts.start()
             tsInfo.appendMaterielflow(dmp.id)
             ocbHandler.update_entity(tsInfo)
@@ -154,7 +160,7 @@ def taskDealer(taskQueue):
     global ocbHandler
     global currenTaskDesc
     global listCurrentMaterialFlowSpecState
-     
+    global runningSchedulars
     
     logger.info("taskDealer started")
     while True: 
@@ -178,6 +184,11 @@ def taskDealer(taskQueue):
                     if(retVal == 0):
                         listCurrentMaterialFlowSpecState.append(currentMaterialFlowSpecState)
                 else:
+                    # TODO
+                    for schedular in runningSchedulars:
+                        if(schedular.id == objTaskSpec.id):
+                            print("SET INACTIVE: " + schedular.id)
+                            schedular.setActive(False)
                     print("TODO: Disable the Materialflow or ignore it...but first... lets make it easy")
         #ocbHandler.update_entity(currentMaterialFlowSpecState)
     

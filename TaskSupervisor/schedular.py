@@ -59,6 +59,7 @@ class Schedular(threading.Thread):
     def __init__(self, _materialflow, ): # name, taskLanguage):
         threading.Thread.__init__(self) 
         logger.info("taskSchedular init")
+        self.id = _materialflow.id
         self.tasklanguage = _materialflow.specification
         LoTLan = createLoTLan(self.tasklanguage)
 
@@ -67,7 +68,6 @@ class Schedular(threading.Thread):
         taskGraph = graphy.createGraph(LoTLan.taskInfos)
         graphy.printGraphInfo(taskGraph)
         graphy.displayGraph(taskGraph, True)
-
         self.taskGraph = taskGraph
         self.taskInfos = LoTLan.taskInfos
         self.transportOrderStepInfos = LoTLan.transportOrderSteps
@@ -85,8 +85,12 @@ class Schedular(threading.Thread):
         self.historyTasks = [] 
         self.taskManager = []
         self.queue = Queue.Queue()
+        self.active = True
         logger.info("taskSchedular init_end")
     
+    def setActive(self, _value):
+        self.active = _value
+
     def addTask(self, task):
         logger.info("taskSchedular addTask" + task.name)
         if(task not in self.runningTasks):
@@ -118,7 +122,7 @@ class Schedular(threading.Thread):
         # respawn finished taskManager 
         #countDown = self.taskInfos.repeat
         
-        while (True):
+        while (self.active):
             res = self.queue.get()
             logger.info("taskSchedular, taskSMaterialflowUpdateet finished: " + res)
             for tR in self.runningTasks:
@@ -128,14 +132,15 @@ class Schedular(threading.Thread):
                     self.runningTasks.remove(tR)                                           
                     tR = None
                     
-            for tM in self.taskManager:
-                if(tM.taskManagerName == res):
-                    temp = MaterialflowUpdate.newMaterialflowUpdate(tM, self.queue) 
+            if(self.active):
+                for tM in self.taskManager:
+                    if(tM.taskManagerName == res):
+                        temp = MaterialflowUpdate.newMaterialflowUpdate(tM, self.queue) 
 
-                    self.runningTasks.append(temp)
-                    logger.info("taskSchedular, MaterialflowUpdate respawn: " + res)
-                    temp.publishEntity()
-                    temp.start()
+                        self.runningTasks.append(temp)
+                        logger.info("taskSchedular, MaterialflowUpdate respawn: " + res)
+                        temp.publishEntity()
+                        temp.start()
         logger.info("taskSchedular start_end")
             
     def status(self):
