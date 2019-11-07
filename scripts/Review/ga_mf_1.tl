@@ -36,8 +36,20 @@ end
 
 task SupplyTaskFromStorage1ToWorkstation1
     # Transport Order now needs TransportOrderSteps instead of regular instances
-    TriggeredBy triggetGerNewMaterial == True
+    TriggeredBy triggerGetNewMaterial == True
     Transport
     from loadStorage
-    to unloadWorkstation1 
+    to unloadWorkstation1
+    OnDone NaechsteTask
+end
+
+
+
+task NaechsteTask
+    # Transport Order now needs TransportOrderSteps instead of regular instances
+    TriggeredBy triggerGetNewMaterial == True
+    Transport
+    from loadStorage
+    to unloadWorkstation1
+    OnDone NaechsteTask
 end
