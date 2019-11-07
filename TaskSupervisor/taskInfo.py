@@ -42,15 +42,27 @@ class TaskInfo(object):
                             tempName = self.transportOrderStepInfos[_toStep].location
                             return self.findPositionByName(tempName)
                     #rint(key, value)
-                
+
+    def findLocationTypeByTransportOrderStep(self, _toStep): 
+        if(self.transportOrderStepInfos):
+            if(_toStep in self.transportOrderStepInfos):
+                for key, value in self.transportOrderStepInfos.iteritems():
+                    if(key == _toStep):                       
+                        if(value.location != ""):
+                            tempName = self.transportOrderStepInfos[_toStep].location
+                            return self.getPositionType(tempName)
+
+    def getPositionType(self, positionName):   
+        if self.instances:
+            if(positionName in self.instances):
+                return self.instances[positionName].keyval["type"].replace('"',"")
                     
     def findSensorIdByName(self, eventName):
         if self.instances:
             if(eventName in self.instances):
                 return self.instances[eventName].keyval["name"].replace('"',"")
 
-    def findPositionByName(self, positionName):
-   
+    def findPositionByName(self, positionName):   
         if self.instances:
             if(positionName in self.instances):
                 return self.instances[positionName].keyval["name"].replace('"',"")
