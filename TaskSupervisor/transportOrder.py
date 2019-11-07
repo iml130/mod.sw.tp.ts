@@ -34,6 +34,9 @@ from TaskSupervisor.taskInfo import TaskInfo
 from TaskSupervisor.taskState import State, TaskState
 from TaskSupervisor.triggerValidator import validateTrigger
 
+
+from bpo import getRobot
+from helpers.utc import getUTCtime
 ocbHandler = globals.ocbHandler
 
 logger = logging.getLogger(__name__)
@@ -52,8 +55,6 @@ def obj2JsonArray(_obj):
     return (tempArray)
 
 
-def getUTCtime():
-    return str(datetime.datetime.now().replace(microsecond=0).isoformat())
 class TransportOrder():
     def __init__(self, _taskInfo, _refMaterialflowUpdateId, _refOwnerId):
         # threading.Thread.__init__(self)
@@ -80,7 +81,7 @@ class TransportOrder():
         # store the names:
         self.fromId =  self._taskInfo.findLocationByTransportOrderStep(self._taskInfo.transportOrders[0].pickupFrom)
         self.toId = self._taskInfo.findLocationByTransportOrderStep(self._taskInfo.transportOrders[0].deliverTo)
-        
+         
         # temporary uids for the moveOrders
         self._fromUuid = str(uuid.uuid4())
         self._toUuid = str(uuid.uuid4())
@@ -100,7 +101,7 @@ class TransportOrder():
         
         self._subscriptionId = None
         self._transportOrderStateMachine = TransportOrderStateMachine(self.taskName)
-
+        self._robotId = None
         self._transportOrderUpdate = TransportOrderUpdate(self)
         logger.info("Task init_done")
 
@@ -212,8 +213,13 @@ class TransportOrder():
                         if(bResendOrder): #check if we have to resend it, 
                             # working MO
                             #rMo = rMoveOrder(self._fromUuid, self.fromId)
+                            pickupType = self._taskInfo.findLocationTypeByTransportOrderStep(self._taskInfo.transportOrders[0].pickupFrom)
+                            dropoffType = self._taskInfo.findLocationTypeByTransportOrderStep(self._taskInfo.transportOrders[0].deliverTo)
 
-                            rTo = rTransportOrder(self.id, self.fromId, self.toId)
+                            self._robotId = getRobot(pickupType)
+                            self._transportOrderUpdate.robotId = self._robotId
+
+                            rTo = rTransportOrder(self.id, self.fromId, self.toId, self._robotId)
                             
                             if(rTo.status == ROS_CALL_SUCCESS): # no need to resend it...
                                 bResendOrder = False 
@@ -265,7 +271,7 @@ class TransportOrder():
                     retVal = checkIfSensorEventTriggersNextTransportUpdate(sensorEntityData, self._subscriptionId, taskTrigger, self._taskInfo)
                     if(retVal == True):
                         self.deleteSubscription()
-                        status = rManualActionAck()
+                        status = rManualActionAck(self._robotId)
                         if(status == ROS_CALL_SUCCESS): # no need to resend it...
                             self._transportOrderStateMachine.AgvIsLoaded()
                             self._transportOrderUpdate.updateEntity()
@@ -327,7 +333,7 @@ class TransportOrder():
                     if(retVal == True):
                         self.deleteSubscription()
                         self._transportOrderUpdate.taskInfo = UserAction.Idle
-                        status = rManualActionAck()                      
+                        status = rManualActionAck(self._robotId)                      
 
                         if(status == ROS_CALL_SUCCESS):
                             self._transportOrderStateMachine.AgvIsUnloaded()
