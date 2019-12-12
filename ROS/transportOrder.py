@@ -17,9 +17,13 @@ from ROS.OrderState import OrderState
 
 from globals import parsedConfigFile
 
-NAMESPACE = "/mars/agent/logical/robot_" 
+NAMESPACE = "/mars/agent/logical/" 
 TOPIC_ADD_TRANSPORT_ORDER = "add_transport_order"
 TOPIC_MANUAL_ACTION_DONE = "manual_action_done"
+# Infinite reservation time for manual loading and unloading 
+# INIFITE_RSERVATION_TIME = -1.0
+# DST_RESERVATION_TIME = -INIFITE_RSERVATION_TIME
+DST_RESERVATION_TIME = 5
 
 logger = logging.getLogger(__name__)
 
@@ -41,7 +45,7 @@ class rTransportOrder():
             self.to_id = Id(_toId, IdType.ID_TYPE_STRING_NAME)
             dura = Duration()
             # SIMPLY THE BEST
-            dura.data.secs = 5 
+            dura.data.secs = DST_RESERVATION_TIME
             
             
             # FROM
