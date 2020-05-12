@@ -68,7 +68,7 @@ class CreateTreeTaskParserVisitor(TaskParserVisitor):
     def visitProgram(self, ctx):
         # Create Program
         cp = CompleteProgram()
-
+        position = 0
 
         for child in ctx.children:
             TempOrInstOrTaskOrTOS = self.visit(child)  # Get object Template|Instance|Task
@@ -79,7 +79,9 @@ class CreateTreeTaskParserVisitor(TaskParserVisitor):
             if isinstance(TempOrInstOrTaskOrTOS, Instance):
                 cp.instances[TempOrInstOrTaskOrTOS.name] = (TempOrInstOrTaskOrTOS)
             if isinstance(TempOrInstOrTaskOrTOS, TaskInfo):
+                TempOrInstOrTaskOrTOS.position = position
                 cp.taskInfos[TempOrInstOrTaskOrTOS.name] = (TempOrInstOrTaskOrTOS)
+                position += 1
             if isinstance(TempOrInstOrTaskOrTOS, TransportOrderStep):
                 cp.transportOrderSteps[TempOrInstOrTaskOrTOS.name] = (TempOrInstOrTaskOrTOS)
         return cp
