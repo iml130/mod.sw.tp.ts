@@ -32,9 +32,8 @@ def createLoTLan(_taskLanguage):
         visitor = CreateTreeTaskParserVisitor() 
         t = visitor.visit(tree)
         for key,value in t.taskInfos.iteritems():
-            print "NewTask: "
-            print key
-            print value.onDone
+            print("NewTask: ",key)
+            print("  OnDone: ", value.onDone)
         return t
     except Exception as expression:
         print expression
@@ -66,6 +65,9 @@ class Schedular(threading.Thread):
 # todo: check if it is parsable and create an own state
 
         taskGraph = graphy.createGraph(LoTLan.taskInfos)
+        tmp = taskGraph.nodes_with_selfloops()
+        print(tmp)
+        print "NumberOfSelfLoops:" + str(taskGraph.nodes_with_selfloops())
         graphy.printGraphInfo(taskGraph)
         graphy.displayGraph(taskGraph, True)
         self.taskGraph = taskGraph
@@ -90,6 +92,8 @@ class Schedular(threading.Thread):
     
     def setActive(self, _value):
         self.active = _value
+        for tm in self.taskManager:
+            tm.setActive(_value)
 
     def addTask(self, task):
         logger.info("taskSchedular addTask" + task.name)
@@ -101,27 +105,39 @@ class Schedular(threading.Thread):
         logger.info("taskSchedular start")
         for node in self.taskGraph.nodes:
             if(self.taskGraph.in_degree(node) == INDEGREE_ZERO): # get all starting points from the graph
-                tM = MaterialflowUpdate(self.owner,node.name, self.queue)
-                tM.addTask(node) # add the starting task
+                tmp_material_flow_update = MaterialflowUpdate(self.owner,node.name, self.queue)
+                tmp_material_flow_update.setStartTask(node) # add the starting task
+                tmp_material_flow_update.addTask(node) # add the starting task
                 successors = nx.dfs_successors(self.taskGraph, source = node).values()
                 if(successors):
                     #self.taskGraph.nodes() 
                     for successor in successors: # create linked list with child nodes
-                        tM.addTask(successor[0])
-                    self.taskManager.append(tM)
+                        tmp_material_flow_update.addTask(successor[0])
+                    self.taskManager.append(tmp_material_flow_update)
                 else:
                     # no successor, single task, reocurrent                    
-                    self.taskManager.append(tM)
-                    
+                    self.taskManager.append(tmp_material_flow_update)
+            elif(self.taskGraph.in_degree(node) != INDEGREE_ZERO):
+                if(node.position == 0):
+                    # hello starting point for the materialflow :)
+                    tmp_material_flow_update = MaterialflowUpdate(self.owner,node.name, self.queue)
+                    tmp_material_flow_update.setStartTask(node) # add the starting task
+                    #tmp_material_flow_update.addTask(node) # add the starting task
+                    successors = nx.dfs_successors(self.taskGraph, source = node).values()
+                    if(successors):
+                        #self.taskGraph.nodes() 
+                        for successor in successors: # create linked list with child nodes
+                            tmp_material_flow_update.addTask(successor[0])
+                        self.taskManager.append(tmp_material_flow_update)
+                    else:
+                        # no successor, single task, reocurrent                    
+                        self.taskManager.append(tmp_material_flow_update)
         for tm in self.taskManager:
             logger.info("taskSchedular, MaterialflowUpdate spawn: " + tm.taskManagerName)
             self.runningTasks.append(tm)
             tm.publishEntity()
             tm.start()
 
-        # respawn finished taskManager 
-        #countDown = self.taskInfos.repeat
-        
         while (self.active):
             res = self.queue.get()
             logger.info("taskSchedular, taskSMaterialflowUpdateet finished: " + res)
@@ -131,16 +147,11 @@ class Schedular(threading.Thread):
                     #tR.deleteEntity()
                     self.runningTasks.remove(tR)                                           
                     tR = None
-                    
-            if(self.active):
-                for tM in self.taskManager:
-                    if(tM.taskManagerName == res):
-                        temp = MaterialflowUpdate.newMaterialflowUpdate(tM, self.queue) 
+            if(len(self.runningTasks) == 0):
+                self.active = False
+                print("We are done; ")
+                pass
 
-                        self.runningTasks.append(temp)
-                        logger.info("taskSchedular, MaterialflowUpdate respawn: " + res)
-                        temp.publishEntity()
-                        temp.start()
         logger.info("taskSchedular start_end")
             
     def status(self):
