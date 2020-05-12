@@ -17,6 +17,7 @@ class TaskInfo(object):
         self.finishedBy = []
         self.instances = {}
         self.transportOrderStepInfos = {}
+        self.position = -1
         logger.info("TaskInfo init_done")
 
     def addChild(self, _child):
