@@ -34,8 +34,8 @@ from TaskSupervisor.taskInfo import TaskInfo
 from TaskSupervisor.taskState import State, TaskState
 from TaskSupervisor.triggerValidator import validateTrigger
 
-
-from bpo import getRobot
+ 
+from bpo import Robot, getNextRobotByType
 from helpers.utc import getUTCtime
 ocbHandler = globals.ocbHandler
 
@@ -51,12 +51,12 @@ QUEUE_WAIT_TIME_IN_SECONDS = 5
 def obj2JsonArray(_obj):
     tempArray = []
     tempArray.append(_obj)
-    print json.dumps(tempArray)
+    logger.info(json.dumps(tempArray))
     return (tempArray)
 
 
 class TransportOrder():
-    def __init__(self, _taskInfo, _refMaterialflowUpdateId, _refOwnerId):
+    def __init__(self, _taskInfo, _refMaterialflowUpdateId, _refOwnerId, queueTransportOrders):
         # threading.Thread.__init__(self)
         logger.info("Task init")
 
@@ -73,6 +73,7 @@ class TransportOrder():
         # setting up the thread
         self._threadRunner = threading.Thread(target=self.run)
         self._threadRunner.setDaemon(True)
+        self._threadRunner.name = str(self.id)
         # self._t.start()
 
         logger.info("Task name: " + self.taskName + ", uuid:" + str(self.id))
@@ -93,6 +94,7 @@ class TransportOrder():
         rosMessageDispatcher.addThread(self.id)
         # rosMessageDispatcher.addThread(self._fromUuid)
         # rosMessageDispatcher.addThread(self._toUuid)
+        self._queuedTransportOrders = queueTransportOrders
 
         self._sanQueue = sanDictQueue.getQueue(self.id)
         self._rosQueueTO = rosMessageDispatcher.getQueue(self.id)
@@ -103,6 +105,7 @@ class TransportOrder():
         self._transportOrderStateMachine = TransportOrderStateMachine(self.taskName)
         self._robotId = None
         self._transportOrderUpdate = TransportOrderUpdate(self)
+        self._robot = None
         logger.info("Task init_done")
 
     def subscriptionDescription(self):
@@ -160,7 +163,7 @@ class TransportOrder():
                 if(self._subscriptionId in globals.subscriptionDict):
                     del globals.subscriptionDict[self._subscriptionId]  
         except Exception as ex:
-            print("Error in deleteSubscription" + str(ex))
+            logger.info("Error in deleteSubscription" + str(ex))
 
     def registerForSensor(self):
         pass
@@ -168,10 +171,14 @@ class TransportOrder():
     def run(self):
         self.state = State.Running
         #self.updateEntity()
+        hasOnDone = False
         self._transportOrderUpdate.publishEntity()
+
 
         bResendOrder = True
         
+        #this is a huge state machine, quite ugly coded... 
+        # 
         while(self._transportOrderStateMachine.state != "finished" and self._transportOrderStateMachine.state != "error"):
             
             state = self._transportOrderStateMachine.state
@@ -215,8 +222,8 @@ class TransportOrder():
                             #rMo = rMoveOrder(self._fromUuid, self.fromId)
                             pickupType = self._taskInfo.findLocationTypeByTransportOrderStep(self._taskInfo.transportOrders[0].pickupFrom)
                             dropoffType = self._taskInfo.findLocationTypeByTransportOrderStep(self._taskInfo.transportOrders[0].deliverTo)
-
-                            self._robotId = getRobot(pickupType)
+                            self._robot =  getNextRobotByType(pickupType)
+                            self._robotId = self._robot.id
                             self._transportOrderUpdate.robotId = self._robotId
 
                             rTo = rTransportOrder(self.id, self.fromId, self.toId, self._robotId)
@@ -233,7 +240,7 @@ class TransportOrder():
                                 self._transportOrderStateMachine.GotoPickupDestination()
  
                     except Exception:
-                        print("narf, didnt work") 
+                        logger.info("startPickup, didnt work") 
             elif(state == "movingToPickup"):
                 logger.info(state + ", id: " + self.id + ", Task: " + self.taskName)
                 try: 
@@ -258,13 +265,14 @@ class TransportOrder():
                         self._transportOrderStateMachine.ArrivedAtPickupDestination()
 
                     elif(rosPacketOrderState.status == rosOrderStatus.ERROR or rosPacketOrderState.status == rosOrderStatus.WAITING or rosPacketOrderState.status == rosOrderStatus.UNKNOWN):
-                        print rosPacketOrderState.status
+                        logger.info(rosPacketOrderState.status)
                 except Queue.Empty:
                     pass
             elif(state == "waitForLoading"):
                 logger.info(state + ", id: " + self.id + ", Task: " + self.taskName + " - Waiting for _Loading_ Ack")
                 
                 tmpToPickUp =  self._taskInfo.transportOrderStepInfos[self._taskInfo.transportOrders[0].pickupFrom]
+
                 if(tmpToPickUp.finishedBy):
                     sensorEntityData = self._sanQueue.get()
                     taskTrigger =  tmpToPickUp.finishedBy[0]
@@ -278,6 +286,12 @@ class TransportOrder():
 
                 else:
                     self._transportOrderStateMachine.AgvIsLoaded()
+
+                # check if there is a follow up task after picking up at transportorderstep
+                if(tmpToPickUp.onDone):
+                    hasOnDone = True
+                    for onDone in tmpToPickUp.onDone:
+                        self._queuedTransportOrders.put(onDone)
  
             elif(state == "startDelivery"):
                 logger.info("Robot SHOULD moving" + str(rosPacketOrderState.status) + ", Task " + self.taskName + ", id: " + self.id)
@@ -340,7 +354,12 @@ class TransportOrder():
                             self._transportOrderUpdate.updateEntity()
                 else:
                     self._transportOrderStateMachine.AgvIsUnloaded()
- 
+                    
+                    # check if there is a follow up task after dropping at transportorderstep
+                if(tmpToDelivery.onDone):
+                    hasOnDone = True
+                    for onDone in tmpToDelivery.onDone:
+                        self._queuedTransportOrders.put(onDone)
             elif(state == "moveOrderFinished"):
                 logger.info(state + ", id: " + self.id + ", Task: " + self.taskName)
                 self._transportOrderStateMachine.DestinationReached()
@@ -360,12 +379,23 @@ class TransportOrder():
                 #ocbHandler.deleteSubscriptionById(self._subscriptionId)
                 self.deleteSubscription()
         except Exception as ex:
-            print("another error in transportOrder " + str(ex))
+            ("another error in transportOrder " + str(ex))
         
         self.state = State.Finished
         #self.updateEntity()
         self._transportOrderUpdate.deleteEntity()
         logger.info("Task finished, " + str(self))
+        # check if there is a follow up task after the delivery
+        if(self._taskInfo.onDone):
+            for onDone in self._taskInfo.onDone:
+                self._queuedTransportOrders.put(onDone)
+        else:
+            if(not hasOnDone): # here is no follow up task... lets close everything
+                self._queuedTransportOrders.put("_DONE")
+            else:
+                self._queuedTransportOrders.put("_DONE|" + self._threadRunner.name)
+            
+            
 
 
 def checkIfSensorEventTriggersNextTransportUpdate(sensorEntityData,subscriptionId, taskTrigger, taskInfo):
