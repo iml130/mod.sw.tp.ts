@@ -88,6 +88,10 @@ SERVER_ADDRESS = "localhost"
 
 CONFIG_FILE = "./fiware_config.ini"
 parsedConfigFile = Config(CONFIG_FILE)
+
+from TaskSupervisor.bpo import initRobot
+initRobot()
+
 if(parsedConfigFile.FLASK_HOST):
     PORT = int(parsedConfigFile.TASKPLANNER_PORT)
 #globals.initOcbHandler(parsedConfigFile.getFiwareServerAddress())
@@ -131,6 +135,7 @@ def schedularDealer(schedularQueue):
     global tsInfo
     global ocbHandler
     global runningSchedulars
+    global listCurrentMaterialFlowSpecState
     ts = None
     logger.info("SchedularDealer started")
     
@@ -147,6 +152,8 @@ def schedularDealer(schedularQueue):
         else:
             print "Already running, not able to accept any others"
         print "Is Running"
+        # for(currentMaterialFlowSpecState in listCurrentMaterialFlowSpecState):
+
     
     logger.info("SchedularDealer ended")        
 
@@ -174,6 +181,7 @@ def taskDealer(taskQueue):
                     retVal, message = checkTaskLanguage(objTaskSpec.specification)
                     currentMaterialFlowSpecState.message = message
                     if(retVal == 0):
+                        objTaskSpec._specStateId = currentMaterialFlowSpecState.getId()
                         logger.info("newTaskSpec:\n"+ str(objTaskSpec.specification))
                         globals.taskSchedulerQueue.put(objTaskSpec)
             
