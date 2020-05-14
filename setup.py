@@ -10,7 +10,7 @@ from flask import Flask
 app = Flask(__name__)
 
 VERSION = """Fraunhofer IML<br />
-OPIL TaskPlanner v0.1.5 - 10.2019 (#42)<br />
+OPIL TaskPlanner v0.4.0 - 14.05.2020 (#06041986)<br />
 Running...<br />
 """
 import views 
