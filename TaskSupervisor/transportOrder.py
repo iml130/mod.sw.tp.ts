@@ -225,6 +225,7 @@ class TransportOrder():
                             self._robot =  getNextRobotByType(pickupType)
                             self._robotId = self._robot.id
                             self._transportOrderUpdate.robotId = self._robotId
+                            self._transportOrderUpdate.updateEntity()
 
                             rTo = rTransportOrder(self.id, self.fromId, self.toId, self._robotId)
                             
