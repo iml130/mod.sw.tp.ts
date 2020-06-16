@@ -67,7 +67,7 @@ class Schedular(threading.Thread):
         taskGraph = graphy.createGraph(LoTLan.taskInfos)
         tmp = taskGraph.nodes_with_selfloops()
         print(tmp)
-        print "NumberOfSelfLoops:" + str(taskGraph.nodes_with_selfloops())
+        print ("NumberOfSelfLoops:" + str(taskGraph.nodes_with_selfloops()))
         graphy.printGraphInfo(taskGraph)
         graphy.displayGraph(taskGraph, True)
         self.taskGraph = taskGraph

@@ -11,7 +11,7 @@ def getChildTask(G, currentTask):
         
     for node in G.nodes():
         if(node == currentTask):
-            print "current" 
+            print ("current" )
     return child
 
 def getStartTask(G):
@@ -23,14 +23,14 @@ def getStartTask(G):
     return listStartTask
 
 def printGraphInfo(G):
-    print "NumberOfSelfLoops:" + str(G.number_of_selfloops())
+    print ("NumberOfSelfLoops:" + str(G.number_of_selfloops()))
     print getStartTask(G)
 
     for node in G.nodes():
-        print "-----"
-        print node
-        print "in: " + str(G.in_degree(node))
-        print "out: " + str(G.out_degree(node))
+        print( "-----")
+        print (node)
+        print ("in: " + str(G.in_degree(node)))
+        print ("out: " + str(G.out_degree(node)))
 
 def displayGraph(G, save = False):
     color_map = []

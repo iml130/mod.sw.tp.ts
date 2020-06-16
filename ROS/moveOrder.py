@@ -14,7 +14,7 @@ from globals import parsedConfigFile
 class rMoveOrder():
     def __init__(self, _id, _destinationName):
         self.status = -1
-        print "ROS service (MoveOder)" 
+        print ("ROS service (MoveOder)" )
         robotId = parsedConfigFile.robots[0]
 
         rospy.wait_for_service('/mars/agent/logical/' + robotId + '/add_move_order')
@@ -43,11 +43,11 @@ class rMoveOrder():
           
             result = add_move_order_srv_req(move_order)
             self.status = result.result.result
-            print "addMoveOrderResult"
-            print self.status
+            print( "addMoveOrderResult")
+            print( self.status)
 
         except rospy.ServiceException, e:
-            print "ROS Service (MoveOrder) call failed: %s" % e
+            print( "ROS Service (MoveOrder) call failed: %s" % e)
         except Exception as ex:
             print ex
 

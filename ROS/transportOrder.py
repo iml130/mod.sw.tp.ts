@@ -33,7 +33,7 @@ def createTopic(_robotid, _topic):
 class rTransportOrder():
     def __init__(self, _taskId, _fromId, _toId, _robotId):
         self.status = -1
-        print "ROS service (TransportOrder)" 
+        print( "ROS service (TransportOrder)" )
         
         tmpService = createTopic(_robotId, TOPIC_ADD_TRANSPORT_ORDER)
         rospy.wait_for_service(tmpService)
@@ -85,7 +85,7 @@ class rTransportOrder():
 
 def rManualActionAck(_robotId):
  
-    print "ROS service (rManualActionAck)" 
+    print ("ROS service (rManualActionAck)" )
     #robotId = parsedConfigFile.robots[0]
     tmpService = createTopic(_robotId, TOPIC_MANUAL_ACTION_DONE)
     
@@ -104,6 +104,6 @@ def rManualActionAck(_robotId):
         return result
 
     except rospy.ServiceException, e:
-        print "ROS Service (rManualActionAck) call failed: %s" % e
+        print ("ROS Service (rManualActionAck) call failed: %s" % e)
     except Exception as ex:
-        print ex
+        print (ex)

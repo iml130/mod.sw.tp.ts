@@ -8,7 +8,7 @@ class FiwareEntity():
             self.id =  str(id)  
  
     def getEntity(self): 
-        print "Create Entity: id: " + self.getId() + ", type: " + self.getType()
+        print ("Create Entity: id: " + self.getId() + ", type: " + self.getType())
         
         return { "id" : self.getId() , "type" : self.getType() }
     

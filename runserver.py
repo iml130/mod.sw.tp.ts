@@ -24,7 +24,7 @@ import httplib
 from datetime import datetime 
 
 # external lib imports
-from flask import g 
+from flask import g
 from flask import render_template,Response
 from jinja2 import Environment, FileSystemLoader
 
@@ -33,12 +33,12 @@ from mars_agent_logical_msgs.msg import OrderStatus
 
 
 # local imports
-import globals 
+import globals
 from helpers.configParser import Config
 from contextbrokerhandler import ContextBrokerHandler
 from FiwareObjectConverter import objectFiwareConverter
 
-from Entities import task 
+from Entities import task
 from Entities.san import SensorAgent
 from helpers.servercheck import checkServerRunning
 
@@ -54,7 +54,6 @@ from ROS.OrderState import OrderState, rosOrderStatus
 # from Entities import task.Task
 # from Entities import taskstate.TaskState
 
- 
 
 def setup_logging(
     default_path='logging.json',
@@ -74,7 +73,7 @@ def setup_logging(
         logging.config.dictConfig(config)
     else:
         logging.basicConfig(level=default_level)
-    
+
 
 
 #reconnect logging calls which are children of this to the ros log system
@@ -94,7 +93,7 @@ initRobot()
 
 if(parsedConfigFile.FLASK_HOST):
     PORT = int(parsedConfigFile.TASKPLANNER_PORT)
-#globals.initOcbHandler(parsedConfigFile.getFiwareServerAddress())
+# globals.initOcbHandler(parsedConfigFile.getFiwareServerAddress())
 ocbHandler = globals.ocbHandler
  
  
@@ -148,10 +147,10 @@ def schedularDealer(schedularQueue):
             ts.start()
             tsInfo.appendMaterielflow(dmp.id)
             ocbHandler.update_entity(tsInfo)
-            #ts.join()
+            # ts.join()
         else:
-            print "Already running, not able to accept any others"
-        print "Is Running"
+            print ("Already running, not able to accept any others")
+        print("Is Running")
         # for(currentMaterialFlowSpecState in listCurrentMaterialFlowSpecState):
 
     
@@ -181,7 +180,7 @@ def taskDealer(taskQueue):
                     retVal, message = checkTaskLanguage(objTaskSpec.specification)
                     currentMaterialFlowSpecState.message = message
                     if(retVal == 0):
-                        objTaskSpec._specStateId = currentMaterialFlowSpecState.getId()
+                        objTaskSpec._specStateId = currentMaterialFlowSpecState.getId() #????
                         logger.info("newTaskSpec:\n"+ str(objTaskSpec.specification))
                         globals.taskSchedulerQueue.put(objTaskSpec)
             
@@ -198,12 +197,13 @@ def taskDealer(taskQueue):
                             print("SET INACTIVE: " + schedular.id)
                             schedular.setActive(False)
                     print("TODO: Disable the Materialflow or ignore it...but first... lets make it easy")
-        #ocbHandler.update_entity(currentMaterialFlowSpecState)
+        # ocbHandler.update_entity(currentMaterialFlowSpecState)
     
     logger.info("taskDealer ended")
  
 
 def waitForEnd():
+    global terminate
     logger.info("Starting waitForEnd")
     user_input = ""
     global terminate 
@@ -215,15 +215,14 @@ def waitForEnd():
         except EOFError:
             pass
         except KeyboardInterrupt:
-            print "ERR"
+            print ("ERR")
         except:
-            global terminate
             terminate = False
 
 def callback_ros_order_state(data):
-    #rospy.loginfo(data.order_id)  
+    # rospy.loginfo(data.order_id)  
     os  = OrderState.CreateObjectRosMsg(data)
-    #logger.info("uuid: " + str(os.uuid) + ", state: " + str(os.state) +", status:" +  str(os.status))
+    # logger.info("uuid: " + str(os.uuid) + ", state: " + str(os.state) +", status:" +  str(os.status))
     if(os):
         if(os.status == rosOrderStatus.FINISHED):
             logger.info("Received callback_ros_order_state --> FIN")
@@ -233,15 +232,16 @@ def callback_ros_order_state(data):
 if __name__ == '__main__': 
     global ocbHandler
     global currenTaskDesc
-    #global currentTaskState
+    # global currentTaskState
     global currentMaterialFlowSpecState
 
     logger.info("Subscriptions to /order_status")
     
 
-    logger.info("Setting up ROS")
-    rospy.init_node('task_supervisor' ) 
+ #   logger.info("Setting up ROS")
+    rospy.init_node('task_supervisor')
     rospy.Subscriber("/order_status", OrderStatus, callback_ros_order_state)
+    print("WORKS")
     setup_logging()
 
     logger.info("Starting TaskPlanner")

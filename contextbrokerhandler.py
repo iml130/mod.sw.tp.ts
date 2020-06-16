@@ -103,11 +103,11 @@ class ContextBrokerHandler:
         try:           
             response = requests.request(method, url, data = data, headers = kwargs['headers'], timeout = self.TIMEOUT)      
         except requests.exceptions.Timeout:
-            print "pass"
+            print ("pass")
         except Exception as exp:
-            print "another exception"
+            print ("another exception")
         except requests.exceptions.RequestException as e:
-            print "except requests.exceptions.RequestException as e:"
+            print ("except requests.exceptions.RequestException as e:")
         return response
 
     def getEntities(self, _entityId = None , _entityType=None):
