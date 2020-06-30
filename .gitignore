@@ -10,3 +10,4 @@ __pycache__/
 /contextbrokerhandler.pyc
 /configParser.pyc
 /build/*
+/logs/*
