@@ -81,18 +81,15 @@ def setup_logging(
 setup_logging()
 logger = logging.getLogger(__name__)
 HOST = '0.0.0.0'
-PORT = 5555
+PORT = 2906
 SERVER_ADDRESS = "localhost"
 
-
-CONFIG_FILE = "./fiware_config.ini"
-parsedConfigFile = Config(CONFIG_FILE)
 
 from TaskSupervisor.bpo import initRobot
 initRobot()
 
-if(parsedConfigFile.FLASK_HOST):
-    PORT = int(parsedConfigFile.TASKPLANNER_PORT)
+if(globals.parsedConfigFile.TASKPLANNER_HOST):
+    PORT = int(globals.parsedConfigFile.TASKPLANNER_PORT)
 # globals.initOcbHandler(parsedConfigFile.getFiwareServerAddress())
 ocbHandler = globals.ocbHandler
  
@@ -127,7 +124,7 @@ def signal_handler(sig, frame):
     
 def flaskThread(): 
     logger.info("Starting flaskServerThread")
-    app.run(host= parsedConfigFile.FLASK_HOST, port= parsedConfigFile.TASKPLANNER_PORT, threaded=True,use_reloader=False, debug = True)
+    app.run(host= globals.parsedConfigFile.FLASK_HOST, port= globals.parsedConfigFile.TASKPLANNER_PORT, threaded=True,use_reloader=False, debug = True)
  
 
 def schedularDealer(schedularQueue):
@@ -215,7 +212,7 @@ def waitForEnd():
         except EOFError:
             pass
         except KeyboardInterrupt:
-            print ("ERR")
+            print ("KeyboardInterrupt - shutting down")
         except:
             terminate = False
 
@@ -238,7 +235,7 @@ if __name__ == '__main__':
     logger.info("Subscriptions to /order_status")
     
 
- #   logger.info("Setting up ROS")
+    logger.info("Setting up ROS")
     rospy.init_node('task_supervisor')
     rospy.Subscriber("/order_status", OrderStatus, callback_ros_order_state)
     print("WORKS")
@@ -257,7 +254,7 @@ if __name__ == '__main__':
     logger.info("Setting up checkIfServerIsUpRunning")
     checkIfServerIsUpRunning = threading.Thread(name='checkServerRunning', 
                                                 target=checkServerRunning, 
-                                                args=(SERVER_ADDRESS, parsedConfigFile.TASKPLANNER_PORT,))
+                                                args=(SERVER_ADDRESS, globals.parsedConfigFile.TASKPLANNER_PORT,))
 
     logger.info("Setting up checkForProgrammEnd")
     checkForProgrammEnd = threading.Thread(name='waitForEnd', 
@@ -281,7 +278,10 @@ if __name__ == '__main__':
     retVal = ocbHandler.create_entity(tsInfo) 
     if (retVal == 0):   
         logger.info("Orion Connection is working - created TaskSpecState Entity")
-        logger.info("Orion Address: " + parsedConfigFile.getFiwareServerAddress())
+        logger.info("Orion Address: " + globals.parsedConfigFile.getFiwareServerAddress())
+    else:
+        logger.error("No Connection to Orion - please check configurations")
+        sys.exit(0)
 
 
 
@@ -296,7 +296,7 @@ if __name__ == '__main__':
     objMaterialflow = Materialflow()
     subscriptionId = ocbHandler.subscribe2Entity( _description = "Materialflow subscription",
             _entities = objMaterialflow.obj2JsonArray(),  
-            _notification = parsedConfigFile.getTaskPlannerAddress() +"/task",_generic=True)
+            _notification = globals.parsedConfigFile.getTaskPlannerAddress() +"/task",_generic=True)
     globals.subscriptionDict[subscriptionId] ="Materialflow"     
   
 
