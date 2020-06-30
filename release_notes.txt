@@ -1,0 +1,35 @@
+MOD.SW.TP 3.1.2 (30. June 2020)
+
+What's new
+- Check on startup if config-file exists, otherwise TS stops working
+- Better error handling while sending commands towards Orion; Throw Error
+
+Whats deprecated:
+- n/a 
+
+Bug Fixes:
+- n/a 
+
+Known Bugs:
+- n/a 
+
+
+MOD.SW.TP 3.1.2 (16. June 2020)
+
+What's new
+- Tasks are executed only once; OnDone statement needs to be used for an infinite loop
+- Infinite loops can be cancelled by setting the MaterialFlow to "intactive" by chaning the "active" field to "false"
+- Restart of inactive MaterialFlow can be done by setting the "active" field to "true"
+- TransportOrderUpdate shows now the name of the Robot in the field "robotId"
+- A very very simple task scheduling has been implemented (round robin scheduling)
+- IDs and names of the topology are now shown by a right click on the edge or the center of a vertex (names and ids are printed in the terminal) in RVIZ
+- Reduced start time of tp
+
+Whats deprecated:
+- Removal of repeat statement
+
+Bug Fixes:
+- n/a 
+
+Known Bugs:
+- Usage of unknown locations crashes the TaskPlanner
