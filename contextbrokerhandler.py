@@ -58,14 +58,19 @@ class ContextBrokerHandler:
             #     print "error"
 
             jsonObj = ObjectFiwareConverter.obj2Fiware(entityInstance, ind=4)     
-            response = self._request("POST",self._getUrl(ENTITIES), data = jsonObj, headers = self.HEADER)
-            statusCode = response.status_code
-            if(not isResponseOk(statusCode)):
-                return json.loads(response.content)
-            else:
-                self.published_entities.append(entityInstance.id)
-                return 0
-                # todo: raise error 
+            try:
+                response = self._request("POST",self._getUrl(ENTITIES), data = jsonObj, headers = self.HEADER)
+                statusCode = response.status_code
+                if(not isResponseOk(statusCode)):
+                    return json.loads(response.content)
+                else:
+                    self.published_entities.append(entityInstance.id)
+                    return 0
+                    # todo: raise error 
+            except Exception as e:
+                logger.error("No Connection to Orion :(")
+                return -1
+
 
     def delete_entity(self, entityId):
         with self.lock:
@@ -103,11 +108,11 @@ class ContextBrokerHandler:
         try:           
             response = requests.request(method, url, data = data, headers = kwargs['headers'], timeout = self.TIMEOUT)      
         except requests.exceptions.Timeout:
-            print ("pass")
+            logger.error("Orion Timeout :(")
         except Exception as exp:
-            print ("another exception")
+            logger.error("Orion Timeout :(" + exp.message)
         except requests.exceptions.RequestException as e:
-            print ("except requests.exceptions.RequestException as e:")
+            logger.error("except requests.exceptions.RequestException as e:" + exp.message)
         return response
 
     def getEntities(self, _entityId = None , _entityType=None):
