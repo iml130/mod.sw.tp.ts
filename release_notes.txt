@@ -3,6 +3,7 @@ MOD.SW.TP 3.1.2 (30. June 2020)
 What's new
 - Check on startup if config-file exists, otherwise TS stops working
 - Better error handling while sending commands towards Orion; Throw Error
+- Removal of TL scripts from src folder
 
 Whats deprecated:
 - n/a 
@@ -11,7 +12,7 @@ Bug Fixes:
 - n/a 
 
 Known Bugs:
-- n/a 
+- n/a
 
 
 MOD.SW.TP 3.1.2 (16. June 2020)
