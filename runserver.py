@@ -48,7 +48,7 @@ from Entities.materialflowSpecificationSate import MaterialflowSpecificationStat
 from TaskLanguage.checkGrammarTreeCreation import checkTaskLanguage
 from TaskSupervisor.schedular import Schedular
 
-from tasksupervisor import TasksuperVisorInfo
+from Entities.tasksupervisor import TasksuperVisorInfo
 
 from ROS.OrderState import OrderState, rosOrderStatus
 # from Entities import task.Task
