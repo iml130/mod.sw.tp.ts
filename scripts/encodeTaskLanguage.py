@@ -12,17 +12,17 @@ def main(argv):
    loadedFile = loadFile(inputfile)
    encodedTl =  encodeTaskLanguage(loadedFile)
 
-   print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TASK_LANGUAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+   print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~TASK_LANGUAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
    print("\n")
-   print loadedFile
+   print (loadedFile)
    print("\n\n\n")
-   print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ENCODED TASK_LANGUAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+   print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ENCODED TASK_LANGUAGE~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
    print("\n")
    print (encodedTl)
    print("\n\n\n")
-   print "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ENTITY:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~"
+   print ("~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ENTITY:~~~~~~~~~~~~~~~~~~~~~~~~~~~~~")
    print("\n")
-   print createEntity(encodedTl)
+   print (createEntity(encodedTl))
 
 def loadFile(_file):
 	with open(_file) as f:
@@ -60,6 +60,6 @@ def createEntity(_encodedTl):
 if __name__ == "__main__":
 	numberOfArguments = (len(sys.argv[1:]))
 	if(numberOfArguments != 1):
-		print "python encodeTaskLanguage INPUTFILE"
+		print ("python encodeTaskLanguage INPUTFILE")
 		exit(1)
 	main(sys.argv[1:])

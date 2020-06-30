@@ -106,8 +106,8 @@ if len(sys.argv) != 2:
 filename = sys.argv[1]
 
 # Warn user
-print "WARNING!!!! This script will delete all the entities in the file '%s'" % filename
-print "This action cannot be undone. If you are sure you want to continue type 'yes' and press Enter"
+print ("WARNING!!!! This script will delete all the entities in the file '%s'" % filename)
+print ("This action cannot be undone. If you are sure you want to continue type 'yes' and press Enter")
 
 confirm = raw_input()
 
@@ -115,4 +115,4 @@ if (confirm != 'yes'):
     sys.exit()
 
 if remove_all(filename):    
-    print "We are done!"
+    print ("We are done!")

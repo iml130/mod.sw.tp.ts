@@ -12,12 +12,12 @@ import ocb
 import sys
 def deleteEntitiesById(id):
     try:
-        print "Deleting " + id 
+        print ("Deleting " + id )
         response = requests.request("DELETE", ocb.getAddress(ocb.ENTITIES)+ id)  
         if(response.status_code // httplib.OK == 1):
-            print "Success"
+            print ("Success")
     except expression as Exception:
-        print "Failed"
+        print ("Failed")
         return False
     return True
 

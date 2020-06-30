@@ -13,12 +13,12 @@ HEADER = {"Content-Type" : "application/json"}
 
 def deleteSubscriptionById(id):
     try:
-        print "Deleting " + id 
+        print ("Deleting " + id )
         response = requests.request("DELETE", ocb.getAddress(ocb.SUBSCRIPTIONS)+ id)  
         if(response.status_code // httplib.OK == 1):
-            print "Success"
+            print ("Success")
     except expression as Exception:
-        print "Failed"
+        print ("Failed")
         return False
     return True
 
@@ -90,12 +90,12 @@ def subscription_update(subscription_id, status=None, subject= None, notificatio
 
         # if notification:
         #     subscription["notification"] = notification
-        print json.dumps(subscription)
-        print "address: " + ocb.getAddress(ocb.SUBSCRIPTIONS) + subscription_id
+        print (json.dumps(subscription))
+        print ("address: " + ocb.getAddress(ocb.SUBSCRIPTIONS) + subscription_id)
 
         response = requests.request("PATCH", ocb.getAddress(ocb.SUBSCRIPTIONS) + subscription_id,
             json=subscription, headers=HEADER)
-        print response.status_code, response.text
+        print (response.status_code, response.text)
 
 def deleteAllSubscriptions():
     response = requests.request("GET", ocb.getAddress(ocb.SUBSCRIPTIONS))  
