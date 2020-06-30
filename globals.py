@@ -1,5 +1,5 @@
+import sys
 import Queue
-
 import threading
 
 from helpers.dictQueue import DictQueue
@@ -26,7 +26,12 @@ FI_DATA = "data"
 
 ocbHandler = None
 CONFIG_FILE = "./fiware_config.ini"
-parsedConfigFile = Config(CONFIG_FILE)
+try:
+    parsedConfigFile = Config(CONFIG_FILE)
+except Exception as e:
+    print(e.message)
+    sys.exit()
+
 # globals.initOcbHandler(parsedConfigFile.getFiwareServerAddress())
 ocbHandler = ContextBrokerHandler(parsedConfigFile.getFiwareServerAddress())
 
