@@ -1,7 +1,7 @@
 # using enum34
 import uuid
  
-from Entities.entity import FiwareEntity
+from entity import FiwareEntity
 
 id = 0
 idHistory = []
