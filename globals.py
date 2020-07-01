@@ -30,7 +30,7 @@ try:
     parsedConfigFile = Config(CONFIG_FILE)
 except Exception as e:
     print(e.message)
-    sys.exit()
+    sys.exit(0)
 
 # globals.initOcbHandler(parsedConfigFile.getFiwareServerAddress())
 ocbHandler = ContextBrokerHandler(parsedConfigFile.getFiwareServerAddress())
