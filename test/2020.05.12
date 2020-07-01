@@ -51,7 +51,48 @@
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
       </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SimpleTaskNoTrigger" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Salomon" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;Salomon1&quot;,&#xd;
+	&quot;type&quot;: &quot;Materialflow&quot;,&#xd;
+&quot;specification&quot;: {&#xd;
+		&quot;value&quot;:  &quot;Location+prod%0A++++name+%3D+%22Tag10_11%22%0A++++type+%3D+%22SmallLoadCarrier%22%0Aend%0A%0ALocation+wh_1%0A++++name+%3D+%22Tag12%22%0A++++type+%3D+%22SmallLoadCarrier%22%0Aend%0A%0AEvent+triggerGetNewMaterial%0A++++name+%3D+%22startTaskButton1%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0AEvent+agvLoadedAtStorage1%0A++++name+%3D+%22loadedButton1%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0AEvent+agvUnloadedAtProd%0A++++name+%3D+%22unloadedProd%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0ATransportOrderStep+loadStorage1%0A++++Location+wh_1%0A++++FinishedBy+agvLoadedAtStorage1+%3D%3D+True+%0Aend%0A%0ATransportOrderStep+unloadWorkstation1%0A++++Location+prod%0A++++FinishedBy+agvUnloadedAtProd+%3D%3D+True%0Aend%0A%0Atask+SupplyTaskFromStorage1ToWorkstation1%0A++++TriggeredBy+triggerGetNewMaterial+%3D%3D+True%0A++++Transport%0A++++from++++loadStorage1+%0A++++to++unloadWorkstation1%0Aend&quot;,&#xd;
+		&quot;type&quot;: &quot;Text&quot;&#xd;
+	},&#xd;
+	&quot;ownerId&quot;: {&#xd;
+		&quot;type&quot;: &quot;Text&quot;,&#xd;
+		&quot;value&quot;: &quot;reviewers hmi&quot;&#xd;
+	},&#xd;
+	&quot;active&quot;: {&#xd;
+		&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+		&quot;value&quot;: true&#xd;
+	}&#xd;
+}</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
+          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SimpleTaskNoTrigger" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -175,7 +216,7 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SimpleTaskNoTriggerT1T2Parallel" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SimpleTaskNoTriggerT1T2Parallel" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -515,6 +556,261 @@
         </HTTPSamplerProxy>
         <hashTree/>
       </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Salomon Trigger" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="triggerGetNewMaterial" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+        &quot;id&quot;: &quot;startTaskButton1&quot;,&#xd;
+        &quot;type&quot;: &quot;SensorAgent&quot;,&#xd;
+        &quot;measurementType&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;boolean&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;modifiedTime&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;2019-09-11T09:36:53Z&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;readings&quot;: {&#xd;
+            &quot;type&quot;: &quot;array&quot;,&#xd;
+            &quot;value&quot;: [&#xd;
+                {&#xd;
+                    &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
+                    &quot;value&quot;: {&#xd;
+                        &quot;reading&quot;: {&#xd;
+                            &quot;type&quot;: &quot;boolean&quot;,&#xd;
+                            &quot;value&quot;: false&#xd;
+                        }&#xd;
+                    }&#xd;
+                }&#xd;
+            ],&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sanID&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;SAN1&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sensorID&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;startTaskButton1&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sensorManufacturer&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;LLC&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sensorType&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;ON_OFF_SENSOR&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;units&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;boolean&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        }&#xd;
+    }&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
+          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="agvLoadedAtStorage1" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+        &quot;id&quot;: &quot;loadedButton1&quot;,&#xd;
+        &quot;type&quot;: &quot;SensorAgent&quot;,&#xd;
+        &quot;measurementType&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;boolean&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;modifiedTime&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;2019-09-11T09:36:53Z&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;readings&quot;: {&#xd;
+            &quot;type&quot;: &quot;array&quot;,&#xd;
+            &quot;value&quot;: [&#xd;
+                {&#xd;
+                    &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
+                    &quot;value&quot;: {&#xd;
+                        &quot;reading&quot;: {&#xd;
+                            &quot;type&quot;: &quot;boolean&quot;,&#xd;
+                            &quot;value&quot;: false&#xd;
+                        }&#xd;
+                    }&#xd;
+                }&#xd;
+            ],&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sanID&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;SAN1&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sensorID&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;loadedButton1&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sensorManufacturer&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;LLC&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sensorType&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;ON_OFF_SENSOR&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;units&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;boolean&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        }&#xd;
+    }&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
+          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="agvUnloadedAtProd" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+        &quot;id&quot;: &quot;unloadedProd&quot;,&#xd;
+        &quot;type&quot;: &quot;SensorAgent&quot;,&#xd;
+        &quot;measurementType&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;boolean&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;modifiedTime&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;2019-09-11T09:36:53Z&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;readings&quot;: {&#xd;
+            &quot;type&quot;: &quot;array&quot;,&#xd;
+            &quot;value&quot;: [&#xd;
+                {&#xd;
+                    &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
+                    &quot;value&quot;: {&#xd;
+                        &quot;reading&quot;: {&#xd;
+                            &quot;type&quot;: &quot;boolean&quot;,&#xd;
+                            &quot;value&quot;: false&#xd;
+                        }&#xd;
+                    }&#xd;
+                }&#xd;
+            ],&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sanID&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;SAN1&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sensorID&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;unloadedProd&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sensorManufacturer&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;LLC&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;sensorType&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;ON_OFF_SENSOR&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        },&#xd;
+        &quot;units&quot;: {&#xd;
+            &quot;type&quot;: &quot;string&quot;,&#xd;
+            &quot;value&quot;: &quot;boolean&quot;,&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        }&#xd;
+    }&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
+          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+      </hashTree>
       <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="toggle Sensor at Workstation 1" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
@@ -809,7 +1105,7 @@
             <stringProp name="1808022304">MaterialflowName</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="1658841412">
+            <collectionProp name="-1117795416">
               <stringProp name="1658841381">5ebadd8ce869e9cc57901207</stringProp>
             </collectionProp>
           </collectionProp>
@@ -883,7 +1179,7 @@
           <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/v2/entities/SimpleTaskNoTriggerT1T2Parallel/attrs</stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SimpleTaskNoTriggerOnDoneAgain/attrs</stringProp>
           <stringProp name="HTTPSampler.method">PATCH</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -894,7 +1190,7 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Active" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Active" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -915,7 +1211,7 @@
           <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/v2/entities/SimpleTaskNoTriggerT1T2Parallel/attrs</stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/SimpleTaskNoTriggerOnDoneAgain/attrs</stringProp>
           <stringProp name="HTTPSampler.method">PATCH</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
