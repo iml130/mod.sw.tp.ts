@@ -1,3 +1,18 @@
+MOD.SW.TP 3.1.4 (30. June 2020)
+
+What's new
+- n/a
+
+Whats deprecated:
+- n/a 
+
+Bug Fixes:
+- typo fix in robot selection, otherwise it stucks in an infinite loop 
+
+Known Bugs:
+- n/a
+
+
 MOD.SW.TP 3.1.3 (30. June 2020)
 
 What's new
