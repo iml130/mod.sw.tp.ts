@@ -68,6 +68,7 @@ def initRobot():
         
 def getNextRobotByType(_type):
     global robotOverview
+    _type = _type.lower()
     if(_type not in robotOverview):
         return None
 
