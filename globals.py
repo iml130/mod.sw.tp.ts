@@ -28,6 +28,7 @@ ocbHandler = None
 CONFIG_FILE = "./fiware_config.ini"
 try:
     parsedConfigFile = Config(CONFIG_FILE)
+    parsedConfigFile.isValid()
 except Exception as e:
     print(e.message)
     sys.exit(0)
