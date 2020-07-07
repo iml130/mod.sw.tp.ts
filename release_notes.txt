@@ -1,4 +1,21 @@
-MOD.SW.TP 3.1.4 (30. June 2020)
+MOD.SW.TP 3.1.5 (07. Juli 2020)
+
+What's new
+- n/a
+
+Whats deprecated:
+- n/a 
+
+Bug Fixes:
+- verification of configuration file, checking if robots exists (name, type and id)
+- checks if robot type is wrong during transportorder assignment otherwhise ("No valid robot selection; Please check TS configuration and Materialflow Description")
+    - TransportOrderUpdate state changes into "error"
+
+Known Bugs:
+- n/a
+
+
+MOD.SW.TP 3.1.4 (02. Juli 2020)
 
 What's new
 - n/a
