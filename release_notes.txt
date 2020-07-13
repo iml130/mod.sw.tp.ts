@@ -1,3 +1,18 @@
+MOD.SW.TP 3.1.5 (13. Juli 2020)
+
+What's new
+- n/a
+
+Whats deprecated:
+- n/a 
+
+Bug Fixes:
+- replace of \r\n with \n for the tasklanguage to be operating system independent (windows/unix)
+
+Known Bugs:
+- n/a
+
+
 MOD.SW.TP 3.1.5 (07. Juli 2020)
 
 What's new
