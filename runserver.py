@@ -174,6 +174,7 @@ def taskDealer(taskQueue):
                 currentMaterialFlowSpecState = MaterialflowSpecificationState()
                 objTaskSpec = Materialflow.CreateObjectFromJson(tempJsonReq)
                 if(objTaskSpec.active): # check if the materialflow shall be processed - or not
+                    objTaskSpec.specification = objTaskSpec.specification.replace("\r\n", "\n")
                     retVal, message = checkTaskLanguage(objTaskSpec.specification)
                     currentMaterialFlowSpecState.message = message
                     if(retVal == 0):
