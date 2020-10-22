@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 # check if the server is running, otherwise wait until
 
 
-def webserver_is_running(_server_address, _port):
+def webserver_is_running(server_address, port):
     do_forever = True
     max_check_counter = 0
     while do_forever:
@@ -25,7 +25,7 @@ def webserver_is_running(_server_address, _port):
             logger.info("CheckServerRunning maximum retries reached")
             do_forever = False
         try:
-            temp_url = f"http://{_server_address}:{_port}"
+            temp_url = f"http://{server_address}:{port}"
             logger.info("CheckServerRunning Try to access: %s", temp_url)
             urllib.request.urlopen(temp_url)
             logger.info("CheckServerRunning is available %s", temp_url)

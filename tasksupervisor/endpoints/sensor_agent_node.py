@@ -11,13 +11,11 @@ from tasksupervisor import my_globals
 logger = logging.getLogger(__name__)
 
 
-
-
 # dictQueue = my_globals.sanDictQueue
 
 def construct_blueprint_sensor(task_supervisor):
-    sensor_agent_node_blueprint = Blueprint('sensor_agent_node_endpoint', __name__)
-
+    sensor_agent_node_blueprint = Blueprint(
+        'sensor_agent_node_endpoint', __name__)
 
     @sensor_agent_node_blueprint.route('/<token>', methods=['GET', 'POST'])
     def sensor_agent_node_endpoint(token):

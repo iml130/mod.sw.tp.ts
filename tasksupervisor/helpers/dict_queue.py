@@ -15,39 +15,39 @@ class DictQueue:
         self.dict = {}
         logger.info("DictQueue init_done")
 
-    def addThread(self, _uuid):
+    def add_thread(self, uuid):
         with self.lock:
-            _uuid = str(_uuid)
-            if _uuid in self.dict:
+            uuid = str(uuid)
+            if uuid in self.dict:
                 return False
-            self.dict[_uuid] = queue.Queue()
-            logger.info("DictQueue UUID added: %s", _uuid)
+            self.dict[uuid] = queue.Queue()
+            logger.info("DictQueue UUID added: %s", uuid)
             return True
 
-    def getQueue(self, _uuid):
+    def get_queue(self, uuid):
         with self.lock:
-            _uuid = str(_uuid)
-            if _uuid in self.dict:
-                return self.dict[_uuid]
+            uuid = str(uuid)
+            if uuid in self.dict:
+                return self.dict[uuid]
             return None
 
-    def removeThread(self, _uuid):
+    def remove_thread(self, uuid):
         """ removes an uuid from the dict """
         with self.lock:
-            _uuid = str(_uuid)
-            if _uuid in self.dict:
+            uuid = str(uuid)
+            if uuid in self.dict:
                 try:
-                    del self.dict[_uuid]
-                    logger.info("DictQueue UUID deleted: %s", _uuid)
+                    del self.dict[uuid]
+                    logger.info("DictQueue UUID deleted: %s", uuid)
                     return True
                 except KeyError:
-                    logger.error("DictQueue key not found: %s", _uuid)
+                    logger.error("DictQueue key not found: %s", uuid)
                     return False
             return False
 
-    def putData(self, _uuid, data):
+    def put_data(self, uuid, data):
         with self.lock:
-            _uuid = str(_uuid)
-            if _uuid in self.dict:
-                q = self.dict[_uuid]
+            uuid = str(uuid)
+            if uuid in self.dict:
+                q = self.dict[uuid]
                 q.put(data)

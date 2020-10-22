@@ -6,18 +6,19 @@ import jsonschema
 
 # third party imports
 from flask import Blueprint
-from flask import request 
+from flask import request
 from flask import send_file
 
 # import my_globals
 from tasksupervisor import my_globals
 
 
-
 # local imports
 logger = logging.getLogger(__name__)
 
-materialflow_schema = open("./tasksupervisor/endpoints/materialflow_schema.json").read()
+materialflow_schema = open(
+    "./tasksupervisor/endpoints/materialflow_schema.json").read()
+
 
 def construct_blueprint_materialflow(task_supervisor):
 
@@ -36,12 +37,15 @@ def construct_blueprint_materialflow(task_supervisor):
             # retVal = checkTaskLanguage(decodedString)
 
             try:
-                jsonschema.validate(json_requests['data'][0], json.loads(materialflow_schema))
+                jsonschema.validate(
+                    json_requests['data'][0], json.loads(materialflow_schema))
             except jsonschema.ValidationError as err:
-                logger.error("Materialflow Endpoint ValidationError: %s", str(err.message))
+                logger.error(
+                    "Materialflow Endpoint ValidationError: %s", str(err.message))
                 return err.message, http.client.BAD_REQUEST
             except jsonschema.SchemaError as err:
-                logger.error("Materialflow Endpoint SchemaError: %s", str(err.message))
+                logger.error(
+                    "Materialflow Endpoint SchemaError: %s", str(err.message))
                 return err.message, http.client.INTERNAL_SERVER_ERROR
             except:
                 logger.error("General error")

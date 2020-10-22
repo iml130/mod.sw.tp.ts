@@ -216,7 +216,7 @@ if __name__ == '__main__':
         my_globals.parsed_config_file.robots, my_globals.parsed_config_file.robotNames, my_globals.parsed_config_file.robotTypes)
     task_supervisor.optimizer = RoundRobin(task_supervisor.agv_manager)
     task_supervisor.orion_connector = ORION_CONNECTOR
-    task_supervisor.task_planner_address = my_globals.parsed_config_file.getTaskPlannerAddress()
+    task_supervisor.task_planner_address = my_globals.parsed_config_file.get_taskplanner_address()
 
     # initialize rospy
     rospy.init_node('task_supervisor')
@@ -258,7 +258,7 @@ if __name__ == '__main__':
         logger.info(
             "Orion Connection is working - created TaskSpecState Entity")
         logger.info("Orion Address: " +
-                    my_globals.parsed_config_file.getFiwareServerAddress())
+                    my_globals.parsed_config_file.get_fiware_server_address())
     else:
         logger.error("No Connection to Orion - please check configurations")
         sys.exit(0)
@@ -278,7 +278,7 @@ if __name__ == '__main__':
     with my_globals.lock:
         subscription_id_materialflow = ORION_CONNECTOR.subscribe_to_entity(_description="Materialflow subscription",
                                                                            _entities=materialflow_entity.obj2JsonArray(),
-                                                                           _notification=my_globals.parsed_config_file.getTaskPlannerAddress() + "/materialflow", _generic=True)
+                                                                           _notification=my_globals.parsed_config_file.get_taskplanner_address() + "/materialflow", _generic=True)
         task_supervisor.subscription_dict[subscription_id_materialflow] = "Materialflow"
 
     logger.info("Push Ctrl+C to exit()")

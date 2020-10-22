@@ -16,7 +16,7 @@ class ConfigReader(object):
             # config = configparser.RawConfigParser(allow_no_value=True)
             # config.readfp(io.BytesIO(sample_config))
             config = configparser.ConfigParser(inline_comment_prefixes='#')
-            
+
             config.read(_filename)
             self.CB_HOST = config.get('contextbroker', 'host')
             self.CB_PORT = config.get('contextbroker', 'port')
@@ -29,30 +29,30 @@ class ConfigReader(object):
             #self.robot_id = config.get('RAN', 'robot_id')
             self.FLASK_HOST = "0.0.0.0"
 
-            self.robots = self._trimArray(
+            self.robots = self._trim_array(
                 config.get("robots", "ids").split(","))
-            self.robotTypes = self._trimArray(
+            self.robotTypes = self._trim_array(
                 config.get("robots", "types").split(","))
-            self.robotNames = self._trimArray(
+            self.robotNames = self._trim_array(
                 config.get("robots", "names").split(","))
         else:
             print("ERROR OPENING CONFIG FILE " + _filename)
             raise OSError("Config File does not exists")
 
-    def getTaskPlannerAddress(self):
+    def get_taskplanner_address(self):
         return "http://" + self.TASKPLANNER_HOST + ":" + str(self.TASKPLANNER_PORT)
 
-    def getFiwareServerAddress(self):
+    def get_fiware_server_address(self):
         return str("http://" + self.CB_HOST+":"+self.CB_PORT)
 
-    def _trimArray(self, _array):
+    def _trim_array(self, _array):
         trimmed_array = []
         for item in _array:
             if(len(item)):
                 trimmed_array.append(item.strip().lower())
         return trimmed_array
 
-    def isValid(self):
+    def is_valid(self):
         if len(self.robots) == 0:
             raise StandardError(
                 "Please configure at least on robot (including id, type and name)")

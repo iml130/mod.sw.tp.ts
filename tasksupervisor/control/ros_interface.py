@@ -109,8 +109,8 @@ class RosControl(FormalControlInterface):
             logger.error(ex)
             logger.info("ROS manual_action_acknowledge done")
 
-    def _create_topic(self, _robot_id, _topic):
-        return NAMESPACE + str(_robot_id) + "/" + str(_topic)
+    def _create_topic(self, robot_id, topic):
+        return NAMESPACE + str(robot_id) + "/" + str(topic)
 
 
 if __name__ == "__main__":
