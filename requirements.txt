@@ -4,6 +4,7 @@ transitions
 enum34
 jinja2
 jsonschema
-antlr4-python2-runtime
+antlr4-python3-runtime
 networkx
 matplotlib
+fiwareobjectconverter==0.1.1

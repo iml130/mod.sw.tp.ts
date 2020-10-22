@@ -1,4 +1,4 @@
-MOD.SW.TP 3.1.5 (13. Juli 2020)
+MOD.SW.TP 3.1.6 (13. Juli 2020)
 
 What's new
 - n/a

@@ -11,3 +11,6 @@ __pycache__/
 /configParser.pyc
 /build/*
 /logs/*.log
+.vscode/.ropeproject/config.py
+.vscode/.ropeproject/config.py
+.vscode/.ropeproject/config.py

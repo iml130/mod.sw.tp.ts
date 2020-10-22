@@ -1,0 +1,26 @@
+[taskplanner]
+# make sure that there are no "" or '' here
+# roslaunch mars_common_test haier_simulation.launch
+# roslaunch infacts_bringup haier_simulation.launch
+host = 10.64.10.152
+# home
+#192.168.0.101
+# fhg
+#10.64.10.152 
+# home mxp 192.168.100.15
+# polimi eduroam 10.169.117.111
+# fhg 10.64.10.152
+PORT = 2906 
+
+[contextbroker]
+host=localhost
+#host=10.64.10.144
+port=1026
+
+[robots]
+# emili, rb1_1
+ids = robot_00000000000000000000000000000100, robot_00000000000000000000000000000101
+types = pallet, pallet
+names = emili, robotinik
+
+ 
