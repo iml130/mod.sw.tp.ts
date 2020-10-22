@@ -12,7 +12,7 @@ from lotlan_schedular.api.event import Event
 # import local packages
 from tasksupervisor.helpers.utc import get_utc_time
 from tasksupervisor.entities.materialflow_update import MaterialflowUpdate
-from TaskSupervisor.new_transport_order import NewTransportOrder
+from TaskSupervisor.transport_order import TransportOrder
 
 logger = logging.getLogger(__name__)
 
@@ -57,7 +57,7 @@ class Materialflow(threading.Thread):
         print("UUID: " + str(_uuid), "Event_Info: " + str(event_information))
         temp_uuid = str(_uuid)
         if temp_uuid not in self._running_transport_orders: 
-            self._running_transport_orders[temp_uuid] = NewTransportOrder(
+            self._running_transport_orders[temp_uuid] = TransportOrder(
                 _uuid, self.id, self.refOwnerId, self._queue_to_transport_order, self.task_supervisor_knowledge) 
         self._running_transport_orders[temp_uuid].wait_for_triggered_by(event_information)
         if not self._running_transport_orders[temp_uuid].is_alive():
@@ -71,7 +71,7 @@ class Materialflow(threading.Thread):
                 print("key: ", key, "-> TO: ", to)
                 temp_uuid = str(to.uuid)
                 if temp_uuid not in self._running_transport_orders:
-                    self._running_transport_orders[temp_uuid] = NewTransportOrder(
+                    self._running_transport_orders[temp_uuid] = TransportOrder(
                         to.uuid, self.id, self.refOwnerId, self._queue_to_transport_order, self.task_supervisor_knowledge)
                 self._running_transport_orders[temp_uuid].set_transport_info(to)
                 if not self._running_transport_orders[temp_uuid].is_alive():
