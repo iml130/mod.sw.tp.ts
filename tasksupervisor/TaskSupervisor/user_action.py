@@ -5,3 +5,4 @@ class UserAction():
     WaitForLoading = 3
     MovingToDeliveryDestination = 4
     WaitForUnloading = 5
+    WaitForFinishTrigger = 6
