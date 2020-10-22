@@ -14,38 +14,38 @@ COMPARISON_OPERATOR_LESS_OR_EQUAL_THAN = "<="
 COMPARISON_OPERATOR_GREATER_OR_EQUAL_THAN = ">="
 
 
-def get_sensor_physical_sensor_name(sensorEntityData, subscriptionId):
-    if (sensorEntityData):
-        if("subscriptionId" in sensorEntityData):
+def get_sensor_physical_sensor_name(sensor_entity_data, sub_ids):
+    if sensor_entity_data:
+        if "subscriptionId" in sensor_entity_data:
 
-            if(sensorEntityData["subscriptionId"] in subscriptionId):
-                for sensorData in sensorEntityData["data"]:
-                    dd = SensorAgent.CreateObjectFromJson(sensorData)
+            if sensor_entity_data["subscriptionId"] in sub_ids:
+                for sensor_data in sensor_entity_data["data"]:
+                    dd = SensorAgent.CreateObjectFromJson(sensor_data)
                     if dd:
                         return dd.sensorID
     return NotImplementedError
 
 
-def get_sensor_value(sensorEntityData, subscriptionId):
-    if sensorEntityData:
-        if "subscriptionId" in sensorEntityData:
-            if sensorEntityData["subscriptionId"] in subscriptionId:
-                for sensorData in sensorEntityData["data"]:
-                    dd = SensorAgent.CreateObjectFromJson(sensorData)
+def get_sensor_value(sensor_entity_data, sub_ids):
+    if sensor_entity_data:
+        if "subscriptionId" in sensor_entity_data:
+            if sensor_entity_data["subscriptionId"] in sub_ids:
+                for sensor_data in sensor_entity_data["data"]:
+                    dd = SensorAgent.CreateObjectFromJson(sensor_data)
                     if dd.readings:
                         return dd.readings[0]["reading"]
     return None
 
 
-def checkIfSensorEventTriggersNextTransportUpdate(sensorEntityData, subscriptionId, expected_value, expected_type, expected_comperator):
-    if (sensorEntityData):
-        if("subscriptionId" in sensorEntityData):
+def checkIfSensorEventTriggersNextTransportUpdate(sensor_entity_data, sub_ids, expected_value, expected_type, expected_comperator):
+    if sensor_entity_data:
+        if "subscriptionId" in sensor_entity_data:
 
-            if(sensorEntityData["subscriptionId"] in subscriptionId):
-                for sensorData in sensorEntityData["data"]:
-                    dd = SensorAgent.CreateObjectFromJson(sensorData)
-                    if(expected_value):
-                        if(dd.readings):
+            if sensor_entity_data["subscriptionId"] in sub_ids:
+                for sensor_data in sensor_entity_data["data"]:
+                    dd = SensorAgent.CreateObjectFromJson(sensor_data)
+                    if expected_value:
+                        if dd.readings:
                             if expected_type:
                                 if validate_event(dd.readings, expected_value, expected_type, expected_comperator):
                                     return True
