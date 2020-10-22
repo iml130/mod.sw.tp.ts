@@ -74,12 +74,12 @@ class TransportOrder(threading.Thread):
         # setting up the thread
         self._queue_to_materialflow = queueTransportOrders
 
-        self._task_supervisor_knowledge.ros_message_dispatcher.addThread(
+        self._task_supervisor_knowledge.ros_message_dispatcher.add_thread(
             self.id)
-        self._ros_queue_to = self._task_supervisor_knowledge.ros_message_dispatcher.getQueue(
+        self._ros_queue_to = self._task_supervisor_knowledge.ros_message_dispatcher.get_queue(
             self.id)
-        self._task_supervisor_knowledge.sensor_dispatcher.addThread(self.id)
-        self._sensor_queue = self._task_supervisor_knowledge.sensor_dispatcher.getQueue(
+        self._task_supervisor_knowledge.sensor_dispatcher.add_thread(self.id)
+        self._sensor_queue = self._task_supervisor_knowledge.sensor_dispatcher.get_queue(
             self.id)
         self._internal_queue = queue.Queue()
 
@@ -473,6 +473,6 @@ class TransportOrder(threading.Thread):
         self._task_supervisor_knowledge.orion_connector.delete_entity(
             self._transport_order_update.getId())
 
-        self._task_supervisor_knowledge.ros_message_dispatcher.removeThread(
+        self._task_supervisor_knowledge.ros_message_dispatcher.remove_thread(
             self.id)
-        self._task_supervisor_knowledge.sensor_dispatcher.removeThread(self.id)
+        self._task_supervisor_knowledge.sensor_dispatcher.remove_thread(self.id)

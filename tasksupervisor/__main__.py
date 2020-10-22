@@ -204,7 +204,7 @@ def callback_ros_order_state(data, ros_queue):
     if order_state:
         if order_state.status == rosOrderStatus.FINISHED:
             logger.info("Received callback_ros_order_state --> FIN")
-        ros_queue.putData(order_state.uuid, order_state)
+        ros_queue.put_data(order_state.uuid, order_state)
 
 
 if __name__ == '__main__':
