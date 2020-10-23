@@ -13,7 +13,7 @@ from lotlan_schedular.api.event import Event
 from tasksupervisor.entities.sensor_agent_node import SensorAgent
 
 from tasksupervisor.control.ros_order_state import rosOrderStatus, rosTransportOrderStates
-from tasksupervisor.control.ros_interface import RosControl
+
 
 from tasksupervisor.entities.transport_order_update import TransportOrderUpdate
 
@@ -218,16 +218,11 @@ class TransportOrder(threading.Thread):
 
                         self._robot_id = self._robot.id
 
-                        ros_transport = RosControl()
-
-                        # create the real transport order
-                        ros_transport.create_transport_order(
-                            str(self._to_info.uuid),
+                        self._robot.control.create_transport_order(str(self._to_info.uuid),
                             self._to_info.to_step_from.location.physical_name,
-                            self._to_info.to_step_to.location.physical_name,
-                            self._robot_id)
+                            self._to_info.to_step_to.location.physical_name)
 
-                        if ros_transport.status == CREATE_TRANSPORT_ORDER_SUCCESS:
+                        if self._robot.control.status == CREATE_TRANSPORT_ORDER_SUCCESS:
                             # transport order has been send, now we can move on
                             send_transport_order = False
 
@@ -305,10 +300,9 @@ class TransportOrder(threading.Thread):
                         sensor_entity_data, self._subscription_ids, expected_value, expected_type, expected_comperator)
                     if agv_is_loaded:
                         # unsubscribe from events:
-                        self._clear_subsriptions()
-                        ros_control = RosControl()
-                        status = ros_control.manual_action_acknowledge(
-                            self._robot_id)
+                        self._clear_subsriptions() 
+                        self._robot.control.manual_action_acknowledge()
+                        status = self._robot.control.status
                         # no need to resend it...
                         if status == CREATE_TRANSPORT_ORDER_SUCCESS:
 
@@ -395,9 +389,8 @@ class TransportOrder(threading.Thread):
                     if agv_is_unloaded:
                         self._clear_subsriptions()
 
-                        ros_control = RosControl()
-                        status = ros_control.manual_action_acknowledge(
-                            self._robot_id)
+                        self._robot.control.manual_action_acknowledge()
+                        status = self._robot.control.status
 
                         if status == CREATE_TRANSPORT_ORDER_SUCCESS:
                             # no need to resend it...

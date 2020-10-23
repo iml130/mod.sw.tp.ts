@@ -1,3 +1,6 @@
+import threading
+from tasksupervisor.control.interface import FormalControlInterface
+
 class Location():
     def __init__(self):
         self.coord_x = 0
@@ -12,9 +15,15 @@ class WorkingQueue():
 
 
 class AGV():
+    lock = threading.Lock()
     def __init__(self, _id, _name, _type):
         self.id = _id
         self.name = _name
         self.type = _type
         self.location = Location()
         self.working_queue = WorkingQueue()
+        self.control = None
+        
+    
+    def set_control(self, control):
+        self.control = control

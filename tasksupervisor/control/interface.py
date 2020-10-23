@@ -10,11 +10,11 @@ class FormalControlInterface(metaclass=abc.ABCMeta):
                 NotImplemented)
 
     @abc.abstractmethod
-    def create_transport_order(self, _task_id: str, _from_id: str, _to_id: str, _robot_id: str):
+    def create_transport_order(self, task_id: str, from_id: str, to_id: str):
         """Load in the data set"""
         raise NotImplementedError
 
     @abc.abstractmethod
-    def manual_action_acknowledge(self, _robot_id: str):
+    def manual_action_acknowledge(self):
         """Load in the data set"""
         raise NotImplementedError

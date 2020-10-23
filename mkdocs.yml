@@ -20,8 +20,10 @@ nav:
         - Configuration: install/configuration.md
         - Logs: install/logs.md
     - Programmers Manual:
+        - Connecting to Middlewares: programmers/connecting-to-middlewares.md
         - Interfaces: programmers/interfaces.md
         - Materialflow: programmers/materialflow.md
         - Entities: programmers/entities.md
+    - Glossary: glossary.md
     - Usage: usage.md
     - Deprecated Functionality: deprecated.md
