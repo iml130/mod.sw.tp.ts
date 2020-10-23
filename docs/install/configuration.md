@@ -1,8 +1,9 @@
 Our sample configuration *config_ts.ini* defines two robots, having the same skill transporting *pallets*. The assignment of tasks is done by a simple round-robin shedulling algorithm. This means, task1 is assigned to robot1, task2 is assigned to robot2. Task3 is assigned to robot1, and so on. In case of a third robot exists, task3 would have been assigned to this on.
 
 2 Robots with ids:
-- robot_00000000000000000000000000000101
-- robot_00000000000000000000000000000100
+
+  * robot_00000000000000000000000000000101
+  * robot_00000000000000000000000000000100
 
 These ids are also published during the TransportOrderUpdate by the TaskSupervisor.
 

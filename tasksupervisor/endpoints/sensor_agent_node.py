@@ -29,9 +29,7 @@ def construct_blueprint_sensor(task_supervisor):
 
                     task_supervisor.sensor_dispatcher.put_data(
                         task_supervisor.subscription_dict[subscription_id], json_request)
-
-                    # my_globals.sanDictQueue.put_data(
-                    #     my_globals.subscriptionDict[subscription_id], json_request)
+ 
             else:
                 # no subscription
                 logger.info("sanEndpoint: No Subscription in List")
