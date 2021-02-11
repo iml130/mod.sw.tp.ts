@@ -1,20 +1,6 @@
 FROM ros:melodic-ros-core-bionic
 
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-# ONLY FOR IML NETWORK 
-# ENV http_proxy=http://192.44.23.9:80
-# ENV https_proxy=http://192.44.23.9:80
-# ENV all_proxy=socks://192.44.23.9:80
-# ENV ftp_proxy=ftp://192.44.23.9:80
-
-#ENV no_proxy='localhost,::1,127.0.0.1,10.64.10.0/16'
-
-
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-ENV GITLAB_TOKEN_MARS=6ThiiJd_xcSFFASN3Fye
-ENV GITLAB_TOKEN_TS=XKw-VpSxMj52YcN4rQmp
-#XKw-VpSxMj52YcN4rQmp
+# ToDo: Update 
 
 RUN apt-get update && apt-get install -y \
     ros-melodic-industrial-msgs \
