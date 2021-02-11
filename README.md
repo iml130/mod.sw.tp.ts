@@ -30,7 +30,7 @@ Receives material flow specification from in an appropriate formal language (LoT
 * Python3 >= 3.8.5
 * ROS1 Noetic
 * (Docker and docker-compose - in case you want to have an easy life ;))
-* Understanding defining material flows based on (lotlan)[https://lotlan.readthedocs.io/en/latest/]
+* Understanding defining material flows based on [lotlan](https://lotlan.readthedocs.io/en/latest/)
 
 ## OpenTodo's
 Currently we are working on the following topics. It takes some time.
@@ -59,7 +59,7 @@ git clone repo
 
 ## Configuration
 
-This modules requires a [configuration file](docs/install/configuration).
+This modules requires a [configuration file](docs/install/configuration.md).
 
 
 ### Docker Image
@@ -75,9 +75,9 @@ python __main__.py
 ```
 
 ## API
-[Consumed interfaces](docs/programmers/interfaces#Consuming)
+[Consumed interfaces](docs/programmers/interfaces.md#Consuming)
 
-[Produced interfaces](docs/programmers/interfaces#Producing)
+[Produced interfaces](docs/programmers/interfaces.md#Producing)
 
 ## Testing
 Comming soon
