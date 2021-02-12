@@ -12,7 +12,7 @@ from threading import Thread
 # external third party imports
 import rospy
 from mars_agent_logical_msgs.msg import OrderStatus
-from lotlan_schedular.schedular import LotlanSchedular
+from lotlan_scheduler.scheduler import LotlanScheduler
 
 # local imports
 from tasksupervisor import my_globals
@@ -26,7 +26,7 @@ from tasksupervisor.helpers import servercheck
 from tasksupervisor.control.ros_order_state import OrderState, rosOrderStatus
 
 # from tasksupervisor.optimization.round_robin import initRobot
-from tasksupervisor.TaskSupervisor.schedular import Schedular
+from tasksupervisor.TaskSupervisor.scheduler import Scheduler
 
 from tasksupervisor.control.agv_manager import AgvManager
 from tasksupervisor.optimization.round_robin import RoundRobin
@@ -64,7 +64,7 @@ logger = logging.getLogger(__name__)
 ORION_CONNECTOR = my_globals.ORION_CONNECTOR
 
 active_materialflow_specification_states = []
-active_task_schedulars = []
+active_task_schedulers = []
 # currentMaterialFlowSpecState = MaterialflowSpecificationState()
 entity_task_supervisor_info = TaskSupervisorInfo()
 
@@ -97,35 +97,35 @@ def callback_flask_server(task_supervisor):
             port=my_globals.parsed_config_file.TASKPLANNER_PORT, threaded=True, use_reloader=False, debug=True)
 
 
-def callback_task_schedular_creator(queue_task_schedular, task_supervisor):
-    """ Callback method for creating a new task schedular
+def callback_task_scheduler_creator(queue_task_scheduler, task_supervisor):
+    """ Callback method for creating a new task scheduler
 
     Keyword arguments:
-        queue_task_schedular -- a queue which gets a valid materialflow description
+        queue_task_scheduler -- a queue which gets a valid materialflow description
     """
     global entity_task_supervisor_info
-    global active_task_schedulars
-    logger.info("SchedularDealer started")
+    global active_task_schedulers
+    logger.info("SchedulerDealer started")
 
     while True:
-        task_schedular = None
+        task_scheduler = None
         # wait for a new materialflow
-        materialflow_specification = queue_task_schedular.get()
+        materialflow_specification = queue_task_scheduler.get()
 
         # create new task shedular
-        task_schedular = Schedular(materialflow_specification, task_supervisor)
+        task_scheduler = Scheduler(materialflow_specification, task_supervisor)
 
-        active_task_schedulars.append(task_schedular)
-        task_schedular.start()
+        active_task_schedulers.append(task_scheduler)
+        task_scheduler.start()
 
         entity_task_supervisor_info.appendMaterialflow(
             materialflow_specification.id)
 
         task_supervisor.orion_connector.update_entity(
             entity_task_supervisor_info)
-        logger.info("New TaskSchedular added")
+        logger.info("New TaskScheduler added")
 
-    logger.info("SchedularDealer ended")
+    logger.info("SchedulerDealer ended")
 
 
 def callback_new_materialflow(queue_materialflow_spec, task_supervisor):
@@ -137,7 +137,7 @@ def callback_new_materialflow(queue_materialflow_spec, task_supervisor):
     lock = threading.Lock()
 
     global active_materialflow_specification_states
-    global active_task_schedulars
+    global active_task_schedulers
 
     logger.info("callback_new_materialflow started")
     while True:
@@ -156,7 +156,7 @@ def callback_new_materialflow(queue_materialflow_spec, task_supervisor):
                     # check if the materialflow shall be processed - or not
                     if new_materialflow.active:
                         try:
-                            lotlan_validator = LotlanSchedular(
+                            lotlan_validator = LotlanScheduler(
                                 new_materialflow.specification)
                             materialflow_is_valid = lotlan_validator.validate(
                                 new_materialflow.specification)
@@ -184,10 +184,10 @@ def callback_new_materialflow(queue_materialflow_spec, task_supervisor):
                     else:
                         # materialflow has been set passive
                         # disable the inactive ones
-                        for schedular in active_task_schedulars:
-                            if schedular.id == new_materialflow.id:
-                                print("SET INACTIVE: " + schedular.id)
-                                schedular.set_active(False)
+                        for scheduler in active_task_schedulers:
+                            if scheduler.id == new_materialflow.id:
+                                print("SET INACTIVE: " + scheduler.id)
+                                scheduler.set_active(False)
                         print(
                             "TODO: Disable the Materialflow or ignore it...but first... lets make it easy")
         # ORION_CONNECTOR.update_entity(currentMaterialFlowSpecState)
@@ -267,7 +267,7 @@ if __name__ == '__main__':
     thread_new_materialflow = Thread(target=callback_new_materialflow,
                                      args=(my_globals.taskQueue, task_supervisor))
     thread_new_materialflow_scheduler = Thread(
-        target=callback_task_schedular_creator, args=(my_globals.taskSchedulerQueue, task_supervisor))
+        target=callback_task_scheduler_creator, args=(my_globals.taskSchedulerQueue, task_supervisor))
 
     logger.info(
         "Starting callback_new_materialflow, sanDealer and workTaskScheduler")
