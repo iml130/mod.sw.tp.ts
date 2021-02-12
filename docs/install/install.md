@@ -10,7 +10,7 @@ jsonschema
 networkx
 matplotlib
 fiwareobjectconverter==0.1.1
-lotlan-schedular
+lotlan-scheduler
 ```
 
 In addition to that it also requires at the moment a rospy.
