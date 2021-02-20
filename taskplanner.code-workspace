@@ -8,10 +8,10 @@
 			"path": "."
 		},
 		{
-			"path": "/home/admin-detzner/catkin_ws/src/MARS/Logical-Agents/mars_agent_logical_srvs"
+			"path": "../MARS/Logical-Agents/mars_agent_logical_srvs"
 		},
 		{
-			"path": "/home/admin-detzner/catkin_ws/src/MARS/Logical-Agents/mars_agent_logical_msgs"
+			"path": "../MARS/Logical-Agents/mars_agent_logical_msgs"
 		}
 	],
 	"settings": {
