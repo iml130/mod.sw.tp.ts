@@ -29,15 +29,16 @@ TOPIC_MANUAL_ACTION_DONE = "manual_action_done"
 class RosControl(FormalControlInterface):
     """Extract text from a PDF."""
 
-    def __init__(self):
+    def __init__(self, robot_id : str):
+        self.robot_id = robot_id
         self.status = 0
 
-    def create_transport_order(self, _task_id: str, _from_id: str, _to_id: str, _robot_id: str) -> str:
+    def create_transport_order(self, _task_id: str, _from_id: str, _to_id: str) -> str:
         """Overrides FormalParserInterface.create_transport_order()"""
 
         logger.info("ROS create_transport_order")
         service_topic_add_transport_order = self._create_topic(
-            _robot_id, TOPIC_ADD_TRANSPORT_ORDER)
+            self.robot_id, TOPIC_ADD_TRANSPORT_ORDER)
         rospy.wait_for_service(service_topic_add_transport_order)
         try:
             ros_task_id = Id(_task_id, IdType.ID_TYPE_STRING_UUID)
@@ -84,10 +85,10 @@ class RosControl(FormalControlInterface):
         except Exception as ex:
             logger.info("ROS Exception: %s", ex)
 
-    def manual_action_acknowledge(self, _robot_id):
+    def manual_action_acknowledge(self):
         logger.info("ROS manual_action_acknowledge")
         service_topic_manual_action_done = self._create_topic(
-            _robot_id, TOPIC_MANUAL_ACTION_DONE)
+            self.robot_id, TOPIC_MANUAL_ACTION_DONE)
 
         rospy.wait_for_service(service_topic_manual_action_done)
         try:

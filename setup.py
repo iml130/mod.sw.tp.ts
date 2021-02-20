@@ -6,6 +6,6 @@ setup(name='tasksupervisor',
       url='http://github.com/iml130',
       author='Me',
       author_email='peter.detzner@iml.fraunhofer.de',
-      license='MIT',
+      license='APACHE 2',
       packages=['tasksupervisor'],
       zip_safe=False)

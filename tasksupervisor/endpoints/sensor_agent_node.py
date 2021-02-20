@@ -22,16 +22,14 @@ def construct_blueprint_sensor(task_supervisor):
         """ Endpoint for the Sensor Agent to handle update notification """
         if request.json:
             json_request = request.json
-            #dictQueue.putData(token, jsonReq)
+            #dictQueue.put_data(token, jsonReq)
             if my_globals.FI_SUB_ID in json_request and my_globals.FI_DATA in json_request:
                 subscription_id = json_request[my_globals.FI_SUB_ID]
                 if subscription_id in task_supervisor.subscription_dict:
 
-                    task_supervisor.sensor_dispatcher.putData(
+                    task_supervisor.sensor_dispatcher.put_data(
                         task_supervisor.subscription_dict[subscription_id], json_request)
-
-                    # my_globals.sanDictQueue.putData(
-                    #     my_globals.subscriptionDict[subscription_id], json_request)
+ 
             else:
                 # no subscription
                 logger.info("sanEndpoint: No Subscription in List")

@@ -1,7 +1,7 @@
 import threading
 
 from tasksupervisor.control.agv import AGV
-
+from tasksupervisor.control.ros_interface import RosControl
 
 class AgvManager():
     lock = threading.Lock()
@@ -21,6 +21,7 @@ class AgvManager():
             if not robot_id in self.available_agvs:
                 self.available_agvs[robot_id] = AGV(
                     robot_id, robot_name, robot_type)
+                self.available_agvs[robot_id].set_control(RosControl(robot_id))
 
     def get_agv_by_id(self, robot_id):
         with self.lock:

@@ -7,7 +7,7 @@ import queue
 # import multiprocessing
 
 # import 3rd partie libs
-from lotlan_schedular.api.event import Event
+from lotlan_scheduler.api.event import Event
 
 # import local packages
 from tasksupervisor.helpers.utc import get_utc_time
@@ -18,7 +18,7 @@ logger = logging.getLogger(__name__)
 
 # this represents a set of tasks
 class Materialflow(threading.Thread):
-    def __init__(self, ownerId, _materialflow, _queue_to_schedular, task_supervisor_knowledge):
+    def __init__(self, ownerId, _materialflow, _queue_to_scheduler, task_supervisor_knowledge):
         threading.Thread.__init__(self)
         logger.info("taskManager init")
         self.id = uuid.uuid4()
@@ -35,7 +35,7 @@ class Materialflow(threading.Thread):
                     self.taskManagerName, str(self.id))
 
         #self.runningTask= None
-        self._queue_to_schedular = _queue_to_schedular
+        self._queue_to_scheduler = _queue_to_scheduler
         self._start_task = None
 
         self._queue_to_transport_order = queue.Queue()
@@ -48,6 +48,8 @@ class Materialflow(threading.Thread):
         self._materialflow.register_callback_task_finished(
             self.cb_task_finished)
         self._materialflow.register_callback_all_finished(self.cb_all_finished)
+        self._materialflow.register_callback_pickup_finished(self.cb_pickup_finished)
+        self._materialflow.register_callback_delivery_finished(self.cb_delivery_finished)
 
         logger.info("taskManager init_done")
 
@@ -77,6 +79,16 @@ class Materialflow(threading.Thread):
                 if not self._running_transport_orders[temp_uuid].is_alive():
                     self._running_transport_orders[temp_uuid].start()
             # print(str(transport_orders))
+
+    def cb_pickup_finished(self, mf_uuid, _uuid):
+        print("cb_pickup_finished from mf: " + str(mf_uuid))
+        temp_uuid = str(_uuid)
+        self._running_transport_orders[temp_uuid].load_agv()
+
+    def cb_delivery_finished(self, mf_uuid, _uuid):
+        print("cb_delivery_finished from mf: " + str(mf_uuid))
+        temp_uuid = str(_uuid)
+        self._running_transport_orders[temp_uuid].unload_agv()
 
     def cb_finished_by(self, mf_uuid, _uuid, event_information):
         print("cb_finished_by from mf: " + str(mf_uuid))
@@ -117,9 +129,6 @@ class Materialflow(threading.Thread):
             if temp_lotlan_event is not None:
                 if type(temp_lotlan_event) is Event:
                     self._materialflow.fire_event(temp_uuid, temp_lotlan_event)
-            else:
-                self._materialflow.fire_event(
-                    temp_uuid, Event("to_done", "", "", "", True))
             pass
 
         print("WAIT_FOR_END")
@@ -132,7 +141,7 @@ class Materialflow(threading.Thread):
         self.task_supervisor_knowledge.orion_connector.delete_entity(
             self._materialflow_update.getId())
 
-        self._queue_to_schedular.put(self.taskManagerName)
+        self._queue_to_scheduler.put(self.taskManagerName)
 
     def __cmp__(self, other):
         if self.name == other:

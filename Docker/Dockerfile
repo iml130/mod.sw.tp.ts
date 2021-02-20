@@ -1,9 +1,6 @@
 FROM ros:melodic-ros-core-bionic
 
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-ENV GITLAB_TOKEN_MARS=6ThiiJd_xcSFFASN3Fye
-ENV GITLAB_TOKEN_TS=XKw-VpSxMj52YcN4rQmp 
+# ToDo: Update 
 
 RUN apt-get update && apt-get install -y \
     ros-melodic-industrial-msgs \

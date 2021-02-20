@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.2.1">
+<jmeterTestPlan version="1.2" properties="5.0" jmeter="5.3">
   <hashTree>
-    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Test Plan" enabled="true">
-      <stringProp name="TestPlan.comments"></stringProp>
+    <TestPlan guiclass="TestPlanGui" testclass="TestPlan" testname="Orion Test Plan for TaskSupervisor" enabled="true">
+      <stringProp name="TestPlan.comments">Please adjust the ORION_ADDRESS here
+</stringProp>
       <boolProp name="TestPlan.functional_mode">false</boolProp>
       <boolProp name="TestPlan.tearDown_on_shutdown">true</boolProp>
       <boolProp name="TestPlan.serialize_threadgroups">false</boolProp>
@@ -35,9 +36,10 @@
             <stringProp name="Header.value">application/json</stringProp>
           </elementProp>
         </collectionProp>
+        <stringProp name="TestPlan.comments">Set the content type here</stringProp>
       </HeaderManager>
       <hashTree/>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Materialflow Creation" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Materialflow Examples" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -45,105 +47,30 @@
         </elementProp>
         <stringProp name="ThreadGroup.num_threads">1</stringProp>
         <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration"></stringProp>
+        <boolProp name="ThreadGroup.scheduler">true</boolProp>
+        <stringProp name="ThreadGroup.duration">1</stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="TestPlan.comments">These examples shows the possibilities you have with LoTLan to describe Materialflows.
+Start the Thread Group and the activated examples will be executed.
+
+Note, that the examples are URL Encoded. If you want to understand the content of each example decode them yourself or visit the
+documentation for the TaskSupervisor and head to the examples section.
+
+A quick description of each Example can also be found in the comments section in the corresponding request below.</stringProp>
       </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Salomon" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TransportGoodsPallet" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-	&quot;id&quot;: &quot;Salomon1&quot;,&#xd;
-	&quot;type&quot;: &quot;Materialflow&quot;,&#xd;
-&quot;specification&quot;: {&#xd;
-		&quot;value&quot;:  &quot;Location+prod%0A++++name+%3D+%22Tag10_11%22%0A++++type+%3D+%22SmallLoadCarrier%22%0Aend%0A%0ALocation+wh_1%0A++++name+%3D+%22Tag12%22%0A++++type+%3D+%22SmallLoadCarrier%22%0Aend%0A%0AEvent+triggerGetNewMaterial%0A++++name+%3D+%22startTaskButton1%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0AEvent+agvLoadedAtStorage1%0A++++name+%3D+%22loadedButton1%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0AEvent+agvUnloadedAtProd%0A++++name+%3D+%22unloadedProd%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0ATransportOrderStep+loadStorage1%0A++++Location+wh_1%0A++++FinishedBy+agvLoadedAtStorage1+%3D%3D+True+%0Aend%0A%0ATransportOrderStep+unloadWorkstation1%0A++++Location+prod%0A++++FinishedBy+agvUnloadedAtProd+%3D%3D+True%0Aend%0A%0Atask+SupplyTaskFromStorage1ToWorkstation1%0A++++TriggeredBy+triggerGetNewMaterial+%3D%3D+True%0A++++Transport%0A++++from++++loadStorage1+%0A++++to++unloadWorkstation1%0Aend&quot;,&#xd;
-		&quot;type&quot;: &quot;Text&quot;&#xd;
-	},&#xd;
-	&quot;ownerId&quot;: {&#xd;
-		&quot;type&quot;: &quot;Text&quot;,&#xd;
-		&quot;value&quot;: &quot;reviewers hmi&quot;&#xd;
-	},&#xd;
-	&quot;active&quot;: {&#xd;
-		&quot;type&quot;: &quot;Boolean&quot;,&#xd;
-		&quot;value&quot;: true&#xd;
-	}&#xd;
-}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
-          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SimpleTaskNoTrigger" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-	&quot;id&quot;: &quot;SimpleTaskNoTrigger111&quot;,&#xd;
-	&quot;type&quot;: &quot;Materialflow&quot;,&#xd;
-&quot;specification&quot;: {&#xd;
-		&quot;value&quot;:  &quot;Location+pickupItem%0A++++name+%3D+%22Tag10_11%22%0A++++type+%3D+%22pallet%22%0Aend%0A%0ALocation+dropoffItem%0A++++name+%3D+%22Tag12%22%0A++++type+%3D+%22pallet%22%0Aend%0A%0AEvent+agvLoadedAtWorkstation1%0A++++name+%3D+%22realSensorAgvLoadedWs1%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0AEvent+agvUnloadedAtWorkstation2%0A++++name+%3D+%22realSensorAgvUnloadedWs2%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0ATransportOrderStep+loadAtWorkstation1%0A++++Location+pickupItem++%23+Only+one+Location+can+be+defined%21%0A++++FinishedBy+agvLoadedAtWorkstation1+%3D%3D+True+%0Aend%0A%0ATransportOrderStep+unloadWorkstation2%0A++++Location+dropoffItem%0A++++FinishedBy+agvUnloadedAtWorkstation2+%3D%3D+True%0Aend%0A%0Atask+SupplyTaskFromWorkstation1ToWorkstation2%0A++++%23+Transport+Order+now+needs+TransportOrderSteps+instead+of+regular+instances%0A++++Transport%0A++++from+loadAtWorkstation1%0A++++to+unloadWorkstation2+%0Aend&quot;,&#xd;
-		&quot;type&quot;: &quot;Text&quot;&#xd;
-	},&#xd;
-	&quot;ownerId&quot;: {&#xd;
-		&quot;type&quot;: &quot;Text&quot;,&#xd;
-		&quot;value&quot;: &quot;reviewers hmi&quot;&#xd;
-	},&#xd;
-	&quot;active&quot;: {&#xd;
-		&quot;type&quot;: &quot;Boolean&quot;,&#xd;
-		&quot;value&quot;: true&#xd;
-	}&#xd;
-}</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
-          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SimpleTaskNoTriggerOnDoneAgain" enabled="false">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-	&quot;id&quot;: &quot;SimpleTaskNoTriggerOnDoneAgain&quot;,&#xd;
+	&quot;id&quot;: &quot;TransportGoodsPallet&quot;,&#xd;
 	&quot;type&quot;: &quot;Materialflow&quot;,&#xd;
 	&quot;specification&quot;: {&#xd;
-		&quot;value&quot;:  &quot;Location+pickupItem%0A++++name+%3D+%22Tag10_11%22%0A++++type+%3D+%22pallet%22%0Aend%0A%0ALocation+dropoffItem%0A++++name+%3D+%22Tag12%22%0A++++type+%3D+%22pallet%22%0Aend%0A%0AEvent+agvLoadedAtWorkstation1%0A++++name+%3D+%22realSensorAgvLoadedWs1%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0AEvent+agvUnloadedAtWorkstation2%0A++++name+%3D+%22realSensorAgvUnloadedWs2%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0ATransportOrderStep+loadAtWorkstation1%0A++++Location+pickupItem++%23+Only+one+Location+can+be+defined%21%0A++++FinishedBy+agvLoadedAtWorkstation1+%3D%3D+True+%0Aend%0A%0ATransportOrderStep+unloadWorkstation2%0A++++Location+dropoffItem%0A++++FinishedBy+agvUnloadedAtWorkstation2+%3D%3D+True%0Aend%0A%0Atask+SupplyTaskFromWorkstation1ToWorkstation2%0A++++%23+Transport+Order+now+needs+TransportOrderSteps+instead+of+regular+instances%0A++++Transport%0A++++from+loadAtWorkstation1%0A++++to+unloadWorkstation2%0A++++OnDone+SupplyTaskFromWorkstation1ToWorkstation2%0Aend&quot;,&#xd;
+		&quot;value&quot;:  &quot;Location%20pickupItem%0A%20%20%20%20name%20%3D%20%22Tag10%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0ALocation%20dropoffItem%0A%20%20%20%20name%20%3D%20%22Tag12%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0AEvent%20agvLoadedAtPickupItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvLoadedWs1%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0AEvent%20agvLoadedAtDropoffItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvUnloadedWs2%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0ATransportOrderStep%20loadPickupItem%0A%20%20%20%20Location%20pickupItem%0A%20%20%20%20FinishedBy%20agvLoadedAtPickupItem%20%3D%3D%20True%20%0AEnd%0A%0ATransportOrderStep%20unloadDropoffItem%0A%20%20%20%20Location%20dropoffItem%0A%20%20%20%20FinishedBy%20agvLoadedAtDropoffItem%20%3D%3D%20True%0AEnd%0A%0ATask%20transportGoodsPallet%0A%20%20%20%20Transport%0A%20%20%20%20From%20loadPickupItem%0A%20%20%20%20To%20unloadDropoffItem%20%0AEnd%0A&quot;,&#xd;
 		&quot;type&quot;: &quot;Text&quot;&#xd;
 	},&#xd;
 	&quot;ownerId&quot;: {&#xd;
@@ -154,7 +81,8 @@
 		&quot;type&quot;: &quot;Boolean&quot;,&#xd;
 		&quot;value&quot;: true&#xd;
 	}&#xd;
-}</stringProp>
+}&#xd;
+</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -172,22 +100,25 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">A simple Task which describes a Transport from one Location to another.
+
+
+</stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SimpleTaskNoTriggerOnDoneT1T2T1Again" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TransportGoodsPallet_Forever" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-	&quot;id&quot;: &quot;SimpleTaskNoTriggerOnDoneT1T2T1Again&quot;,&#xd;
+	&quot;id&quot;: &quot;TransportGoodsPallet_Forever&quot;,&#xd;
 	&quot;type&quot;: &quot;Materialflow&quot;,&#xd;
 	&quot;specification&quot;: {&#xd;
-		&quot;value&quot;:  &quot;Location+pickupItem%0A++++name+%3D+%22Tag10_11%22%0A++++type+%3D+%22pallet%22%0Aend%0A%0ALocation+dropoffItem%0A++++name+%3D+%22Tag12%22%0A++++type+%3D+%22pallet%22%0Aend%0A%0AEvent+agvLoadedAtWorkstation1%0A++++name+%3D+%22realSensorAgvLoadedWs1%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0AEvent+agvUnloadedAtWorkstation2%0A++++name+%3D+%22realSensorAgvUnloadedWs2%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0ATransportOrderStep+loadAtWorkstation1%0A++++Location+pickupItem++%23+Only+one+Location+can+be+defined%21%0A++++FinishedBy+agvLoadedAtWorkstation1+%3D%3D+True+%0Aend%0A%0ATransportOrderStep+unloadWorkstation2%0A++++Location+dropoffItem%0A++++FinishedBy+agvUnloadedAtWorkstation2+%3D%3D+True%0Aend%0A%0Atask+SupplyTaskFromWorkstation1ToWorkstation2%0A++++%23+Transport+Order+now+needs+TransportOrderSteps+instead+of+regular+instances%0A++++Transport%0A++++from+loadAtWorkstation1%0A++++to+unloadWorkstation2%0A++++OnDone+SupplyTaskFromWorkstation2ToWorkstation1%0Aend%0A%0Atask+SupplyTaskFromWorkstation2ToWorkstation1%0A++++%23+Transport+Order+now+needs+TransportOrderSteps+instead+of+regular+instances%0A++++Transport%0A++++from+unloadWorkstation2%0A++++to+loadAtWorkstation1%0A++++OnDone+SupplyTaskFromWorkstation1ToWorkstation2%0Aend&quot;,&#xd;
+		&quot;value&quot;:  &quot;Location%20pickupItem%0A%20%20%20%20name%20%3D%20%22Tag10%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0ALocation%20dropoffItem%0A%20%20%20%20name%20%3D%20%22Tag12%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0AEvent%20agvLoadedAtPickupItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvLoadedWs1%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0AEvent%20agvLoadedAtDropoffItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvUnloadedWs2%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0ATransportOrderStep%20loadPickupItem%0A%20%20%20%20Location%20pickupItem%0A%20%20%20%20FinishedBy%20agvLoadedAtPickupItem%20%3D%3D%20True%20%0AEnd%0A%0ATransportOrderStep%20unloadDropoffItem%0A%20%20%20%20Location%20dropoffItem%0A%20%20%20%20FinishedBy%20agvLoadedAtDropoffItem%20%3D%3D%20True%0AEnd%0A%0ATask%20transportGoodsPallet%0A%20%20%20%20Transport%0A%20%20%20%20From%20loadPickupItem%0A%20%20%20%20To%20unloadDropoffItem%20%0A%20%20%20%20OnDone%20transportGoodsPallet%0AEnd%0A&quot;,&#xd;
 		&quot;type&quot;: &quot;Text&quot;&#xd;
 	},&#xd;
-&#xd;
 	&quot;ownerId&quot;: {&#xd;
 		&quot;type&quot;: &quot;Text&quot;,&#xd;
 		&quot;value&quot;: &quot;reviewers hmi&quot;&#xd;
@@ -196,7 +127,8 @@
 		&quot;type&quot;: &quot;Boolean&quot;,&#xd;
 		&quot;value&quot;: true&#xd;
 	}&#xd;
-}</stringProp>
+}&#xd;
+</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -214,22 +146,23 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">The TransportGoodsPallet example but it runs forever.
+The Task has itself as OnDone Task.</stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SimpleTaskNoTriggerT1T2Parallel" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TransportGoodsPallet_TriggeredBy" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-	&quot;id&quot;: &quot;SimpleTaskNoTriggerT1T2Parallel&quot;,&#xd;
+	&quot;id&quot;: &quot;TransportGoodsPallet_TriggeredBy&quot;,&#xd;
 	&quot;type&quot;: &quot;Materialflow&quot;,&#xd;
 	&quot;specification&quot;: {&#xd;
-		&quot;value&quot;:  &quot;Location+pickupItem%0A++++name+%3D+%22Tag10_11%22%0A++++type+%3D+%22pallet%22%0Aend%0A%0ALocation+dropoffItem%0A++++name+%3D+%22Tag12%22%0A++++type+%3D+%22pallet%22%0Aend%0A%0AEvent+agvLoadedAtWorkstation1%0A++++name+%3D+%22realSensorAgvLoadedWs1%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0AEvent+agvUnloadedAtWorkstation2%0A++++name+%3D+%22realSensorAgvUnloadedWs2%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0ATransportOrderStep+loadAtWorkstation1%0A++++Location+pickupItem++%23+Only+one+Location+can+be+defined%21%0A++++FinishedBy+agvLoadedAtWorkstation1+%3D%3D+True+%0Aend%0A%0ATransportOrderStep+unloadWorkstation2%0A++++Location+dropoffItem%0A++++FinishedBy+agvUnloadedAtWorkstation2+%3D%3D+True%0Aend%0A%0Atask+SupplyTaskFromWorkstation1ToWorkstation2%0A++++%23+Transport+Order+now+needs+TransportOrderSteps+instead+of+regular+instances%0A++++Transport%0A++++from+loadAtWorkstation1%0A++++to+unloadWorkstation2+%0Aend%0A%0Atask+SupplyTaskFromWorkstation2ToWorkstation1%0A++++%23+Transport+Order+now+needs+TransportOrderSteps+instead+of+regular+instances%0A++++Transport%0A++++from+unloadWorkstation2%0A++++to+loadAtWorkstation1+%0Aend%0A&quot;,&#xd;
+		&quot;value&quot;:  &quot;Location%20pickupItem%0A%20%20%20%20name%20%3D%20%22Tag10%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0ALocation%20dropoffItem%0A%20%20%20%20name%20%3D%20%22Tag12%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0AEvent%20buttonPressed%0A%20%20%20%20name%20%3D%20%22AUniqueNameforAButton%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0AEvent%20agvLoadedAtPickupItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvLoadedWs1%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0AEvent%20agvLoadedAtDropoffItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvUnloadedWs2%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0ATransportOrderStep%20loadPickupItem%0A%20%20%20%20Location%20pickupItem%0A%20%20%20%20FinishedBy%20agvLoadedAtPickupItem%20%3D%3D%20True%20%0AEnd%0A%0ATransportOrderStep%20unloadDropoffItem%0A%20%20%20%20Location%20dropoffItem%0A%20%20%20%20FinishedBy%20agvLoadedAtDropoffItem%20%3D%3D%20True%0AEnd%0A%0ATask%20transportGoodsPallet%0A%20%20%20%20TriggeredBy%20buttonPressed%20%3D%3D%20True%20%0A%20%20%20%20Transport%0A%20%20%20%20From%20loadPickupItem%0A%20%20%20%20To%20unloadDropoffItem%20%0AEnd%0A&quot;,&#xd;
 		&quot;type&quot;: &quot;Text&quot;&#xd;
 	},&#xd;
-&#xd;
 	&quot;ownerId&quot;: {&#xd;
 		&quot;type&quot;: &quot;Text&quot;,&#xd;
 		&quot;value&quot;: &quot;reviewers hmi&quot;&#xd;
@@ -238,7 +171,8 @@
 		&quot;type&quot;: &quot;Boolean&quot;,&#xd;
 		&quot;value&quot;: true&#xd;
 	}&#xd;
-}</stringProp>
+}&#xd;
+</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -256,22 +190,23 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">A simple Task with a TriggeredBy condition.
+The Task can only start if the button is pressed.</stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SimpleTaskNoTriggerOnDoneInTransportOrderStep" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TransportGoodsPallet_FinishedBy" enabled="false">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-	&quot;id&quot;: &quot;SimpleTaskNoTriggerOnDoneInTransportOrderStep&quot;,&#xd;
+	&quot;id&quot;: &quot;TransportGoodsPallet_FinishedBy&quot;,&#xd;
 	&quot;type&quot;: &quot;Materialflow&quot;,&#xd;
 	&quot;specification&quot;: {&#xd;
-		&quot;value&quot;:  &quot;Location+pickupItem%0A++++name+%3D+%22Tag10_11%22%0A++++type+%3D+%22pallet%22%0Aend%0A%0ALocation+dropoffItem%0A++++name+%3D+%22Tag12%22%0A++++type+%3D+%22pallet%22%0Aend%0A%0AEvent+agvLoadedAtWorkstation1%0A++++name+%3D+%22realSensorAgvLoadedWs1%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0AEvent+agvUnloadedAtWorkstation2%0A++++name+%3D+%22realSensorAgvUnloadedWs2%22%0A++++type+%3D+%22Boolean%22%0Aend%0A%0ATransportOrderStep+loadAtWorkstation1%0A++++Location+pickupItem++%23+Only+one+Location+can+be+defined%21%0A++++FinishedBy+agvLoadedAtWorkstation1+%3D%3D+True%0A++++OnDone+SupplyTaskFromWorkstation1ToWorkstation2%0Aend%0A%0ATransportOrderStep+unloadWorkstation2%0A++++Location+dropoffItem%0A++++FinishedBy+agvUnloadedAtWorkstation2+%3D%3D+True%0Aend%0A%0Atask+SupplyTaskFromWorkstation1ToWorkstation2%0A++++%23+Transport+Order+now+needs+TransportOrderSteps+instead+of+regular+instances%0A++++Transport%0A++++from+loadAtWorkstation1%0A++++to+unloadWorkstation2+%0Aend&quot;,&#xd;
+		&quot;value&quot;:  &quot;Location%20pickupItem%0A%20%20%20%20name%20%3D%20%22Tag10%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0ALocation%20dropoffItem%0A%20%20%20%20name%20%3D%20%22Tag12%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0AEvent%20buttonPressed%0A%20%20%20%20name%20%3D%20%22AUniqueNameforAButton%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0AEvent%20agvLoadedAtPickupItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvLoadedWs1%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0AEvent%20agvLoadedAtDropoffItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvUnloadedWs2%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0ATransportOrderStep%20loadPickupItem%0A%20%20%20%20Location%20pickupItem%0A%20%20%20%20FinishedBy%20agvLoadedAtPickupItem%20%3D%3D%20True%20%0AEnd%0A%0ATransportOrderStep%20unloadDropoffItem%0A%20%20%20%20Location%20dropoffItem%0A%20%20%20%20FinishedBy%20agvLoadedAtDropoffItem%20%3D%3D%20True%0AEnd%0A%0ATask%20transportGoodsPallet%0A%20%20%20%20Transport%0A%20%20%20%20From%20loadPickupItem%0A%20%20%20%20To%20unloadDropoffItem%0A%20%20%20%20FinishedBy%20buttonPressed%20%3D%3D%20True%20%20%0AEnd&quot;,&#xd;
 		&quot;type&quot;: &quot;Text&quot;&#xd;
 	},&#xd;
-&#xd;
 	&quot;ownerId&quot;: {&#xd;
 		&quot;type&quot;: &quot;Text&quot;,&#xd;
 		&quot;value&quot;: &quot;reviewers hmi&quot;&#xd;
@@ -280,7 +215,8 @@
 		&quot;type&quot;: &quot;Boolean&quot;,&#xd;
 		&quot;value&quot;: true&#xd;
 	}&#xd;
-}</stringProp>
+}&#xd;
+</stringProp>
                 <stringProp name="Argument.metadata">=</stringProp>
               </elementProp>
             </collectionProp>
@@ -298,6 +234,141 @@
           <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
           <stringProp name="HTTPSampler.connect_timeout"></stringProp>
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">A simple Task with a FinishedBy condition.
+The Task will be executed like the TransportGoodsPallet example but it will be only marked as finished when the FinishedBy condition is satisfied.</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TransportGoodsPallet_OnDone" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;TransportGoodsPallet_OnDone&quot;,&#xd;
+	&quot;type&quot;: &quot;Materialflow&quot;,&#xd;
+	&quot;specification&quot;: {&#xd;
+		&quot;value&quot;:  &quot;Location%20pickupItem%0A%20%20%20%20name%20%3D%20%22Tag10%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0ALocation%20dropoffItem%0A%20%20%20%20name%20%3D%20%22Tag12%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0AEvent%20agvLoadedAtPickupItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvLoadedWs1%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0AEvent%20agvLoadedAtDropoffItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvUnloadedWs2%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0ATransportOrderStep%20loadPickupItem%0A%20%20%20%20Location%20pickupItem%0A%20%20%20%20FinishedBy%20agvLoadedAtPickupItem%20%3D%3D%20True%20%0AEnd%0A%0ATransportOrderStep%20unloadDropoffItem%0A%20%20%20%20Location%20dropoffItem%0A%20%20%20%20FinishedBy%20agvLoadedAtDropoffItem%20%3D%3D%20True%0AEnd%0A%0ATask%20transportGoodsPallet%0A%20%20%20%20Transport%0A%20%20%20%20From%20loadPickupItem%0A%20%20%20%20To%20unloadDropoffItem%20%0A%20%20%20%20OnDone%20transportGoodsPallet2%0AEnd%0A%0ATask%20transportGoodsPallet2%0A%20%20%20%20Transport%0A%20%20%20%20From%20loadPickupItem%0A%20%20%20%20To%20unloadDropoffItem%20%0AEnd&quot;,&#xd;
+		&quot;type&quot;: &quot;Text&quot;&#xd;
+	},&#xd;
+	&quot;ownerId&quot;: {&#xd;
+		&quot;type&quot;: &quot;Text&quot;,&#xd;
+		&quot;value&quot;: &quot;reviewers hmi&quot;&#xd;
+	},&#xd;
+	&quot;active&quot;: {&#xd;
+		&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+		&quot;value&quot;: true&#xd;
+	}&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
+          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">In this example the Task will be executed like in TransportGoodsPallet and after the first Task is done the Task definied in the OnDone statement will be executed next.</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TransportGoodsPallet_Parallel" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;TransportGoodsPallet_Parallel&quot;,&#xd;
+	&quot;type&quot;: &quot;Materialflow&quot;,&#xd;
+	&quot;specification&quot;: {&#xd;
+		&quot;value&quot;:  &quot;Location%20pickupItem%0A%20%20%20%20name%20%3D%20%22Tag10%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0ALocation%20dropoffItem%0A%20%20%20%20name%20%3D%20%22Tag12%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0AEvent%20agvLoadedAtPickupItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvLoadedWs1%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0AEvent%20agvLoadedAtDropoffItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvUnloadedWs2%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0ATransportOrderStep%20loadPickupItem%0A%20%20%20%20Location%20pickupItem%0A%20%20%20%20FinishedBy%20agvLoadedAtPickupItem%20%3D%3D%20True%20%0AEnd%0A%0ATransportOrderStep%20unloadDropoffItem%0A%20%20%20%20Location%20dropoffItem%0A%20%20%20%20FinishedBy%20agvLoadedAtDropoffItem%20%3D%3D%20True%0AEnd%0A%0ATask%20transportGoodsPallet%0A%20%20%20%20Transport%0A%20%20%20%20From%20loadPickupItem%0A%20%20%20%20To%20unloadDropoffItem%0AEnd%0A%0ATask%20transportGoodsPallet2%0A%20%20%20%20Transport%0A%20%20%20%20From%20loadPickupItem%0A%20%20%20%20To%20unloadDropoffItem%20%0AEnd%0A&quot;,&#xd;
+		&quot;type&quot;: &quot;Text&quot;&#xd;
+	},&#xd;
+	&quot;ownerId&quot;: {&#xd;
+		&quot;type&quot;: &quot;Text&quot;,&#xd;
+		&quot;value&quot;: &quot;reviewers hmi&quot;&#xd;
+	},&#xd;
+	&quot;active&quot;: {&#xd;
+		&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+		&quot;value&quot;: true&#xd;
+	}&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
+          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">In this example two Tasks which are independent from each other are definied, so they can run in parallel.</stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TransportGoodsPallet_Invalid" enabled="false">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+	&quot;id&quot;: &quot;TransportGoodsPallet_Invalid&quot;,&#xd;
+	&quot;type&quot;: &quot;Materialflow&quot;,&#xd;
+	&quot;specification&quot;: {&#xd;
+		&quot;value&quot;:  &quot;Location%20pickupItem%0A%20%20%20%20name%20%3D%20%22Tag10%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0ALocation%20dropoffItem%0A%20%20%20%20name%20%3D%20%22Tag12%22%0A%20%20%20%20type%20%3D%20%22pallet%22%0AEnd%0A%0AEvent%20agvLoadedAtPickupItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvLoadedWs1%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0AEvent%20agvLoadedAtDropoffItem%0A%20%20%20%20name%20%3D%20%22realSensorAgvUnloadedWs2%22%0A%20%20%20%20type%20%3D%20%22Boolean%22%0AEnd%0A%0ATransportOrderStep%20loadPickupItem%0A%20%20%20%20Location%20pickupItem%0A%20%20%20%20FinishedBy%20agvLoadedAtPickupItem%20%3D%3D%20True%20%0AEnd%0A%0ATransportOrderStep%20unloadDropoffItem%0A%20%20%20%20Location%20dropoffItem%0A%20%20%20%20FinishedBy%20agvLoadedAtDropoffItem%20%3D%3D%20True%0AEnd%0A%0Atask%20TransportGoodsPallet%0A%20%20%20%20Transport%0A%20%20%20%20From%20loadPickupItem%0A%20%20%20%20To%20unloadDropoffItem%20%0AEnd&quot;,&#xd;
+		&quot;type&quot;: &quot;Text&quot;&#xd;
+	},&#xd;
+	&quot;ownerId&quot;: {&#xd;
+		&quot;type&quot;: &quot;Text&quot;,&#xd;
+		&quot;value&quot;: &quot;reviewers hmi&quot;&#xd;
+	},&#xd;
+	&quot;active&quot;: {&#xd;
+		&quot;type&quot;: &quot;Boolean&quot;,&#xd;
+		&quot;value&quot;: true&#xd;
+	}&#xd;
+}&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
+          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
+          <stringProp name="HTTPSampler.method">POST</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+          <stringProp name="TestPlan.comments">This File violates our grammar rules.
+If you try to start it, the schedular should not execute it and instead returns an error message containing more information.
+
+In this specifiy example the Task keyword starts with a lower case character which is forbidden.
+The supervisor should print the error message and shoudl throw a Materialflow specification error.</stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
       </hashTree>
@@ -313,16 +384,17 @@
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="TestPlan.comments">This Thread Group creates the Orion entities for the Sensors used in the Materialflow examples (agvLoadedAtPickupItem, agvLoadedAtDropoffItem, buttonPallet)</stringProp>
       </ThreadGroup>
       <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="virtualSensorTransportFromWs1ToWs2" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Trigger Sensor buttonPallet" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
                 <stringProp name="Argument.value">{&#xd;
-        &quot;id&quot;: &quot;virtualSensorTransportFromWs1ToWs2&quot;,&#xd;
+        &quot;id&quot;: &quot;AUniqueNameforAButton&quot;,&#xd;
         &quot;type&quot;: &quot;SensorAgent&quot;,&#xd;
         &quot;measurementType&quot;: {&#xd;
             &quot;type&quot;: &quot;string&quot;,&#xd;
@@ -356,7 +428,7 @@
         },&#xd;
         &quot;sensorID&quot;: {&#xd;
             &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;virtualSensorTransportFromWs1ToWs2&quot;,&#xd;
+            &quot;value&quot;: &quot;AUniqueNameforAButton&quot;,&#xd;
             &quot;metadata&quot;: {}&#xd;
         },&#xd;
         &quot;sensorManufacturer&quot;: {&#xd;
@@ -395,7 +467,7 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="real Sensor AGV Loadad at Workstation 1" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Sensor agvLoadedAtPickupItem" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -475,7 +547,7 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="real Sensor AGV Unloaded at Workstation 2" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Sensor agvLoadedAtDropoffItem" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
@@ -556,7 +628,7 @@
         </HTTPSamplerProxy>
         <hashTree/>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="Salomon Trigger" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="TOGGLE Sensor agvLoadedAtPickupItem" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -568,261 +640,8 @@
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
-      </ThreadGroup>
-      <hashTree>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="triggerGetNewMaterial" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-        &quot;id&quot;: &quot;startTaskButton1&quot;,&#xd;
-        &quot;type&quot;: &quot;SensorAgent&quot;,&#xd;
-        &quot;measurementType&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;boolean&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;modifiedTime&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;2019-09-11T09:36:53Z&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;readings&quot;: {&#xd;
-            &quot;type&quot;: &quot;array&quot;,&#xd;
-            &quot;value&quot;: [&#xd;
-                {&#xd;
-                    &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
-                    &quot;value&quot;: {&#xd;
-                        &quot;reading&quot;: {&#xd;
-                            &quot;type&quot;: &quot;boolean&quot;,&#xd;
-                            &quot;value&quot;: false&#xd;
-                        }&#xd;
-                    }&#xd;
-                }&#xd;
-            ],&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sanID&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;SAN1&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sensorID&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;startTaskButton1&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sensorManufacturer&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;LLC&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sensorType&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;ON_OFF_SENSOR&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;units&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;boolean&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        }&#xd;
-    }&#xd;
-</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
-          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="agvLoadedAtStorage1" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-        &quot;id&quot;: &quot;loadedButton1&quot;,&#xd;
-        &quot;type&quot;: &quot;SensorAgent&quot;,&#xd;
-        &quot;measurementType&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;boolean&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;modifiedTime&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;2019-09-11T09:36:53Z&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;readings&quot;: {&#xd;
-            &quot;type&quot;: &quot;array&quot;,&#xd;
-            &quot;value&quot;: [&#xd;
-                {&#xd;
-                    &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
-                    &quot;value&quot;: {&#xd;
-                        &quot;reading&quot;: {&#xd;
-                            &quot;type&quot;: &quot;boolean&quot;,&#xd;
-                            &quot;value&quot;: false&#xd;
-                        }&#xd;
-                    }&#xd;
-                }&#xd;
-            ],&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sanID&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;SAN1&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sensorID&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;loadedButton1&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sensorManufacturer&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;LLC&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sensorType&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;ON_OFF_SENSOR&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;units&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;boolean&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        }&#xd;
-    }&#xd;
-</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
-          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="agvUnloadedAtProd" enabled="true">
-          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
-          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
-            <collectionProp name="Arguments.arguments">
-              <elementProp name="" elementType="HTTPArgument">
-                <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-        &quot;id&quot;: &quot;unloadedProd&quot;,&#xd;
-        &quot;type&quot;: &quot;SensorAgent&quot;,&#xd;
-        &quot;measurementType&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;boolean&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;modifiedTime&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;2019-09-11T09:36:53Z&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;readings&quot;: {&#xd;
-            &quot;type&quot;: &quot;array&quot;,&#xd;
-            &quot;value&quot;: [&#xd;
-                {&#xd;
-                    &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
-                    &quot;value&quot;: {&#xd;
-                        &quot;reading&quot;: {&#xd;
-                            &quot;type&quot;: &quot;boolean&quot;,&#xd;
-                            &quot;value&quot;: false&#xd;
-                        }&#xd;
-                    }&#xd;
-                }&#xd;
-            ],&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sanID&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;SAN1&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sensorID&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;unloadedProd&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sensorManufacturer&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;LLC&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;sensorType&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;ON_OFF_SENSOR&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        },&#xd;
-        &quot;units&quot;: {&#xd;
-            &quot;type&quot;: &quot;string&quot;,&#xd;
-            &quot;value&quot;: &quot;boolean&quot;,&#xd;
-            &quot;metadata&quot;: {}&#xd;
-        }&#xd;
-    }&#xd;
-</stringProp>
-                <stringProp name="Argument.metadata">=</stringProp>
-              </elementProp>
-            </collectionProp>
-          </elementProp>
-          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
-          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
-          <stringProp name="HTTPSampler.protocol"></stringProp>
-          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">v2/entities</stringProp>
-          <stringProp name="HTTPSampler.method">POST</stringProp>
-          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
-          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
-          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
-          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
-          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
-          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
-          <stringProp name="HTTPSampler.response_timeout"></stringProp>
-        </HTTPSamplerProxy>
-        <hashTree/>
-      </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="toggle Sensor at Workstation 1" enabled="true">
-        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
-        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
-          <boolProp name="LoopController.continue_forever">false</boolProp>
-          <stringProp name="LoopController.loops">1</stringProp>
-        </elementProp>
-        <stringProp name="ThreadGroup.num_threads">1</stringProp>
-        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
-        <boolProp name="ThreadGroup.scheduler">false</boolProp>
-        <stringProp name="ThreadGroup.duration"></stringProp>
-        <stringProp name="ThreadGroup.delay"></stringProp>
-        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="TestPlan.comments">Represents a button/trigger at the pickup location. If loading is done this can be activated.
+Note: Currently only manual loading / unloading is supported</stringProp>
       </ThreadGroup>
       <hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Active" enabled="true">
@@ -919,7 +738,7 @@
           <hashTree/>
         </hashTree>
       </hashTree>
-      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="toggle Sensor at Workstation 2" enabled="true">
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="TOGGLE Sensor at agvLoadedAtDropoffItem" enabled="true">
         <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
         <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
           <boolProp name="LoopController.continue_forever">false</boolProp>
@@ -931,6 +750,8 @@
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="TestPlan.comments">Represents a button/trigger at the pickup location. If loading is done this can be activated.
+Note: Currently only manual loading / unloading is supported</stringProp>
       </ThreadGroup>
       <hashTree>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Active" enabled="true">
@@ -1011,6 +832,117 @@
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
           <stringProp name="HTTPSampler.path">/v2/entities/realSensorAgvUnloadedWs2/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree>
+          <ConstantTimer guiclass="ConstantTimerGui" testclass="ConstantTimer" testname="Constant Timer" enabled="true">
+            <stringProp name="ConstantTimer.delay">${CONSTANT_TIMER_500MS}</stringProp>
+          </ConstantTimer>
+          <hashTree/>
+        </hashTree>
+      </hashTree>
+      <ThreadGroup guiclass="ThreadGroupGui" testclass="ThreadGroup" testname="TOGGLE Sensor button" enabled="true">
+        <stringProp name="ThreadGroup.on_sample_error">continue</stringProp>
+        <elementProp name="ThreadGroup.main_controller" elementType="LoopController" guiclass="LoopControlPanel" testclass="LoopController" testname="Loop Controller" enabled="true">
+          <boolProp name="LoopController.continue_forever">false</boolProp>
+          <stringProp name="LoopController.loops">1</stringProp>
+        </elementProp>
+        <stringProp name="ThreadGroup.num_threads">1</stringProp>
+        <stringProp name="ThreadGroup.ramp_time">1</stringProp>
+        <boolProp name="ThreadGroup.scheduler">false</boolProp>
+        <stringProp name="ThreadGroup.duration"></stringProp>
+        <stringProp name="ThreadGroup.delay"></stringProp>
+        <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="TestPlan.comments">Represents a button for testing TriggeredBy and FinishedBy
+
+In our example it could be a button at the AGV parking space which has to be pressed to start or finish a Task.</stringProp>
+      </ThreadGroup>
+      <hashTree>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Active" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+         &#xd;
+        &quot;readings&quot;: {&#xd;
+            &quot;type&quot;: &quot;array&quot;,&#xd;
+            &quot;value&quot;: [&#xd;
+                {&#xd;
+                    &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
+                    &quot;value&quot;: {&#xd;
+                        &quot;reading&quot;: {&#xd;
+                            &quot;type&quot;: &quot;boolean&quot;,&#xd;
+                            &quot;value&quot;: true&#xd;
+                        }&#xd;
+                    }&#xd;
+                }&#xd;
+            ],&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        } &#xd;
+    }&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
+          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/AUniqueNameforAButton/attrs</stringProp>
+          <stringProp name="HTTPSampler.method">PATCH</stringProp>
+          <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
+          <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
+          <boolProp name="HTTPSampler.use_keepalive">true</boolProp>
+          <boolProp name="HTTPSampler.DO_MULTIPART_POST">false</boolProp>
+          <stringProp name="HTTPSampler.embedded_url_re"></stringProp>
+          <stringProp name="HTTPSampler.connect_timeout"></stringProp>
+          <stringProp name="HTTPSampler.response_timeout"></stringProp>
+        </HTTPSamplerProxy>
+        <hashTree/>
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Inactive" enabled="true">
+          <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
+          <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
+            <collectionProp name="Arguments.arguments">
+              <elementProp name="" elementType="HTTPArgument">
+                <boolProp name="HTTPArgument.always_encode">false</boolProp>
+                <stringProp name="Argument.value">{&#xd;
+         &#xd;
+        &quot;readings&quot;: {&#xd;
+            &quot;type&quot;: &quot;array&quot;,&#xd;
+            &quot;value&quot;: [&#xd;
+                {&#xd;
+                    &quot;type&quot;: &quot;SensorReading&quot;,&#xd;
+                    &quot;value&quot;: {&#xd;
+                        &quot;reading&quot;: {&#xd;
+                            &quot;type&quot;: &quot;boolean&quot;,&#xd;
+                            &quot;value&quot;: false&#xd;
+                        }&#xd;
+                    }&#xd;
+                }&#xd;
+            ],&#xd;
+            &quot;metadata&quot;: {}&#xd;
+        } &#xd;
+    }&#xd;
+</stringProp>
+                <stringProp name="Argument.metadata">=</stringProp>
+              </elementProp>
+            </collectionProp>
+          </elementProp>
+          <stringProp name="HTTPSampler.domain">${ORION_ADDRESS}</stringProp>
+          <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
+          <stringProp name="HTTPSampler.protocol"></stringProp>
+          <stringProp name="HTTPSampler.contentEncoding"></stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/AUniqueNameforAButton/attrs</stringProp>
           <stringProp name="HTTPSampler.method">PATCH</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1046,8 +978,8 @@
             <stringProp name="1808022304">MaterialflowName</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
-            <collectionProp name="-1840890494">
-              <stringProp name="-1389742922">5e988baa216f41e5ed3b5d37</stringProp>
+            <collectionProp name="1317577873">
+              <stringProp name="1747358669">TransportGoodsPallet</stringProp>
             </collectionProp>
           </collectionProp>
           <boolProp name="UserParameters.per_iteration">false</boolProp>
@@ -1066,7 +998,7 @@
           </collectionProp>
         </HeaderManager>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="SimpleTaskNoTrigger ENTITY USER VARIABLE" enabled="true">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="TransportGoodsPallet ENTITY USER VARIABLE" enabled="true">
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments" guiclass="HTTPArgumentsPanel" testclass="Arguments" testname="User Defined Variables" enabled="true">
             <collectionProp name="Arguments.arguments"/>
           </elementProp>
@@ -1102,7 +1034,7 @@
       <hashTree>
         <UserParameters guiclass="UserParametersGui" testclass="UserParameters" testname="Parameter" enabled="true">
           <collectionProp name="UserParameters.names">
-            <stringProp name="1808022304">MaterialflowName</stringProp>
+            <stringProp name="476797752">SubscriptionId</stringProp>
           </collectionProp>
           <collectionProp name="UserParameters.thread_values">
             <collectionProp name="-1117795416">
@@ -1133,7 +1065,7 @@
           <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">v2/subscriptions/${MaterialflowName}</stringProp>
+          <stringProp name="HTTPSampler.path">v2/subscriptions/${SubscriptionId}</stringProp>
           <stringProp name="HTTPSampler.method">DELETE</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1157,8 +1089,23 @@
         <stringProp name="ThreadGroup.duration"></stringProp>
         <stringProp name="ThreadGroup.delay"></stringProp>
         <boolProp name="ThreadGroup.same_user_on_next_iteration">true</boolProp>
+        <stringProp name="TestPlan.comments">If a Materialflow is done it can be started again if its active value is toggled.
+This thread group sets the active attribute to false and immediatly to true, so the Task will be started again.
+
+To specify which Materialflow should be restarted, type in the name in the &quot;Materialflow To Restart&quot; section.</stringProp>
       </ThreadGroup>
       <hashTree>
+        <Arguments guiclass="ArgumentsPanel" testclass="Arguments" testname="Materialflow To Restart" enabled="true">
+          <collectionProp name="Arguments.arguments">
+            <elementProp name="MATERIALFLOW" elementType="Argument">
+              <stringProp name="Argument.name">MATERIALFLOW</stringProp>
+              <stringProp name="Argument.value">TransportGoodsPallet_TriggeredBy</stringProp>
+              <stringProp name="Argument.metadata">=</stringProp>
+            </elementProp>
+          </collectionProp>
+          <stringProp name="TestPlan.comments">Here you can specify which Materialflow should be started again.</stringProp>
+        </Arguments>
+        <hashTree/>
         <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Inactive" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
@@ -1179,7 +1126,7 @@
           <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/v2/entities/SimpleTaskNoTriggerOnDoneAgain/attrs</stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/${MATERIALFLOW}/attrs</stringProp>
           <stringProp name="HTTPSampler.method">PATCH</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>
@@ -1190,15 +1137,14 @@
           <stringProp name="HTTPSampler.response_timeout"></stringProp>
         </HTTPSamplerProxy>
         <hashTree/>
-        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Active" enabled="false">
+        <HTTPSamplerProxy guiclass="HttpTestSampleGui" testclass="HTTPSamplerProxy" testname="Active" enabled="true">
           <boolProp name="HTTPSampler.postBodyRaw">true</boolProp>
           <elementProp name="HTTPsampler.Arguments" elementType="Arguments">
             <collectionProp name="Arguments.arguments">
               <elementProp name="" elementType="HTTPArgument">
                 <boolProp name="HTTPArgument.always_encode">false</boolProp>
-                <stringProp name="Argument.value">{&#xd;
-         &#xd;
-     	&quot;active&quot;: {&#xd;
+                <stringProp name="Argument.value">{        &#xd;
+	&quot;active&quot;: {&#xd;
 		&quot;type&quot;: &quot;Boolean&quot;,&#xd;
 		&quot;value&quot;: true&#xd;
 	}&#xd;
@@ -1211,7 +1157,7 @@
           <stringProp name="HTTPSampler.port">${ORION_PORT}</stringProp>
           <stringProp name="HTTPSampler.protocol"></stringProp>
           <stringProp name="HTTPSampler.contentEncoding"></stringProp>
-          <stringProp name="HTTPSampler.path">/v2/entities/SimpleTaskNoTriggerOnDoneAgain/attrs</stringProp>
+          <stringProp name="HTTPSampler.path">/v2/entities/${MATERIALFLOW}/attrs</stringProp>
           <stringProp name="HTTPSampler.method">PATCH</stringProp>
           <boolProp name="HTTPSampler.follow_redirects">true</boolProp>
           <boolProp name="HTTPSampler.auto_redirects">false</boolProp>

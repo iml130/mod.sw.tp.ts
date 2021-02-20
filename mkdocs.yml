@@ -20,8 +20,20 @@ nav:
         - Configuration: install/configuration.md
         - Logs: install/logs.md
     - Programmers Manual:
+        - Connecting to Middlewares: programmers/connecting-to-middlewares.md
         - Interfaces: programmers/interfaces.md
         - Materialflow: programmers/materialflow.md
         - Entities: programmers/entities.md
+    - Examples:
+        - Introduction: examples/introduction.md
+        - Materialflows:
+            - TransportOrderGoodsPallet: examples/materialflows/transportorder-goodspallet.md
+            - TransportOrderGoodsPallet Forever: examples/materialflows/transportorder-goodspallet-forever.md
+            - TransportOrderGoodsPallet TriggeredBy: examples/materialflows/transportorder-goodspallet-triggeredby.md
+            - TransportOrderGoodsPallet FinishedBy: examples/materialflows/transportorder-goodspallet-finishedby.md
+            - TransportOrderGoodsPallet OnDone: examples/materialflows/transportorder-goodspallet-ondone.md
+            - TransportOrderGoodsPallet Parallel: examples/materialflows/transportorder-goodspallet-parallel.md
+            - TransportOrderGoodsPallet Invalid: examples/materialflows/transportorder-goodspallet-invalid.md
+    - Glossary: glossary.md
     - Usage: usage.md
     - Deprecated Functionality: deprecated.md
