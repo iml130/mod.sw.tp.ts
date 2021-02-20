@@ -4,7 +4,7 @@ class Location():
         self.coord_y = 0
         self.theta = 0
 
-    def set_location(self, location: Location):
+    def set_location(self, location):
         # assert to check if location is current location
         self.coord_x = location.coord_x
         self.coord_y = location.coord_y
