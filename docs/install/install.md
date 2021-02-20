@@ -11,6 +11,7 @@ networkx
 matplotlib
 fiwareobjectconverter==0.1.1
 lotlan-scheduler
+sqlalchemy
 ```
 
-In addition to that it also requires at the moment a rospy.
+In addition to that it also requires at the moment a ROS1 which includes rospy.

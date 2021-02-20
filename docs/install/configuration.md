@@ -11,7 +11,7 @@ These ids are also published during the TransportOrderUpdate by the TaskSupervis
 [taskplanner]
 ; hostname or ip address of the TaskPlanner machine 
 ; Please note that "tp" in docker-compose.yml must match
-host = infacts.ts
+host = <IP-ADDRESS_OR_DOCKER_NAME>
 ; Port of the task planner
 PORT = 2906
 

@@ -6,6 +6,22 @@ markdown_extensions: [toc, fenced_code]
 use_directory_urls: false
 theme: readthedocs
 
+
+markdown_extensions:
+    - toc:
+          baselevel: 2
+    - fenced_code
+    - attr_list
+
+theme:
+    name: readthedocs
+    highlightjs: true
+    hljs_languages:
+        - yaml
+        - django
+        - bash
+        - yml
+
 nav:
     - Home: index.md
     - Getting Started: start.md
@@ -13,7 +29,7 @@ nav:
         - Introduction: user/introduction.md
         - Architecture: user/architecture.md
         - Docker: user/docker.md
-        - Known Limitations: user/known-limitatins.md
+        - Known Limitations: user/known-limitations.md
     - Installation & Administration:
         - Introduction: install/introduction.md
         - Installation: install/install.md

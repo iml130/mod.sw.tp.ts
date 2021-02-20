@@ -11,6 +11,7 @@ Fleet Management System
 Motion Task Planner
 
 **TaskSupervisor**
-ts...
+This little cute takes care of assigning tasks.
 
 **Topology**
+A map for AGVs. 
