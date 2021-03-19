@@ -134,3 +134,6 @@ def response_is_ok(status_code):
     if(status_code >= http.client.OK and status_code <= http.client.IM_USED):  
         return True
     return False
+
+if __name__ == '__main__':
+    unittest.main()

@@ -21,6 +21,8 @@ from tasksupervisor.TaskSupervisor import materialflow
 class TestBrokerInterface(BrokerInterface):
     def __init__(self):
         pass
+    def start_interface(self):
+        pass
     def run(self):
         pass
     def subscribe(self, topic, opt_data=None, generic=False):
@@ -32,6 +34,8 @@ class TestBrokerInterface(BrokerInterface):
     def update(self, data):
         pass
     def delete(self, data):
+        pass
+    def shutdown(self):
         pass
 
 class DummyStateMachine:
@@ -234,3 +238,6 @@ class TestContextBrokerHandler(TestCase):
 
         interface = self.broker_connector.get_interface_by_data(transport_order_update)
         self.assertEqual(interface, test_interface)
+
+if __name__ == '__main__':
+    unittest.main()

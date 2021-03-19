@@ -205,3 +205,6 @@ class TestContextBrokerHandler(TestCase):
     def test_get_entities_get_content(self):
         entity = self.context_broker_handler.get_entities("entity_id", "entitiy_type")
         self.assertEqual(entity, {"Entity": "test"})
+
+if __name__ == '__main__':
+    unittest.main()
