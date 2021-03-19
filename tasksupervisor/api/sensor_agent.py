@@ -15,18 +15,18 @@ class SensorData(object):
 class SensorAgent():
     def __init__(self, _id=None):
         self.type = "SensorAgent"
-        self.measurementType = ""
-        self.modifiedTime = ""  # ISO8601
+        self.measuremen_type = ""
+        self.modified_time = ""  # ISO8601
         self.readings = []  # List of SensorData
-        self.sanID = ""
-        self.sensorID = ""
-        self.sensorManufacturer = ""
-        self.sensorType = ""
+        self.san_id = ""
+        self.sensor_id = ""
+        self.sensor_manufacturer = ""
+        self.sensor_type = ""
         self.units = ""
 
-    def findSensorById(self, _trigger_name):
-        _trigger_name = _trigger_name.split(".")[0]
+    def findSensorById(self, trigger_name):
+        trigger_name = trigger_name.split(".")[0]
         for sdata in self.sensorData:
-            if(sdata.sensorId == _trigger_name):
+            if(sdata.sensor_id == trigger_name):
                 return sdata
         return None
