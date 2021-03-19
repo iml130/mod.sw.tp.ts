@@ -13,11 +13,15 @@ class BrokerInterface(threading.Thread, metaclass=abc.ABCMeta):
                 NotImplemented)
 
     @abc.abstractmethod
+    def start_interface(self):
+        pass
+
+    @abc.abstractmethod
     def run(self):
         pass
 
     @abc.abstractmethod
-    def subscribe(self, topic, opt_data = None):
+    def subscribe(self, topic, opt_data=None, generic=False):
         """ Handle Subscriptions """
         pass
 
@@ -34,4 +38,8 @@ class BrokerInterface(threading.Thread, metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def delete(self, data):
         """ Handle deletion of the given data """
+        pass
+
+    @abc.abstractmethod
+    def shutdown(self):
         pass
