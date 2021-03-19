@@ -12,7 +12,7 @@ from lotlan_scheduler.api.event import Event
 # import local packages
 from tasksupervisor.helpers.utc import get_utc_time
 from tasksupervisor.entities.materialflow_update import MaterialflowUpdate
-from TaskSupervisor.transport_order import TransportOrder
+from tasksupervisor.TaskSupervisor.transport_order import TransportOrder
 
 logger = logging.getLogger(__name__)
 
