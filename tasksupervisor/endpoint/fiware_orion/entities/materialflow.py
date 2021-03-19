@@ -8,13 +8,13 @@ class Materialflow(FiwareEntity):
     def __init__(self):
         FiwareEntity.__init__(self)
         self.specification = ""
-        self.owner_id = ""
+        self.ownerId = ""
         self.active = False
 
     def to_api_object(self):
         api_materialflow = materialflow.Materialflow(self.id)
         api_materialflow.specification = self.specification
-        api_materialflow.owner_id = self.owner_id
+        api_materialflow.ownerId = self.ownerId
         api_materialflow.active = self.active
 
         return api_materialflow
