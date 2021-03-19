@@ -26,17 +26,17 @@ class BrokerInterface(threading.Thread, metaclass=abc.ABCMeta):
         pass
 
     @abc.abstractmethod
-    def create(self, data):
+    def create(self, entity):
         """ Handle creation of new data entries """
         pass
 
     @abc.abstractmethod
-    def update(self, data):
+    def update(self, entity):
         """ Handle updating of the given data """
         pass
 
     @abc.abstractmethod
-    def delete(self, data):
+    def delete(self, entity_id):
         """ Handle deletion of the given data """
         pass
 

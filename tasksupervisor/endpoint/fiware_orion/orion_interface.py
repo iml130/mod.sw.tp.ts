@@ -64,13 +64,13 @@ class OrionInterface(BrokerInterface):
                                                                  notification, generic=generic)
         self.subscription_dict[sub_id] = class_name
 
-    def create(self, data):
+    def create(self, entity):
         pass
 
-    def update(self, data):
+    def update(self, entity):
         pass
 
-    def delete(self, data):
+    def delete(self, entity_id):
         pass
 
     def retreive(self, json_requests):
