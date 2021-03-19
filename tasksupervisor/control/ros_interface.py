@@ -27,7 +27,6 @@ TOPIC_MANUAL_ACTION_DONE = "manual_action_done"
 
 
 class RosControl(FormalControlInterface):
-    """Extract text from a PDF."""
 
     def __init__(self, robot_id : str):
         self.robot_id = robot_id
