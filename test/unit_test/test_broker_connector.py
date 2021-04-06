@@ -14,13 +14,15 @@ from tasksupervisor.endpoint.fiware_orion.entities.materialflow_specification_st
 from tasksupervisor.endpoint.fiware_orion.entities.tasksupervisor_info import TaskSupervisorInfo
 from tasksupervisor.endpoint.fiware_orion.entities.transport_order_update import TransportOrderUpdate
 from tasksupervisor.endpoint.fiware_orion.entities.materialflow_update import MaterialflowUpdate
+from tasksupervisor.task_supervisor_knowledge import TaskSupervisorKnowledge
 
 from tasksupervisor.TaskSupervisor import materialflow
 
 # Just a plain BrokerInterface implementation to test the Connector
 class TestBrokerInterface(BrokerInterface):
-    def __init__(self):
-        pass
+    def __init__(self, broker_id, broker_name):
+        self.broker_id = broker_id
+        self.broker_name = broker_name
     def start_interface(self):
         pass
     def run(self):
@@ -47,7 +49,8 @@ class DummyTransportOrder:
         self.task_name = ""
         self.start_time = None
         self._to_info = None
-        self.ref_owner_id = "mf_id"
+        self.ref_owner_id = ""
+        self.broker_ref_id = "id"
         self.ref_materialflow_update_id = ""
         self._to_state_machine = DummyStateMachine()
         self._robot_id = None
@@ -56,91 +59,109 @@ class DummyMaterialflow:
     def __init__(self):
         self.taskManagerName = ""
         self.transportOrderList = []
-        self.refOwnerId = "mf_id"
+        self.broker_ref_id = "id"
 
 class TestContextBrokerHandler(TestCase):
 
     def setUp(self):
-        self.broker_connector = BrokerConnector()
+        task_supervisor_knowledge = TaskSupervisorKnowledge()
+        self.broker_connector = BrokerConnector(task_supervisor_knowledge)
     
     def test_register_interface(self):
-        test_interface = TestBrokerInterface()
+        test_interface = TestBrokerInterface("id", "broker_name")
         self.broker_connector.register_interface(test_interface)
 
         self.assertEqual(len(self.broker_connector.interfaces), 1)
-        self.assertEqual(len(self.broker_connector.interface_mf_ids_dict), 1)
-        self.assertEqual(len(self.broker_connector.mf_id_interface_dict), 0)
 
-    def test_subscribe_specific(self):
-        test_interface = TestBrokerInterface()
-        test_interface_2 = TestBrokerInterface()
+    def test_subscribe_to_specific(self):
+        test_interface = TestBrokerInterface("id", "broker_name")
+        test_interface_2 = TestBrokerInterface("id_2", "broker_name_2")
 
         self.broker_connector.register_interface(test_interface)
         self.broker_connector.register_interface(test_interface_2)
 
-        with patch.object(test_interface, "subscribe") as mock:
-            self.broker_connector.subscribe_specific("test_topic")
-        mock.assert_called_with("test_topic", generic=False)
+        with patch.object(test_interface_2, "subscribe") as mock:
+            self.broker_connector.subscribe_to_specific("test_topic", "id_2")
+        mock.assert_called_with("test_topic", opt_data=None, generic=False)
     
-    def test_subscribe_generic(self):
-        test_interface = TestBrokerInterface()
+    def test_subscribe_to_specific_generic(self):
+        test_interface = TestBrokerInterface("id", "broker_name")
+        test_interface_2 = TestBrokerInterface("id_2", "broker_name_2")
+
+        self.broker_connector.register_interface(test_interface)
+        self.broker_connector.register_interface(test_interface_2)
+
+        with patch.object(test_interface_2, "subscribe") as mock:
+            self.broker_connector.subscribe_to_specific("test_topic", "id_2", generic=True)
+        mock.assert_called_with("test_topic", opt_data=None, generic=True)
+
+    def test_subscribe_to_all(self):
+        test_interface = TestBrokerInterface("id", "broker_name")
         self.broker_connector.register_interface(test_interface)
         with patch.object(test_interface, "subscribe") as mock:
-            self.broker_connector.subscribe_generic("test_topic")
-        mock.assert_called_with("test_topic", generic=True)
+            self.broker_connector.subscribe_to_all("test_topic")
+        mock.assert_called_with("test_topic", opt_data=None, generic=False)
     
+    def test_subscribe_to_all_generic(self):
+        test_interface = TestBrokerInterface("id", "broker_name")
+        self.broker_connector.register_interface(test_interface)
+        with patch.object(test_interface, "subscribe") as mock:
+            self.broker_connector.subscribe_to_all("test_topic", generic=True)
+        mock.assert_called_with("test_topic", opt_data=None, generic=True)
+
     def test_retreive_with_materialflow(self):
-        test_interface = TestBrokerInterface()
+        test_interface = TestBrokerInterface("id", "broker_name")
         self.broker_connector.register_interface(test_interface)
         
         materialflow = Materialflow()
         self.broker_connector.retreive(materialflow, test_interface)
 
-        self.assertEqual(len(self.broker_connector.interface_mf_ids_dict[test_interface]), 1)
-        self.assertEqual(self.broker_connector.interface_mf_ids_dict[test_interface][0], materialflow.id)
-        self.assertEqual(materialflow.id in self.broker_connector.mf_id_interface_dict, True)
-        self.assertEqual(self.broker_connector.mf_id_interface_dict[materialflow.id], test_interface)
         self.assertEqual(my_globals.taskQueue.qsize(), 1)
 
     def test_retreive_with_sensor_agent(self):
-        test_interface = TestBrokerInterface()
+        test_interface = TestBrokerInterface("id", "broker_name")
         self.broker_connector.register_interface(test_interface)
 
+        self.broker_connector.sensor_id_to_ids_dict["san_id"] = []
+        self.broker_connector.sensor_id_to_ids_dict["san_id"].append("to_id")
         sensor_agent = SensorAgent()
+        sensor_agent.id = "san_id"
+
+        dict_queue = self.broker_connector.task_supervisor.sensor_dispatcher
+        dict_queue.add_thread("to_id")
+
         self.broker_connector.retreive(sensor_agent, test_interface)
-        # ToDo
+        self.assertIsNotNone(dict_queue.get_queue("to_id"))
+        self.assertEqual(dict_queue.get_queue("to_id").qsize(), 1)
 
     def test_create(self):
-        test_interface = TestBrokerInterface()
-        test_interface_2 = TestBrokerInterface()
+        test_interface = TestBrokerInterface("id", "broker_name")
+        test_interface_2 = TestBrokerInterface("id_2", "broker_name_2")
 
         self.broker_connector.register_interface(test_interface)
         self.broker_connector.register_interface(test_interface_2)
 
-        self.broker_connector.mf_id_interface_dict["mf_id"] = test_interface
-        self.broker_connector.mf_id_interface_dict["mf_id_2"] = test_interface_2
-
         mf_spec_state = MaterialflowSpecificationState()
-        mf_spec_state.refId = "mf_id"
+        mf_spec_state.broker_ref_id = "id"
 
         with patch.object(test_interface, "create") as mock:
             self.broker_connector.create(mf_spec_state)
         mock.assert_called_with(mf_spec_state)
 
-        mf_spec_state.refId = "mf_id_2"
+        mf_spec_state.broker_ref_id = "id_2"
+
         with patch.object(test_interface_2, "create") as mock_2:
             self.broker_connector.create(mf_spec_state)
         mock_2.assert_called_with(mf_spec_state)
 
     def test_create_with_task_supervisor_info(self):
-        test_interface = TestBrokerInterface()
-        test_interface_2 = TestBrokerInterface()
+        test_interface = TestBrokerInterface("id", "broker_name")
+        test_interface_2 = TestBrokerInterface("id_2", "broker_name_2")
 
         self.broker_connector.register_interface(test_interface)
         self.broker_connector.register_interface(test_interface_2)
 
         task_supervisor_info = TaskSupervisorInfo()
-        self.assertIsNotNone(self.broker_connector.get_interface_by_data(task_supervisor_info))
         
         # check if methods in both interfaces are being called
         with patch.object(test_interface, "create") as mock:
@@ -152,19 +173,14 @@ class TestContextBrokerHandler(TestCase):
         mock_2.assert_called_with(task_supervisor_info)
 
     def test_update(self):
-        test_interface = TestBrokerInterface()
-        test_interface_2 = TestBrokerInterface()
+        test_interface = TestBrokerInterface("id", "broker_name")
+        test_interface_2 = TestBrokerInterface("id_2", "broker_name_2")
 
         self.broker_connector.register_interface(test_interface)
         self.broker_connector.register_interface(test_interface_2)
 
-        self.broker_connector.mf_id_interface_dict["mf_id"] = test_interface
-        self.broker_connector.mf_id_interface_dict["mf_id_2"] = test_interface_2
-
         mf_spec_state = MaterialflowSpecificationState()
-        mf_spec_state.refId = "mf_id"
-
-        self.assertIsNotNone(self.broker_connector.get_interface_by_data(mf_spec_state))
+        mf_spec_state.broker_ref_id = "id"
 
         self.broker_connector.create(mf_spec_state)
 
@@ -172,72 +188,48 @@ class TestContextBrokerHandler(TestCase):
             self.broker_connector.update(mf_spec_state)
         mock.assert_called_with(mf_spec_state)
 
-        mf_spec_state.refId = "mf_id_2"
+        mf_spec_state.broker_ref_id = "id_2"
         self.broker_connector.create(mf_spec_state)
 
         with patch.object(test_interface_2, "update") as mock_2:
             self.broker_connector.update(mf_spec_state)
         mock_2.assert_called_with(mf_spec_state)
     
-    def test_delete(self):
-        test_interface = TestBrokerInterface()
-        test_interface_2 = TestBrokerInterface()
+    def test_delete_with_entity(self):
+        test_interface = TestBrokerInterface("id", "broker_name")
+        test_interface_2 = TestBrokerInterface("id_2", "broker_name_2")
 
         self.broker_connector.register_interface(test_interface)
         self.broker_connector.register_interface(test_interface_2)
 
-        self.broker_connector.mf_id_interface_dict["mf_id"] = test_interface
-        self.broker_connector.mf_id_interface_dict["mf_id_2"] = test_interface_2
-
-        mf_spec_state = MaterialflowSpecificationState()
-        mf_spec_state.refId = "mf_id"
-
-        self.assertIsNotNone(self.broker_connector.get_interface_by_data(mf_spec_state))
-
-        self.broker_connector.create(mf_spec_state)
-
         with patch.object(test_interface, "delete") as mock:
-            self.broker_connector.delete(mf_spec_state)
-        mock.assert_called_with(mf_spec_state)
-
-        mf_spec_state.refId = "mf_id_2"
-        self.broker_connector.create(mf_spec_state)
+            self.broker_connector.delete("entity_id", "id")
+        mock.assert_called_with("entity_id", delete_entity=True)
 
         with patch.object(test_interface_2, "delete") as mock_2:
-            self.broker_connector.delete(mf_spec_state)
-        mock_2.assert_called_with(mf_spec_state)
+            self.broker_connector.delete("entity_id", "id_2")
+        mock_2.assert_called_with("entity_id", delete_entity=True)
 
-    def test_get_interface_by_data_with_mf_spec_state(self):
-        test_interface = TestBrokerInterface()
-        self.broker_connector.mf_id_interface_dict["mf_id"] = test_interface
+    def test_delete_with_subscription(self):
+        test_interface = TestBrokerInterface("id", "broker_name")
+        test_interface_2 = TestBrokerInterface("id_2", "broker_name_2")
 
-        mf_spec_state = MaterialflowSpecificationState()
-        mf_spec_state.refId = "mf_id"
+        self.broker_connector.register_interface(test_interface)
+        self.broker_connector.register_interface(test_interface_2)
 
-        interface = self.broker_connector.get_interface_by_data(mf_spec_state)
-        self.assertEqual(interface, test_interface)
+        with patch.object(test_interface, "delete") as mock:
+            self.broker_connector.delete("sub_id", "id", delete_entity=False)
+        mock.assert_called_with("sub_id", delete_entity=False)
 
-    def test_get_interface_by_data_with_materialflow_update(self):
-        test_interface = TestBrokerInterface()
-        self.broker_connector.mf_id_interface_dict["mf_id"] = test_interface
+        with patch.object(test_interface_2, "delete") as mock_2:
+            self.broker_connector.delete("sub_id", "id_2" ,delete_entity=False)
+        mock_2.assert_called_with("sub_id", delete_entity=False)
 
-        dummy_materialflow = DummyMaterialflow()
+    def get_interface_by_broker_id(self):
+        test_interface = TestBrokerInterface("id", "broker_name")
 
-        materialflow_update = MaterialflowUpdate(dummy_materialflow)
-
-        interface = self.broker_connector.get_interface_by_data(materialflow_update)
-        self.assertEqual(interface, test_interface)
-
-    def test_get_interface_by_data_with_transportorder_update(self):
-        test_interface = TestBrokerInterface()
-        self.broker_connector.mf_id_interface_dict["mf_id"] = test_interface
-
-        dummy_transport_order = DummyTransportOrder()
-        transport_order_update = TransportOrderUpdate(dummy_transport_order)
-        transport_order_update.refOwnerId = "mf_id"
-
-        interface = self.broker_connector.get_interface_by_data(transport_order_update)
-        self.assertEqual(interface, test_interface)
+        interface_id = self.broker_connector.get_interface_by_broker_id("id")
+        self.assertEqual(interface_id, test_interface.broker_id)
 
 if __name__ == '__main__':
     unittest.main()

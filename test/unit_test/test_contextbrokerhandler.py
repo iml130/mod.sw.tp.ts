@@ -173,6 +173,7 @@ class TestContextBrokerHandler(TestCase):
     )))
     def test_delete_subscription_by_id_without_error(self):
         test_entitiy = Materialflow()
+        self.context_broker_handler.subscription_list.append("sub_id")
         try:
             self.context_broker_handler.delete_subscription_by_id("sub_id")
         except Exception:

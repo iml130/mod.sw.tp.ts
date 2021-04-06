@@ -109,7 +109,7 @@ class TestOrionInterface(TestCase):
 
     def setUp(self):
         task_supervisor_knowledge = TaskSupervisorKnowledge()
-        task_supervisor_knowledge.broker_connector = BrokerConnector()
+        task_supervisor_knowledge.broker_connector = BrokerConnector(task_supervisor_knowledge)
         self.orion_interface = OrionInterface(task_supervisor_knowledge)
 
     def test_subscribe_specific(self):
@@ -164,10 +164,10 @@ class TestOrionInterface(TestCase):
             self.orion_interface.create(api_mf_spec_state)
 
         self.assertIsNotNone(mock.call_args)
-        self.assertEqual(len(mock.call_args), 1)
+        self.assertGreaterEqual(len(mock.call_args), 1)
 
         fiware_mf_spec_state = mock.call_args[0][0]
-        self.assertTrue(isinstance(fiware_mf_spec_state, MaterialflowSpecificationState()))
+        self.assertTrue(isinstance(fiware_mf_spec_state, MaterialflowSpecificationState))
 
     def test_update(self):
         api_mf_spec_state = materialflow_specification_state.MaterialflowSpecificationState()
@@ -177,14 +177,15 @@ class TestOrionInterface(TestCase):
             self.orion_interface.update(api_mf_spec_state)
 
         self.assertIsNotNone(mock.call_args)
-        self.assertEqual(len(mock.call_args), 1)
+
+        self.assertGreaterEqual(len(mock.call_args), 1)
 
         fiware_mf_spec_state = mock.call_args[0][0]
-        self.assertTrue(isinstance(fiware_mf_spec_state, MaterialflowSpecificationState()))
+        self.assertTrue(isinstance(fiware_mf_spec_state, MaterialflowSpecificationState))
+        self.assertEqual(fiware_mf_spec_state.id, str(api_mf_spec_state.id))
 
     def test_retreive_with_materialflow(self):
         self.orion_interface.subscription_dict["sub_id"] = "Materialflow"
-        self.orion_interface.broker_connector.interface_mf_ids_dict[self.orion_interface] = []
 
         json_dummy = JSON_MATERIALFLOW_DUMMY
 
@@ -217,9 +218,6 @@ class TestOrionInterface(TestCase):
         new_sensor_agent = mock.call_args[0][0]
         interface = mock.call_args[0][1]
 
-        test_reading = sensor_agent.SensorData()
-        test_reading.readings = [False]
-
         self.assertEqual(new_sensor_agent.id, "test_id")
         self.assertEqual(new_sensor_agent.measurement_type, "boolean")
         self.assertEqual(new_sensor_agent.modified_time, "formated_time")
@@ -228,7 +226,7 @@ class TestOrionInterface(TestCase):
         self.assertEqual(new_sensor_agent.sensor_manufacturer, "manufacturer")
         self.assertEqual(new_sensor_agent.sensor_type, "ON_OFF_SENSOR")
         self.assertEqual(new_sensor_agent.units, "boolean")
-        self.assertEqual(new_sensor_agent.readings, [test_reading])
+        self.assertEqual(new_sensor_agent.readings, [{"reading": False}])
 
 if __name__ == '__main__':
     unittest.main()
