@@ -27,8 +27,8 @@ class Scheduler(threading.Thread):
         self.lotlan_scheduler = LotlanScheduler(self.tasklanguage)
         self._materialflows = self.lotlan_scheduler.get_materialflows()
 
-        self.name = _materialflow.ownerId
-        self.owner = _materialflow.ownerId
+        self.name = _materialflow.owner_id
+        self.owner = _materialflow.owner_id
 
         self.running_materialflows = []
         self.processed_materialflows = []
