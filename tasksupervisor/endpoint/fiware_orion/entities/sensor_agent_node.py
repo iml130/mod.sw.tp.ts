@@ -3,7 +3,7 @@ from enum import IntEnum
 
 from tasksupervisor.entities.entity import FiwareEntity
 from fiwareobjectconverter.object_fiware_converter import ObjectFiwareConverter
-
+from tasksupervisor.api import sensor_agent
 
 class SensorData(object):
     def __init__(self, **entries):
@@ -24,6 +24,22 @@ class SensorAgent(FiwareEntity):
         self.sensorManufacturer = ""
         self.sensorType = ""
         self.units = ""
+
+    def to_api_object(self):
+        api_sensor_agent = sensor_agent.SensorAgent()
+
+        api_sensor_agent.id = self.id
+        api_sensor_agent.type = self.type
+        api_sensor_agent.measurement_type = self.measurementType
+        api_sensor_agent.modified_time = self.modifiedTime
+        api_sensor_agent.readings = self.readings
+        api_sensor_agent.san_id = self.sanID
+        api_sensor_agent.sensor_id = self.sensorID
+        api_sensor_agent.sensor_manufacturer = self.sensorManufacturer
+        api_sensor_agent.sensor_type = self.sensorType
+        api_sensor_agent.units = self.units
+
+        return api_sensor_agent
 
     @classmethod
     def CreateObjectFromJson(cls, _my_json):
