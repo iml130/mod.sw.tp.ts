@@ -8,7 +8,7 @@ class TaskSupervisorKnowledge():
     def __init__(self): 
         self.agv_manager = None
         self.optimizer = None
-        self.orion_connector = None
+        self.broker_connector = None
         self.task_planner_address = None
 
         self.sensor_dispatcher = DictQueue()

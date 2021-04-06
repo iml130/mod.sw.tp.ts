@@ -18,9 +18,10 @@ from lotlan_scheduler.scheduler import LotlanScheduler
 from tasksupervisor import my_globals
 from tasksupervisor.flask_setup import create_flask_app
 from tasksupervisor.task_supervisor_knowledge import TaskSupervisorKnowledge
-from tasksupervisor.entities import materialflow
-from tasksupervisor.entities.materialflow_specification_state import MaterialflowSpecificationState
-from tasksupervisor.entities.task_supervisor_info import TaskSupervisorInfo
+
+from tasksupervisor.api.materialflow import Materialflow
+from tasksupervisor.api.materialflow_specification_state import MaterialflowSpecificationState
+from tasksupervisor.api.tasksupervisor_info import TaskSupervisorInfo
 # from helpers.config import Config
 from tasksupervisor.helpers import servercheck
 from tasksupervisor.control.ros_order_state import OrderState, rosOrderStatus
@@ -31,6 +32,8 @@ from tasksupervisor.TaskSupervisor.scheduler import Scheduler
 from tasksupervisor.control.agv_manager import AgvManager
 from tasksupervisor.optimization.round_robin import RoundRobin
 
+from tasksupervisor.endpoint.broker_connector import BrokerConnector
+from tasksupervisor.endpoint.fiware_orion import orion_interface
 
 def setup_logging(
         default_path='./tasksupervisor/logging.json',
@@ -60,8 +63,6 @@ logger = logging.getLogger(__name__)
 
 # if my_globals.parsed_config_file.TASKPLANNER_HOST:
 #     PORT = int(my_globals.parsed_config_file.TASKPLANNER_PORT)
-
-ORION_CONNECTOR = my_globals.ORION_CONNECTOR
 
 active_materialflow_specification_states = []
 active_task_schedulers = []
@@ -121,7 +122,7 @@ def callback_task_scheduler_creator(queue_task_scheduler, task_supervisor):
         entity_task_supervisor_info.appendMaterialflow(
             materialflow_specification.id)
 
-        task_supervisor.orion_connector.update_entity(
+        task_supervisor.broker_connector.update(
             entity_task_supervisor_info)
         logger.info("New TaskScheduler added")
 
@@ -141,55 +142,49 @@ def callback_new_materialflow(queue_materialflow_spec, task_supervisor):
 
     logger.info("callback_new_materialflow started")
     while True:
-        json_requests, entity_type = queue_materialflow_spec.get()
+        new_materialflow, entity_type = queue_materialflow_spec.get()
         with lock:
             if entity_type == "Materialflow":
-                # it might be possible that there are multiple entities
-                # iterate over each json request
-                for temp_json_request in json_requests:
-                    new_mf_specification_state = MaterialflowSpecificationState()
+                new_mf_specification_state = MaterialflowSpecificationState()
 
-                    # create an entity from the json request
-                    new_materialflow = materialflow.Materialflow.CreateObjectFromJson(
-                        temp_json_request)
-
-                    # check if the materialflow shall be processed - or not
-                    if new_materialflow.active:
-                        try:
-                            lotlan_validator = LotlanScheduler(
-                                new_materialflow.specification)
-                            materialflow_is_valid = lotlan_validator.validate(
-                                new_materialflow.specification)
-                            if materialflow_is_valid:
-                                new_materialflow._specStateId = new_mf_specification_state.getId()  # ????
-                                logger.info("newTaskSpec:\n %s",
-                                            str(new_materialflow.specification))
-                                
-                                new_mf_specification_state.message = "Valid"
-                                new_mf_specification_state.state = materialflow_is_valid
-                                new_mf_specification_state.refId = temp_json_request["id"]
-                                my_globals.taskSchedulerQueue.put(new_materialflow)
-                        except ValueError as p:
-                            materialflow_is_valid = -1
-                            logger.info("Materialflow specification error")
-                            new_mf_specification_state.message = urllib.parse.quote_plus(str(p))
+                # check if the materialflow shall be processed - or not
+                if new_materialflow.active:
+                    try:
+                        lotlan_validator = LotlanScheduler(
+                            new_materialflow.specification)
+                        materialflow_is_valid = lotlan_validator.validate(
+                            new_materialflow.specification)
+                        if materialflow_is_valid:
+                            # new_materialflow._specStateId = new_mf_specification_state.getId()  # ????
+                            logger.info("newTaskSpec:\n %s",
+                                        str(new_materialflow.specification))
+                            
+                            new_mf_specification_state.message = "Valid"
                             new_mf_specification_state.state = materialflow_is_valid
-                            new_mf_specification_state.refId = temp_json_request["id"]
+                            new_mf_specification_state.refId = new_materialflow.id
+                            new_mf_specification_state.broker_ref_id = new_materialflow.broker_ref_id
+                            my_globals.taskSchedulerQueue.put(new_materialflow)
+                    except ValueError as p:
+                        materialflow_is_valid = -1
+                        logger.info("Materialflow specification error")
+                        new_mf_specification_state.message = urllib.parse.quote_plus(str(p))
+                        new_mf_specification_state.state = materialflow_is_valid
+                        new_mf_specification_state.refId = new_materialflow.id
 
 
-                        materialflow_is_valid = task_supervisor.orion_connector.create_entity(new_mf_specification_state)
-                        if materialflow_is_valid == 0:
-                            active_materialflow_specification_states.append(
-                                new_mf_specification_state)
-                    else:
-                        # materialflow has been set passive
-                        # disable the inactive ones
-                        for scheduler in active_task_schedulers:
-                            if scheduler.id == new_materialflow.id:
-                                print("SET INACTIVE: " + scheduler.id)
-                                scheduler.set_active(False)
-                        print(
-                            "TODO: Disable the Materialflow or ignore it...but first... lets make it easy")
+                    materialflow_is_valid = task_supervisor.broker_connector.create(new_mf_specification_state)
+                    if materialflow_is_valid == 0:
+                        active_materialflow_specification_states.append(
+                            new_mf_specification_state)
+                else:
+                    # materialflow has been set passive
+                    # disable the inactive ones
+                    for scheduler in active_task_schedulers:
+                        if scheduler.id == new_materialflow.id:
+                            print("SET INACTIVE: " + scheduler.id)
+                            scheduler.set_active(False)
+                    print(
+                        "TODO: Disable the Materialflow or ignore it...but first... lets make it easy")
         # ORION_CONNECTOR.update_entity(currentMaterialFlowSpecState)
 
     logger.info("callback_new_materialflow ended")
@@ -215,7 +210,6 @@ if __name__ == '__main__':
     task_supervisor.agv_manager = AgvManager(
         my_globals.parsed_config_file.robots, my_globals.parsed_config_file.robotNames, my_globals.parsed_config_file.robotTypes)
     task_supervisor.optimizer = RoundRobin(task_supervisor.agv_manager)
-    task_supervisor.orion_connector = ORION_CONNECTOR
     task_supervisor.task_planner_address = my_globals.parsed_config_file.get_taskplanner_address()
 
     # initialize rospy
@@ -229,39 +223,15 @@ if __name__ == '__main__':
     if os.path.isfile('./images/task.png'):
         os.remove('./images/task.png')
 
-    logger.info("Setting up thread_check_if_server_is_up")
-    thread_check_if_server_is_up = threading.Thread(name='checkServerRunning',
-                                                    target=servercheck.webserver_is_running,
-                                                    args=("localhost", my_globals.parsed_config_file.TASKPLANNER_PORT,))
+    broker_connector = BrokerConnector(task_supervisor)
+    task_supervisor.broker_connector = broker_connector
 
-    logger.info("Setting up checkForProgrammEnd")
-    # checkForProgrammEnd = threading.Thread(name='waitForEnd',
-    #                                             target=waitForEnd,
-    #                                             args=())
+    orion_interface = orion_interface.OrionInterface(task_supervisor, "Orion Context Broker Instance_1")
+    broker_connector.register_interface(orion_interface)
 
-    logger.info("Setting up thread_flask_server")
-    thread_flask_server = threading.Thread(
-        name='callback_flask_server', target=callback_flask_server, args=(task_supervisor,))
+    orion_interface.start_interface()
 
-    thread_check_if_server_is_up.start()
-
-    thread_flask_server.start()
-    logger.info("Starting Flask and wait")
-    thread_check_if_server_is_up.join()
-    logger.info("Flask is running")
-    # create an instance of the fiware ocb handler
-
-    # few things commented due to the damn airplane mode
-    # publish first the needed entities before subscribing ot it
-    return_value = ORION_CONNECTOR.create_entity(entity_task_supervisor_info)
-    if return_value == 0:
-        logger.info(
-            "Orion Connection is working - created TaskSpecState Entity")
-        logger.info("Orion Address: " +
-                    my_globals.parsed_config_file.get_fiware_server_address())
-    else:
-        logger.error("No Connection to Orion - please check configurations")
-        sys.exit(0)
+    broker_connector.create(entity_task_supervisor_info)
 
     logger.info("Setting up callback_new_materialflow and workTaskScheduler")
     thread_new_materialflow = Thread(target=callback_new_materialflow,
@@ -274,13 +244,10 @@ if __name__ == '__main__':
     thread_new_materialflow.start()
     thread_new_materialflow_scheduler.start()
 
-    materialflow_entity = materialflow.Materialflow()
+    new_materialflow = Materialflow()
     with my_globals.lock:
-        subscription_id_materialflow = ORION_CONNECTOR.subscribe_to_entity(_description="Materialflow subscription",
-                                                                           _entities=materialflow_entity.obj2JsonArray(),
-                                                                           _notification=my_globals.parsed_config_file.get_taskplanner_address() + "/materialflow", _generic=True)
+        subscription_id_materialflow = task_supervisor.broker_connector.subscribe_to_specific(new_materialflow, orion_interface.broker_id, generic=True)
         task_supervisor.subscription_dict[subscription_id_materialflow] = "Materialflow"
-
     logger.info("Push Ctrl+C to exit()")
 
     wait_for_user_end = GracefulKiller()
@@ -292,17 +259,10 @@ if __name__ == '__main__':
     #   - all created entities
 
     logger.info("Shutting down TaskPlanner")
-    logger.info("Unsubscribing from Subscriptions")
-    # TODO: error with threads, size of dict might change:
-    # better: get keys and iterate overy keys
-    for temp_subription_id in task_supervisor.subscription_dict:
-        ORION_CONNECTOR.delete_subscription_by_id(temp_subription_id)
+    logger.info("Unsubscribing from Subscriptions and deleting all created Entities")
 
-    logger.info("Unsubscribing from Subscriptions_done")
+    broker_connector.shutdown()
 
-    logger.info("Deleting all created Entities")
-    ORION_CONNECTOR.shutdown()
-    logger.info("Deleting all created Entities_done")
-
+    logger.info("Unsubscribing from Subscriptions and deleting all created Entities done")
     logger.info("EndOf TaskPlanner")
     os._exit(0)

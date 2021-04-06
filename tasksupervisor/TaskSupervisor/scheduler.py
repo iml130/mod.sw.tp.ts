@@ -35,6 +35,8 @@ class Scheduler(threading.Thread):
         self.materialflow_manager = []
         self.queue = queue.Queue()
         self.active = True
+        self.broker_ref_id = _materialflow.broker_ref_id
+
         logger.info("taskScheduler init_end")
 
     def set_active(self, is_active):
@@ -55,11 +57,11 @@ class Scheduler(threading.Thread):
 
         for materialflow in self._materialflows:
             self.materialflow_manager.append(Materialflow(
-                self.owner, materialflow, self.queue, self._task_supervisor_knowledge))
+                self.owner, materialflow, self.queue, self._task_supervisor_knowledge, self.broker_ref_id))
 
         for tm in self.materialflow_manager:
             logger.info(
-                "taskScheduler, MaterialflowUpdate spawn: %s", tm.taskManagerName)
+                "taskScheduler, MaterialflowUpdate spawn: %s", tm.task_manager_name)
             self.running_materialflows.append(tm)
             tm.start()
 
@@ -68,7 +70,7 @@ class Scheduler(threading.Thread):
             logger.info(
                 "taskScheduler, taskSMaterialflowUpdateet finished: %s", res)
             for temp_materialflow in self.running_materialflows:
-                if temp_materialflow.taskManagerName == res:
+                if temp_materialflow.task_manager_name == res:
                     temp_materialflow.join()
                     # tR.deleteEntity()
                     self.running_materialflows.remove(temp_materialflow)

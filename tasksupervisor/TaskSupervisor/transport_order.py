@@ -7,24 +7,20 @@ import logging
 import json
 import queue
 
+# import local libs
 from lotlan_scheduler.api.event import Event
-
 
 from tasksupervisor.entities.sensor_agent_node import SensorAgent
 
 from tasksupervisor.control.ros_order_state import rosOrderStatus, rosTransportOrderStates
 
-
-from tasksupervisor.entities.transport_order_update import TransportOrderUpdate
+from tasksupervisor.api.transport_order_update import TransportOrderUpdate
 
 from tasksupervisor.TaskSupervisor.transport_order_state_machine import TransportOrderStateMachine
 from tasksupervisor.TaskSupervisor.transport_order_state_machine import TRANSPORT_ORDER_STATES
 
 from tasksupervisor.TaskSupervisor.taskState import State
 from tasksupervisor.helpers.utc import get_utc_time
-from tasksupervisor.TaskSupervisor.trigger_validator import get_sensor_value
-from tasksupervisor.TaskSupervisor.trigger_validator import get_sensor_physical_sensor_name
-
 
 from tasksupervisor.TaskSupervisor.multiq import multi_queue
 from tasksupervisor.TaskSupervisor.user_action import UserAction
@@ -49,9 +45,13 @@ def object_to_json_array(object_to_convert):
     logger.info(json.dumps(temp_array))
     return temp_array
 
+class OptData(object):
+    def __init__(self, description, to_id):
+        self.description = description
+        self.to_id = to_id
 
 class TransportOrder(threading.Thread):
-    def __init__(self, _uuid, _refMaterialflowUpdateId, _refOwnerId, queueTransportOrders, task_supervisor_knowledge):
+    def __init__(self, _uuid, _refMaterialflowUpdateId, _refOwnerId, queueTransportOrders, task_supervisor_knowledge, broker_ref_id):
         threading.Thread.__init__(self)
 
         # these attributes representing the materialflow
@@ -65,6 +65,7 @@ class TransportOrder(threading.Thread):
         self.id = str(_uuid)
         self.ref_materialflow_update_id = _refMaterialflowUpdateId
         self.ref_owner_id = _refOwnerId
+        self.broker_ref_id = broker_ref_id
         self.start_time = get_utc_time()
         self.task_name = str(_uuid)
         self.state = State.Idle
@@ -91,9 +92,9 @@ class TransportOrder(threading.Thread):
         self._subscription_ids = []
 
         self._transport_order_update = TransportOrderUpdate(self)
+        self._transport_order_update.broker_ref_id = self.broker_ref_id
 
-
-        self._task_supervisor_knowledge.orion_connector.create_entity(
+        self._task_supervisor_knowledge.broker_connector.create(
             self._transport_order_update)
 
     def wait_for_triggered_by(self, event_information):
@@ -133,8 +134,7 @@ class TransportOrder(threading.Thread):
         temp_list = list(self._subscription_ids)
 
         for sub_id in temp_list:
-            self._task_supervisor_knowledge.orion_connector.delete_subscription_by_id(
-                sub_id)
+            self._task_supervisor_knowledge.broker_connector.delete(sub_id, self.broker_ref_id, delete_entity=False)
             self._subscription_ids.remove(sub_id)
             del self._task_supervisor_knowledge.subscription_dict[sub_id]
 
@@ -153,14 +153,16 @@ class TransportOrder(threading.Thread):
                     for wait_for_tb in self._event_info_triggered_by:
                         sensor_agent = SensorAgent(
                             wait_for_tb.physical_name)
-                        temp_subscription_id = self._task_supervisor_knowledge.orion_connector.subscribe_to_entity(_description=self.get_subscription_desc(
-                        ) + "WaitForTrigger",  _entities=object_to_json_array(sensor_agent.getEntity()), _notification=self._task_supervisor_knowledge.task_planner_address + "/san/" + self.id)
+
+                        opt_data = OptData(self.get_subscription_desc() + "WaitForTrigger", self.id)
+                        temp_subscription_id = self._task_supervisor_knowledge.broker_connector.subscribe_to_specific(sensor_agent, self.broker_ref_id, opt_data=opt_data)
+
                         self._task_supervisor_knowledge.subscription_dict[temp_subscription_id] = self.id
                         self._subscription_ids.append(temp_subscription_id)
                         self._transport_order_update.state = self._to_state_machine.get_state()
-                        self._transport_order_update.taskInfo = UserAction.WaitForStartTrigger
-                        self._transport_order_update.update_time()
-                        self._task_supervisor_knowledge.orion_connector.update_entity(
+                        self._transport_order_update.task_info = UserAction.WaitForStartTrigger
+
+                        self._task_supervisor_knowledge.broker_connector.update(
                             self._transport_order_update)
 
                 self._to_state_machine.Initialized()
@@ -176,16 +178,13 @@ class TransportOrder(threading.Thread):
                             if queue_data == NEW_TRANSPORT_ORDER:
                                 self._clear_subsriptions()
                                 self._transport_order_update.state = self._to_state_machine.get_state()
-                                self._transport_order_update.taskInfo = UserAction.MovingToPickupDestination
-                                self._transport_order_update.update_time()
-                                self._task_supervisor_knowledge.orion_connector.update_entity(
+                                self._transport_order_update.task_info = UserAction.MovingToPickupDestination
+                                self._task_supervisor_knowledge.broker_connector.update(
                                     self._transport_order_update)
                                 continue
                         sensor_entity_data = queue_data
-                        sensor_value = get_sensor_value(
-                            sensor_entity_data, self._subscription_ids)
-                        sensor_physical_name = get_sensor_physical_sensor_name(
-                            sensor_entity_data, self._subscription_ids)
+                        sensor_value = sensor_entity_data.readings[0]["reading"]
+                        sensor_physical_name = sensor_entity_data.sensor_id
 
                         for event_info in self._event_info_triggered_by:
                             if event_info.physical_name == sensor_physical_name:
@@ -198,9 +197,8 @@ class TransportOrder(threading.Thread):
                 elif not self._wait_for_trigger:
                     self._to_state_machine.TriggerReceived()
                     self._transport_order_update.state = self._to_state_machine.get_state()
-                    self._transport_order_update.taskInfo = UserAction.MovingToPickupDestination
-                    self._transport_order_update.update_time()
-                    self._task_supervisor_knowledge.orion_connector.update_entity(
+                    self._transport_order_update.task_info = UserAction.MovingToPickupDestination
+                    self._task_supervisor_knowledge.broker_connector.update(
                         self._transport_order_update)
             elif self.is_current_state(TRANSPORT_ORDER_STATES.START_PICKUP):
                 logger.info("current_state: %s, id: %s, TaskName: %s",
@@ -216,9 +214,8 @@ class TransportOrder(threading.Thread):
                             # we had no valid robot, so we have to kill the transport :(
                             self._to_state_machine.TransportOrderError()
                             self._transport_order_update.state = self._to_state_machine.get_state()
-                            self._transport_order_update.robotId = 0
-                            self._transport_order_update.update_time()
-                            self._task_supervisor_knowledge.orion_connector.update_entity(
+                            self._transport_order_update.robot_id = 0
+                            self._task_supervisor_knowledge.broker_connector.update(
                                 self._transport_order_update)
 
                             logger.error(
@@ -247,13 +244,12 @@ class TransportOrder(threading.Thread):
                                         ros_packet_order_state.status) + ", id: " + self.id)
 
                             self._to_state_machine.GotoPickupDestination()
-                            self._transport_order_update.taskInfo = UserAction.MovingToPickupDestination
+                            self._transport_order_update.task_info = UserAction.MovingToPickupDestination
                             self._transport_order_update.state = self._to_state_machine.get_state()
-                            self._transport_order_update.robotId = self._robot_id
-                            self._transport_order_update.pickupFrom = self._to_info.pickup_tos.location.physical_name
-                            self._transport_order_update.deliverTo = self._to_info.delivery_tos.location.physical_name
-                            self._transport_order_update.update_time()
-                            self._task_supervisor_knowledge.orion_connector.update_entity(
+                            self._transport_order_update.robot_id = self._robot_id
+                            self._transport_order_update.pickup_from = self._to_info.pickup_tos.location.physical_name
+                            self._transport_order_update.deliver_to = self._to_info.delivery_tos.location.physical_name
+                            self._task_supervisor_knowledge.broker_connector.update(
                                 self._transport_order_update)
                         pass
                 except Exception as p:
@@ -275,19 +271,20 @@ class TransportOrder(threading.Thread):
 
                             sensor_agent = SensorAgent(
                                 self._to_info.pickup_tos.finished_by[0].physical_name)
-                            temp_subscription_id = self._task_supervisor_knowledge.orion_connector.subscribe_to_entity(_description=self.get_subscription_desc(
-                            ) + "WaitForManualLoading", _entities=object_to_json_array(sensor_agent.getEntity()), _notification=self._task_supervisor_knowledge.task_planner_address + "/san/" + self.id)
-                            self._task_supervisor_knowledge.subscription_dict[
-                                temp_subscription_id] = self.id
+
+                            opt_data = OptData(self.get_subscription_desc() + "WaitForManualLoading", self.id)
+                            temp_subscription_id = self._task_supervisor_knowledge.broker_connector.subscribe_to_specific(sensor_agent, self.broker_ref_id, opt_data=opt_data)
+
+                            self._task_supervisor_knowledge.subscription_dict[temp_subscription_id] = self.id
                             self._subscription_ids.append(temp_subscription_id)
 
                     # agv arrived at the pickup destination
                     elif (temp_state == rosTransportOrderStates.TO_LOAD_ACTION_START or temp_state == rosTransportOrderStates.TO_LOAD_ACTION_ONGOING) and temp_uuid == self.id:
                         self._to_state_machine.ArrivedAtPickupDestination()
-                        self._transport_order_update.taskInfo = UserAction.WaitForLoading
+                        self._transport_order_update.task_info = UserAction.WaitForLoading
                         self._transport_order_update.state = self._to_state_machine.get_state()
-                        self._transport_order_update.update_time()
-                        self._task_supervisor_knowledge.orion_connector.update_entity(
+
+                        self._task_supervisor_knowledge.broker_connector.update(
                             self._transport_order_update)
                         
                         # send info to scheduler
@@ -310,17 +307,17 @@ class TransportOrder(threading.Thread):
                             # no need to resend it...
                             if status == CREATE_TRANSPORT_ORDER_SUCCESS:
                                 self._to_state_machine.AgvIsLoaded()
-                                self._transport_order_update.update_time()
+
                                 self._transport_order_update.state = self._to_state_machine.get_state()
-                                self._task_supervisor_knowledge.orion_connector.update_entity(self._transport_order_update)
+                                self._task_supervisor_knowledge.broker_connector.update(self._transport_order_update)
                             continue
                     sensor_entity_data = queue_data
 
-                    if sensor_entity_data["subscriptionId"] not in self._subscription_ids:
-                        continue
+                    if not sensor_entity_data.readings:
+                        raise ValueError("Given Sensor data contains no reading")
 
-                    sensor_value = get_sensor_value(sensor_entity_data, self._subscription_ids)
-                    sensor_physical_name = get_sensor_physical_sensor_name(sensor_entity_data, self._subscription_ids)
+                    sensor_value = sensor_entity_data.readings[0]["reading"]
+                    sensor_physical_name = sensor_entity_data.sensor_id
                     for event_info in self._to_info.pickup_tos.finished_by:
                         if event_info.physical_name == sensor_physical_name:
                             self._queue_to_materialflow.put((self.task_name, Event(
@@ -328,9 +325,9 @@ class TransportOrder(threading.Thread):
 
                 else:  # automatic loaded is now simulated ;)
                     self._to_state_machine.AgvIsLoaded()
-                    self._transport_order_update.update_time()
+
                     self._transport_order_update.state = self._to_state_machine.get_state()
-                    self._task_supervisor_knowledge.orion_connector.update_entity(
+                    self._task_supervisor_knowledge.broker_connector.update(
                         self._transport_order_update)
 
             elif self.is_current_state(TRANSPORT_ORDER_STATES.START_DELIVERY):
@@ -346,10 +343,10 @@ class TransportOrder(threading.Thread):
                     if temp_state == rosTransportOrderStates.TO_UNLOAD_MOVE_ORDER_START and temp_uuid == self.id:
 
                         self._to_state_machine.GotoDeliveryDestination()
-                        self._transport_order_update.taskInfo = UserAction.MovingToDeliveryDestination
-                        self._transport_order_update.update_time()
+                        self._transport_order_update.task_info = UserAction.MovingToDeliveryDestination
+
                         self._transport_order_update.state = self._to_state_machine.get_state()
-                        self._task_supervisor_knowledge.orion_connector.update_entity(
+                        self._task_supervisor_knowledge.broker_connector.update(
                             self._transport_order_update)
 
             elif self.is_current_state(TRANSPORT_ORDER_STATES.MOVING_TO_DELIVERY):
@@ -367,8 +364,11 @@ class TransportOrder(threading.Thread):
                             # subscribe to events
                             sensor_agent = SensorAgent(
                                 self._to_info.delivery_tos.finished_by[0].physical_name)
-                            temp_subscription_id = self._task_supervisor_knowledge.orion_connector.subscribe_to_entity(_description=self.get_subscription_desc(
-                            ) + "WaitForManualUNLoading", _entities=object_to_json_array(sensor_agent.getEntity()), _notification=self._task_supervisor_knowledge.task_planner_address + "/san/" + self.id)
+
+
+                            opt_data = OptData(self.get_subscription_desc() + "WaitForManualUNLoading", self.id)
+                            temp_subscription_id = self._task_supervisor_knowledge.broker_connector.subscribe_to_specific(sensor_agent, self.broker_ref_id, opt_data=opt_data)
+
                             self._task_supervisor_knowledge.subscription_dict[
                                 temp_subscription_id] = self.id
                             self._subscription_ids.append(temp_subscription_id)
@@ -376,10 +376,10 @@ class TransportOrder(threading.Thread):
                     elif (temp_state == rosTransportOrderStates.TO_UNLOAD_ACTION_START or temp_state == rosTransportOrderStates.TO_UNLOAD_ACTION_ONGOING) and temp_uuid == self.id:
 
                         self._to_state_machine.ArrivedAtDeliveryDestination()
-                        self._transport_order_update.taskInfo = UserAction.WaitForUnloading
-                        self._transport_order_update.update_time()
+                        self._transport_order_update.task_info = UserAction.WaitForUnloading
+
                         self._transport_order_update.state = self._to_state_machine.get_state()
-                        self._task_supervisor_knowledge.orion_connector.update_entity(
+                        self._task_supervisor_knowledge.broker_connector.update(
                             self._transport_order_update)
 
                         # send info to scheduler
@@ -404,21 +404,19 @@ class TransportOrder(threading.Thread):
                             if status == CREATE_TRANSPORT_ORDER_SUCCESS:
                                 # no need to resend it...
                                 self._to_state_machine.AgvIsUnloaded()
-                                self._transport_order_update.taskInfo = UserAction.Idle
-                                self._transport_order_update.update_time()
+                                self._transport_order_update.task_info = UserAction.Idle
+
                                 self._transport_order_update.state = self._to_state_machine.get_state()
 
-                                self._task_supervisor_knowledge.orion_connector.update_entity(
+                                self._task_supervisor_knowledge.broker_connector.update(
                                     self._transport_order_update)
                             continue
 
                     sensor_entity_data = queue_data
-                    # sensor_entity_data = self._sensor_queue.get()
-                    if sensor_entity_data["subscriptionId"] not in self._subscription_ids:
-                        continue
 
-                    sensor_value = get_sensor_value(sensor_entity_data, self._subscription_ids)
-                    sensor_physical_name = get_sensor_physical_sensor_name(sensor_entity_data, self._subscription_ids)
+                    sensor_value = sensor_entity_data.readings[0]["reading"]
+                    sensor_physical_name = sensor_entity_data.sensor_id
+
                     for event_info in self._to_info.delivery_tos.finished_by:
                         if event_info.physical_name == sensor_physical_name:
                             self._queue_to_materialflow.put((self.task_name, Event(
@@ -438,16 +436,19 @@ class TransportOrder(threading.Thread):
                     for wait_for_fb in self._event_info_finished_by:
                         sensor_agent = SensorAgent(
                             wait_for_fb.physical_name)
-                        temp_subscription_id = self._task_supervisor_knowledge.orion_connector.subscribe_to_entity(_description=self.get_subscription_desc(
-                        ) + "WaitForFinishedBy", _entities=object_to_json_array(sensor_agent.getEntity()), _notification=self._task_supervisor_knowledge.task_planner_address + "/san/" + self.id)
+
+                        
+                        opt_data = OptData(self.get_subscription_desc() + "WaitForFinishedBy", self.id)
+                        temp_subscription_id = self._task_supervisor_knowledge.broker_connector.subscribe_to_specific(sensor_agent, self.broker_ref_id, opt_data=opt_data)
+
                         self._task_supervisor_knowledge.subscription_dict[temp_subscription_id] = self.id
                         self._subscription_ids.append(temp_subscription_id)
                     self._to_state_machine.SubscribedToFinishedEvents()
-                    self._transport_order_update.taskInfo = UserAction.WaitForFinishTrigger
-                    self._transport_order_update.update_time()
+                    self._transport_order_update.task_info = UserAction.WaitForFinishTrigger
+
                     self._transport_order_update.state = self._to_state_machine.get_state()
 
-                    self._task_supervisor_knowledge.orion_connector.update_entity(
+                    self._task_supervisor_knowledge.broker_connector.update(
                         self._transport_order_update)
 
             elif self.is_current_state(TRANSPORT_ORDER_STATES.WAIT_FOR_FINISHED_EVENTS):
@@ -459,10 +460,8 @@ class TransportOrder(threading.Thread):
                         self._to_state_machine.FinishedTriggerReceived()
                         break
                     sensor_entity_data = queue_data
-                    sensor_value = get_sensor_value(
-                        sensor_entity_data, self._subscription_ids)
-                    sensor_physical_name = get_sensor_physical_sensor_name(
-                        sensor_entity_data, self._subscription_ids)
+                    sensor_value = sensor_entity_data.readings[0]["reading"]
+                    sensor_physical_name = sensor_entity_data.sensor_id
 
                     for event_info in self._event_info_finished_by:
                         if event_info.physical_name == sensor_physical_name:
@@ -482,8 +481,7 @@ class TransportOrder(threading.Thread):
         select_on_queues.finish()
         self._clear_subsriptions()
 
-        self._task_supervisor_knowledge.orion_connector.delete_entity(
-            self._transport_order_update.getId())
+        self._task_supervisor_knowledge.broker_connector.delete(self._transport_order_update.id, self.broker_ref_id)
 
         self._task_supervisor_knowledge.ros_message_dispatcher.remove_thread(
             self.id)

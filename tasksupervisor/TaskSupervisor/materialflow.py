@@ -11,28 +11,29 @@ from lotlan_scheduler.api.event import Event
 
 # import local packages
 from tasksupervisor.helpers.utc import get_utc_time
-from tasksupervisor.entities.materialflow_update import MaterialflowUpdate
+from tasksupervisor.api.materialflow_update import MaterialflowUpdate
 from tasksupervisor.TaskSupervisor.transport_order import TransportOrder
 
 logger = logging.getLogger(__name__)
 
 # this represents a set of tasks
 class Materialflow(threading.Thread):
-    def __init__(self, ownerId, _materialflow, _queue_to_scheduler, task_supervisor_knowledge):
+    def __init__(self, ownerId, _materialflow, _queue_to_scheduler, task_supervisor_knowledge, broker_ref_id):
         threading.Thread.__init__(self)
         logger.info("taskManager init")
         self.id = uuid.uuid4()
         self.task_supervisor_knowledge = task_supervisor_knowledge
-        self.taskManagerName = _materialflow.name
+        self.task_manager_name = _materialflow.name
         self.time = get_utc_time()
-        self.transportOrderList = []
-        self.refOwnerId = ownerId
+        self.transport_order_list = []
+        self.ref_owner_id = ownerId
         self._materialflow = _materialflow
+        self.broker_ref_id = broker_ref_id
 
         self._materialflow_update = None
 
         logger.info("taskMakanger name: %s, uuid: %s",
-                    self.taskManagerName, str(self.id))
+                    self.task_manager_name, str(self.id))
 
         #self.runningTask= None
         self._queue_to_scheduler = _queue_to_scheduler
@@ -60,7 +61,7 @@ class Materialflow(threading.Thread):
         temp_uuid = str(_uuid)
         if temp_uuid not in self._running_transport_orders: 
             self._running_transport_orders[temp_uuid] = TransportOrder(
-                _uuid, self.id, self.refOwnerId, self._queue_to_transport_order, self.task_supervisor_knowledge) 
+                _uuid, self.id, self.ref_owner_id, self._queue_to_transport_order, self.task_supervisor_knowledge, self.broker_ref_id) 
         self._running_transport_orders[temp_uuid].wait_for_triggered_by(event_information)
         if not self._running_transport_orders[temp_uuid].is_alive():
             self._running_transport_orders[temp_uuid].start()
@@ -74,7 +75,7 @@ class Materialflow(threading.Thread):
                 temp_uuid = str(to.uuid)
                 if temp_uuid not in self._running_transport_orders:
                     self._running_transport_orders[temp_uuid] = TransportOrder(
-                        to.uuid, self.id, self.refOwnerId, self._queue_to_transport_order, self.task_supervisor_knowledge)
+                        to.uuid, self.id, self.ref_owner_id, self._queue_to_transport_order, self.task_supervisor_knowledge, self.broker_ref_id)
                 self._running_transport_orders[temp_uuid].set_transport_info(to)
                 if not self._running_transport_orders[temp_uuid].is_alive():
                     self._running_transport_orders[temp_uuid].start()
@@ -119,8 +120,7 @@ class Materialflow(threading.Thread):
 
     def run(self):
         self._materialflow_update = MaterialflowUpdate(self)
-        self.task_supervisor_knowledge.orion_connector.create_entity(
-            self._materialflow_update)
+        self.task_supervisor_knowledge.broker_connector.create(self._materialflow_update)
 
         self._materialflow.start()
         while self._materialflow.is_running() and self._repeat_forever:
@@ -138,10 +138,9 @@ class Materialflow(threading.Thread):
                 self._running_transport_orders[temp_uuid].join()
                 del self._running_transport_orders[temp_uuid]
 
-        self.task_supervisor_knowledge.orion_connector.delete_entity(
-            self._materialflow_update.getId())
+        self.task_supervisor_knowledge.broker_connector.delete(self._materialflow_update.id, self.broker_ref_id)
 
-        self._queue_to_scheduler.put(self.taskManagerName)
+        self._queue_to_scheduler.put(self.task_manager_name)
 
     def __cmp__(self, other):
         if self.name == other:
