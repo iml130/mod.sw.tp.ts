@@ -1,8 +1,12 @@
 import abc
-import threading
+import uuid
 
-class BrokerInterface(threading.Thread, metaclass=abc.ABCMeta):
+class BrokerInterface(metaclass=abc.ABCMeta):
     """ Implement this interface to make a Broker work with the Task Supervisor """
+
+    def __init__(self, broker_name=""):
+        self.broker_id = uuid.uuid4()
+        self.broker_name = broker_name
 
     @classmethod
     def __subclasshook__(cls, subclass):
@@ -14,10 +18,6 @@ class BrokerInterface(threading.Thread, metaclass=abc.ABCMeta):
 
     @abc.abstractmethod
     def start_interface(self):
-        pass
-
-    @abc.abstractmethod
-    def run(self):
         pass
 
     @abc.abstractmethod
