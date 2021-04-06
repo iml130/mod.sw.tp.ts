@@ -50,7 +50,7 @@ class ContextBrokerHandler:
 
     def create_entity(self, entity_instance):
         with self.lock:
-            logger.info("Id:" + entity_instance.id)
+            logger.info("Id:" + str(entity_instance.id))
             status_code = http.client.OK
 
             json_obj = ObjectFiwareConverter.obj2Fiware(entity_instance, ind=4)
@@ -59,7 +59,7 @@ class ContextBrokerHandler:
             if not response_is_ok(status_code):
                 raise BrokerException(status_code, "Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
             else:
-                self.published_entities.append(entity_instance.id)
+                self.published_entities.append(str(entity_instance.id))
     
     def delete_entity(self, entity_id):
         with self.lock:
@@ -73,7 +73,7 @@ class ContextBrokerHandler:
                 raise BrokerException(status_code, "Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
             else:
                 logger.info("Id: %s - Done", str(entity_id))
-                self.published_entities.remove(entity_id)
+                self.published_entities.remove(str(entity_id))
 
     def update_entity(self, entity_instance):
         with self.lock:
@@ -151,6 +151,7 @@ class ContextBrokerHandler:
                     raise BrokerException(status_code, "Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
                 else:
                     logger.info("Subscriptions Deleted: " + id_)
+                    self.subscription_list.remove(id_)
 
     def get_entities(self, entity_id=None, entity_type=None):
         get_url = self._getUrl(ENTITIES) + "/"
