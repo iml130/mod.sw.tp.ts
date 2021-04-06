@@ -1,6 +1,6 @@
 import uuid
 
-from tasksupervisor.entities.entity import FiwareEntity
+from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
 
 class TaskSupervisorInfo(FiwareEntity):
     def __init__(self):

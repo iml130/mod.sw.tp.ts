@@ -1,6 +1,5 @@
 from enum import IntEnum
-from tasksupervisor.entities.entity import FiwareEntity
-
+from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
 
 class TaskState(FiwareEntity):
 

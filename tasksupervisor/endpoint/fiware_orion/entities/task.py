@@ -1,7 +1,7 @@
 # using enum34
 from enum import IntEnum
 
-from .entity import FiwareEntity
+from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
 
 class Task(FiwareEntity): 
     def __init__(self): 

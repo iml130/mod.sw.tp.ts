@@ -1,7 +1,7 @@
 # using enum34
 from enum import IntEnum
 
-from tasksupervisor.entities.entity import FiwareEntity
+from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
 from fiwareobjectconverter.object_fiware_converter import ObjectFiwareConverter
 from tasksupervisor.api import sensor_agent
 

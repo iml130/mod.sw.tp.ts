@@ -13,7 +13,7 @@ logger = logging.getLogger(__name__)
 
 # dictQueue = my_globals.sanDictQueue
 
-def construct_blueprint_sensor(task_supervisor):
+def construct_blueprint_sensor(task_supervisor, interface):
     sensor_agent_node_blueprint = Blueprint(
         'sensor_agent_node_endpoint', __name__)
 
@@ -24,11 +24,13 @@ def construct_blueprint_sensor(task_supervisor):
             json_request = request.json
             #dictQueue.put_data(token, jsonReq)
             if my_globals.FI_SUB_ID in json_request and my_globals.FI_DATA in json_request:
-                subscription_id = json_request[my_globals.FI_SUB_ID]
-                if subscription_id in task_supervisor.subscription_dict:
+                interface.retreive(json_request)
+                # subscription_id = json_request[my_globals.FI_SUB_ID]
 
-                    task_supervisor.sensor_dispatcher.put_data(
-                        task_supervisor.subscription_dict[subscription_id], json_request)
+                # if subscription_id in task_supervisor.subscription_dict:
+
+                #     task_supervisor.sensor_dispatcher.put_data(
+                #         task_supervisor.subscription_dict[subscription_id], json_request)
  
             else:
                 # no subscription

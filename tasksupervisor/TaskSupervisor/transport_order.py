@@ -10,7 +10,7 @@ import queue
 # import local libs
 from lotlan_scheduler.api.event import Event
 
-from tasksupervisor.entities.sensor_agent_node import SensorAgent
+from tasksupervisor.endpoint.fiware_orion.entities.sensor_agent_node import SensorAgent
 
 from tasksupervisor.control.ros_order_state import rosOrderStatus, rosTransportOrderStates
 

@@ -1,4 +1,4 @@
-from tasksupervisor.entities.entity import FiwareEntity
+from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
 from tasksupervisor.TaskSupervisor.user_action import UserAction
 
 class TransportOrderUpdate(FiwareEntity):
