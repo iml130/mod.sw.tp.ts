@@ -1,9 +1,6 @@
 # using enum34
 from enum import IntEnum
-
-from tasksupervisor.entities.entity import FiwareEntity
-from fiwareobjectconverter.object_fiware_converter import ObjectFiwareConverter
-
+import uuid
 
 class SensorData(object):
     def __init__(self, **entries):
@@ -11,9 +8,9 @@ class SensorData(object):
 
         self.__dict__.update(entries)  # Insert values from given dict
 
-
 class SensorAgent():
     def __init__(self, _id=None):
+        self.id = uuid.uuid4()
         self.type = "SensorAgent"
         self.measuremen_type = ""
         self.modified_time = ""  # ISO8601
@@ -23,6 +20,7 @@ class SensorAgent():
         self.sensor_manufacturer = ""
         self.sensor_type = ""
         self.units = ""
+        self.broker_ref_id = ""
 
     def findSensorById(self, trigger_name):
         trigger_name = trigger_name.split(".")[0]
