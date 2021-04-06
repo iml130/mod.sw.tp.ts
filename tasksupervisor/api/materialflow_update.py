@@ -1,6 +1,5 @@
 import uuid
 
-from tasksupervisor.entities.entity import FiwareEntity
 from tasksupervisor.helpers.utc import get_utc_time
 
 class MaterialflowUpdate():
