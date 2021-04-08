@@ -2,7 +2,7 @@
 
 
 
-| :books: [Documentation](https://tte-project1.readthedocs.io/en/latest/) |
+| :books: Documentation |
 | --------------------------------------------- |
 
 ## Contents
