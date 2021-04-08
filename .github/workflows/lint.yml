@@ -1,0 +1,18 @@
+# This is a basic workflow to help you get started with Actions
+
+name: Lint
+
+on: [pull_request]
+
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  gitHubActionForPylint:
+    name: GitHub Action for pylint
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@master
+    - name: GitHub Action for pylint
+      uses: cclauss/GitHub-Action-for-pylint@master
+      with:
+        args: "pip install -r requirements.txt ; pylint **/*.py"
