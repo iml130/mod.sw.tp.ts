@@ -29,7 +29,7 @@ class BrokerConnector:
             self.sensor_id_to_ids_dict[topic.id] = []
             self.sensor_id_to_ids_dict[topic.id].append(transport_order_id)
 
-        interface = self.interfaces[broker_id]
+        interface = self.get_interface_by_broker_id(broker_id)
         return interface.subscribe(topic, opt_data=opt_data, generic=generic)
 
     def subscribe_to_all(self, topic, opt_data=None, generic=False):
@@ -39,6 +39,7 @@ class BrokerConnector:
     def retreive(self, data, interface):
         class_name = str(data.__class__.__name__)
         if class_name == "Materialflow":
+            data.broker_ref_id = interface.broker_id
             my_globals.taskQueue.put((data, class_name))
         elif class_name == "SensorAgent":
             for to_id in self.sensor_id_to_ids_dict[data.id]:
@@ -69,9 +70,8 @@ class BrokerConnector:
         interface.delete(id, delete_entity=delete_entity)
 
     def get_interface_by_broker_id(self, broker_id):
-        for interface in self.interfaces.values():
-            if interface.broker_id == broker_id:
-                return interface
+        if broker_id in self.interfaces:
+            return self.interfaces[broker_id]
         raise ValueError("Unknown BrokerID: {}".format(broker_id))
     
     def shutdown(self):

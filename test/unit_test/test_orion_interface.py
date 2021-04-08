@@ -109,8 +109,8 @@ class TestOrionInterface(TestCase):
 
     def setUp(self):
         task_supervisor_knowledge = TaskSupervisorKnowledge()
-        task_supervisor_knowledge.broker_connector = BrokerConnector(task_supervisor_knowledge)
-        self.orion_interface = OrionInterface(task_supervisor_knowledge)
+        broker_connector = BrokerConnector(task_supervisor_knowledge)
+        self.orion_interface = OrionInterface(broker_connector)
 
     def test_subscribe_specific(self):
         sensor_agent = SensorAgent()

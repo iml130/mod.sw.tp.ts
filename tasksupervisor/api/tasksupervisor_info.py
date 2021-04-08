@@ -6,7 +6,6 @@ class TaskSupervisorInfo():
         self.used_materialflows = []
         self.number_of_materialflows = len(self.used_materialflows)
         self.message = ""
-        self.broker_ref_id = ""
 
     def appendMaterialflow(self, _id):
         if _id not in self.used_materialflows:

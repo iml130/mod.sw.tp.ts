@@ -136,7 +136,6 @@ class TransportOrder(threading.Thread):
         for sub_id in temp_list:
             self._task_supervisor_knowledge.broker_connector.delete(sub_id, self.broker_ref_id, delete_entity=False)
             self._subscription_ids.remove(sub_id)
-            del self._task_supervisor_knowledge.subscription_dict[sub_id]
 
     def run(self):
         self.state = State.Running
@@ -157,7 +156,6 @@ class TransportOrder(threading.Thread):
                         opt_data = OptData(self.get_subscription_desc() + "WaitForTrigger", self.id)
                         temp_subscription_id = self._task_supervisor_knowledge.broker_connector.subscribe_to_specific(sensor_agent, self.broker_ref_id, opt_data=opt_data)
 
-                        self._task_supervisor_knowledge.subscription_dict[temp_subscription_id] = self.id
                         self._subscription_ids.append(temp_subscription_id)
                         self._transport_order_update.state = self._to_state_machine.get_state()
                         self._transport_order_update.task_info = UserAction.WaitForStartTrigger
@@ -275,7 +273,6 @@ class TransportOrder(threading.Thread):
                             opt_data = OptData(self.get_subscription_desc() + "WaitForManualLoading", self.id)
                             temp_subscription_id = self._task_supervisor_knowledge.broker_connector.subscribe_to_specific(sensor_agent, self.broker_ref_id, opt_data=opt_data)
 
-                            self._task_supervisor_knowledge.subscription_dict[temp_subscription_id] = self.id
                             self._subscription_ids.append(temp_subscription_id)
 
                     # agv arrived at the pickup destination
@@ -365,12 +362,9 @@ class TransportOrder(threading.Thread):
                             sensor_agent = SensorAgent(
                                 self._to_info.delivery_tos.finished_by[0].physical_name)
 
-
                             opt_data = OptData(self.get_subscription_desc() + "WaitForManualUNLoading", self.id)
                             temp_subscription_id = self._task_supervisor_knowledge.broker_connector.subscribe_to_specific(sensor_agent, self.broker_ref_id, opt_data=opt_data)
 
-                            self._task_supervisor_knowledge.subscription_dict[
-                                temp_subscription_id] = self.id
                             self._subscription_ids.append(temp_subscription_id)
                     # agv arrived at the delivery destination
                     elif (temp_state == rosTransportOrderStates.TO_UNLOAD_ACTION_START or temp_state == rosTransportOrderStates.TO_UNLOAD_ACTION_ONGOING) and temp_uuid == self.id:
@@ -441,7 +435,6 @@ class TransportOrder(threading.Thread):
                         opt_data = OptData(self.get_subscription_desc() + "WaitForFinishedBy", self.id)
                         temp_subscription_id = self._task_supervisor_knowledge.broker_connector.subscribe_to_specific(sensor_agent, self.broker_ref_id, opt_data=opt_data)
 
-                        self._task_supervisor_knowledge.subscription_dict[temp_subscription_id] = self.id
                         self._subscription_ids.append(temp_subscription_id)
                     self._to_state_machine.SubscribedToFinishedEvents()
                     self._transport_order_update.task_info = UserAction.WaitForFinishTrigger

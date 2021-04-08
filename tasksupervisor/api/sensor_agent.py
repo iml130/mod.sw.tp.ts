@@ -12,7 +12,7 @@ class SensorAgent():
     def __init__(self, _id=None):
         self.id = uuid.uuid4()
         self.type = "SensorAgent"
-        self.measuremen_type = ""
+        self.measurement_type = ""
         self.modified_time = ""  # ISO8601
         self.readings = []  # List of SensorData
         self.san_id = ""
@@ -20,7 +20,6 @@ class SensorAgent():
         self.sensor_manufacturer = ""
         self.sensor_type = ""
         self.units = ""
-        self.broker_ref_id = ""
 
     def findSensorById(self, trigger_name):
         trigger_name = trigger_name.split(".")[0]

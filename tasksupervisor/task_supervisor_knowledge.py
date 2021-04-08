@@ -13,6 +13,3 @@ class TaskSupervisorKnowledge():
 
         self.sensor_dispatcher = DictQueue()
         self.ros_message_dispatcher = DictQueue()
-
-        
-        self.subscription_dict = {}

@@ -22,11 +22,7 @@ if lock is None:
     lock = threading.Lock()
 subscriptionDict = {}
 
-FI_SUB_ID = "subscriptionId"
-FI_DATA = "data"
-
-ORION_CONNECTOR = None
-CONFIG_FILE = "./tasksupervisor/fiware_config.ini"
+CONFIG_FILE = "./tasksupervisor/config.ini"
 try:
     parsed_config_file = ConfigReader(CONFIG_FILE)
     parsed_config_file.is_valid()
