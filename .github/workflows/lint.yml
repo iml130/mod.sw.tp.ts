@@ -14,4 +14,4 @@ jobs:
       - uses: actions/setup-python@v1
       - run: pip3 install pylint  # -r requirements.txt
       - run: pip3 install -r requirements.txt
-      - run: pylint **/*.py
+      - run: pylint **/*.py --threshold 7
