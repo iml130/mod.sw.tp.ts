@@ -36,6 +36,7 @@ nav:
         - Configuration: install/configuration.md
         - Logs: install/logs.md
     - Programmers Manual:
+        - Integrate your Broker: programmers/integrate-your-broker.md
         - Connecting to Middlewares: programmers/connecting-to-middlewares.md
         - Interfaces: programmers/interfaces.md
         - Materialflow: programmers/materialflow.md
