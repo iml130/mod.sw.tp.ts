@@ -7,23 +7,11 @@ on: [pull_request]
 
 # A workflow run is made up of one or more jobs that can run sequentially or in parallel
 jobs:
-  gitHubActionForPylint:
-    name: GitHub Action for pylint
+  Pylint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v1
-    - uses: ricardochaves/python-lint@v1.3.0
-      with:
-        python-root-list: "."
-        use-pylint: true
-        use-pycodestyle: false
-        use-flake8: false
-        use-black: false
-        use-mypy: false
-        use-isort: false
-        extra-pylint-options: ""
-        extra-pycodestyle-options: ""
-        extra-flake8-options: ""
-        extra-black-options: ""
-        extra-mypy-options: ""
-        extra-isort-options: ""
+      - uses: actions/checkout@v1
+      - uses: actions/setup-python@v1
+      - run: pip3 install pylint  # -r requirements.txt
+      - run: pip3 install -r requirements.txt
+      - run: pylint **/*.py
