@@ -44,7 +44,7 @@ class TestContextBrokerHandler(TestCase):
         self.assertEqual(response_is_ok(response.status_code), True)
 
         content = json.loads(response.content.decode('utf-8'))
-        materialflow_schema = open("./tasksupervisor/endpoints/materialflow_schema.json")
+        materialflow_schema = open("./tasksupervisor/endpoint/fiware_orion/flask/materialflow_schema.json")
 
         self.validate_schema(content[0], json.loads(materialflow_schema.read()))
         materialflow_schema.close()
