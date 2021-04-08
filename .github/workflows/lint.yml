@@ -11,8 +11,19 @@ jobs:
     name: GitHub Action for pylint
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@master
-    - name: GitHub Action for pylint
-      uses: cclauss/GitHub-Action-for-pylint@master
+    - uses: actions/checkout@v1
+    - uses: ricardochaves/python-lint@v1.3.0
       with:
-        args: "pip install -r requirements.txt ; pylint **/*.py"
+        python-root-list: "."
+        use-pylint: true
+        use-pycodestyle: false
+        use-flake8: false
+        use-black: false
+        use-mypy: false
+        use-isort: false
+        extra-pylint-options: ""
+        extra-pycodestyle-options: ""
+        extra-flake8-options: ""
+        extra-black-options: ""
+        extra-mypy-options: ""
+        extra-isort-options: ""
