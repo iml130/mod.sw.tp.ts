@@ -21,7 +21,7 @@ Running...<br />
 """
 
 logger = logging.getLogger(__name__)
-materialflow_schema = open("./tasksupervisor/endpoints/materialflow_schema.json").read()
+materialflow_schema = open("./tasksupervisor/endpoint/fiware_orion/flask/materialflow_schema.json").read()
 
 def create_flask_app(interface):
     app = Flask(__name__)

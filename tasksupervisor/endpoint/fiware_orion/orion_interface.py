@@ -8,7 +8,7 @@ import tasksupervisor.my_globals as my_globals
 from tasksupervisor.helpers import servercheck
 from tasksupervisor.helpers.config_reader import ConfigReader
 
-from tasksupervisor.flask_setup import create_flask_app
+from tasksupervisor.endpoint.fiware_orion.flask.flask_setup import create_flask_app, FI_SUB_ID, FI_DATA 
 
 from tasksupervisor.endpoint.fiware_orion.entities.materialflow import Materialflow
 from tasksupervisor.endpoint.fiware_orion.entities.sensor_agent_node import SensorAgent
@@ -32,18 +32,16 @@ def callback_flask_server(flask_app):
 class OrionInterface(BrokerInterface):
     """ Implements the BrokerInterface for the Orion Context Broker """
 
-    def __init__(self, tasksupervisor_knowledge, broker_name = ""):
-        BrokerInterface.__init__(self)
+    def __init__(self, broker_connector, broker_name = ""):
+        BrokerInterface.__init__(self, broker_connector)
 
-        self.tasksupervisor_knowledge = tasksupervisor_knowledge
         self.subscription_dict = {}
-        self.broker_connector = tasksupervisor_knowledge.broker_connector
 
-        self.flask_app = create_flask_app(tasksupervisor_knowledge, self)
+        self.flask_app = create_flask_app(self)
 
         self.lock = threading.Lock()
 
-        config_file_path = "./tasksupervisor/fiware_config.ini"
+        config_file_path = "./tasksupervisor/config.ini"
 
         try:
             parsed_config_file = ConfigReader(config_file_path)
@@ -120,24 +118,26 @@ class OrionInterface(BrokerInterface):
 
     def retreive(self, json_requests):
         with self.lock:
-            subscription_id = json_requests[my_globals.FI_SUB_ID]
-            entity_type = self.subscription_dict[subscription_id]
-            if entity_type == "Materialflow":
-                # it might be possible that there are multiple entities
-                # iterate over each json request
-                for temp_json_request in json_requests[my_globals.FI_DATA]:
-                    # create an entity from the json request
-                    orion_materialflow = Materialflow.CreateObjectFromJson(temp_json_request)
+            subscription_id = json_requests[FI_SUB_ID]
+            if subscription_id in self.subscription_dict:
+                entity_type = self.subscription_dict[subscription_id]
+                if entity_type == "Materialflow":
+                    # it might be possible that there are multiple entities
+                    # iterate over each json request
+                    for temp_json_request in json_requests[FI_DATA]:
+                        # create an entity from the json request
+                        orion_materialflow = Materialflow.CreateObjectFromJson(temp_json_request)
 
-                    api_materialflow = orion_materialflow.to_api_object()
-                    api_materialflow.broker_ref_id = self.broker_id
-                    self.broker_connector.retreive(api_materialflow, self)
-            elif entity_type == "SensorAgent":
-                for temp_json_request in json_requests[my_globals.FI_DATA]:
-                    orion_sensor_agent = SensorAgent.CreateObjectFromJson(temp_json_request)
-                    
-                    api_sensor_agent = orion_sensor_agent.to_api_object()
-                    self.broker_connector.retreive(api_sensor_agent, self)
+                        api_materialflow = orion_materialflow.to_api_object()
+                        self.broker_connector.retreive(api_materialflow, self)
+                elif entity_type == "SensorAgent":
+                    for temp_json_request in json_requests[FI_DATA]:
+                        orion_sensor_agent = SensorAgent.CreateObjectFromJson(temp_json_request)
+                        
+                        api_sensor_agent = orion_sensor_agent.to_api_object()
+                        self.broker_connector.retreive(api_sensor_agent, self)
+            else:
+                raise ValueError("Data from an unknown subscription id was received: {}".format(subscription_id))
 
     def shutdown(self):
         self.context_broker_handler.shutdown()

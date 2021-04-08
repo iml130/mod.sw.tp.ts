@@ -16,7 +16,6 @@ from lotlan_scheduler.scheduler import LotlanScheduler
 
 # local imports
 from tasksupervisor import my_globals
-from tasksupervisor.flask_setup import create_flask_app
 from tasksupervisor.task_supervisor_knowledge import TaskSupervisorKnowledge
 
 from tasksupervisor.api.materialflow import Materialflow
@@ -33,7 +32,7 @@ from tasksupervisor.control.agv_manager import AgvManager
 from tasksupervisor.optimization.round_robin import RoundRobin
 
 from tasksupervisor.endpoint.broker_connector import BrokerConnector
-from tasksupervisor.endpoint.fiware_orion import orion_interface
+from tasksupervisor.endpoint.fiware_orion.orion_interface import OrionInterface
 
 def setup_logging(
         default_path='./tasksupervisor/logging.json',
@@ -226,7 +225,8 @@ if __name__ == '__main__':
     broker_connector = BrokerConnector(task_supervisor)
     task_supervisor.broker_connector = broker_connector
 
-    orion_interface = orion_interface.OrionInterface(task_supervisor, "Orion Context Broker Instance_1")
+    # create and register interface instances here
+    orion_interface = OrionInterface(broker_connector, "Orion Context Broker Instance_1")
     broker_connector.register_interface(orion_interface)
 
     orion_interface.start_interface()
@@ -239,15 +239,13 @@ if __name__ == '__main__':
     thread_new_materialflow_scheduler = Thread(
         target=callback_task_scheduler_creator, args=(my_globals.taskSchedulerQueue, task_supervisor))
 
-    logger.info(
-        "Starting callback_new_materialflow, sanDealer and workTaskScheduler")
+    logger.info("Starting callback_new_materialflow, sanDealer and workTaskScheduler")
     thread_new_materialflow.start()
     thread_new_materialflow_scheduler.start()
 
     new_materialflow = Materialflow()
-    with my_globals.lock:
-        subscription_id_materialflow = task_supervisor.broker_connector.subscribe_to_specific(new_materialflow, orion_interface.broker_id, generic=True)
-        task_supervisor.subscription_dict[subscription_id_materialflow] = "Materialflow"
+    task_supervisor.broker_connector.subscribe_to_specific(new_materialflow, orion_interface.broker_id, generic=True)
+
     logger.info("Push Ctrl+C to exit()")
 
     wait_for_user_end = GracefulKiller()
