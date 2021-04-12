@@ -1,8 +1,11 @@
+""" Contains TaskSupervisorInfo Fiware class """
+
 import uuid
 
 from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
 
 class TaskSupervisorInfo(FiwareEntity):
+    """ """
     def __init__(self):
         FiwareEntity.__init__(self)
         self.usedMaterialFlows = []

@@ -1,3 +1,5 @@
+""" Contains FiwareEntity class """
+
 import uuid
 
 
@@ -20,16 +22,16 @@ class FiwareEntity():
             self.id = str(id)
         self.__initialized = True
 
-    def getEntity(self):
-        print("Create Entity: id: " + self.getId() + ", type: " + self.getType())
+    def get_entity(self):
+        print("Create Entity: id: " + self.get_id() + ", type: " + self.get_type())
 
-        return {"id": self.getId(), "type": self.getType()}
+        return {"id": self.get_id(), "type": self.get_type()}
 
-    def getType(self):
+    def get_type(self):
         """ Returns the type of an entity """
         return self.type
 
-    def getId(self):
+    def get_id(self):
         """ Returns the unique ID of an entity """
         return self.id
 
@@ -44,6 +46,6 @@ class FiwareEntity():
 
     def obj2JsonArray(self):
         temp_array = []
-        temp_array.append(self.getEntity())
+        temp_array.append(self.get_entity())
 
         return temp_array

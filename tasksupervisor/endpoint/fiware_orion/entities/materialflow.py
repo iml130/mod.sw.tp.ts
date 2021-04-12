@@ -1,3 +1,5 @@
+""" Contains Materialflow Fiware class """
+
 import urllib
 
 from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
@@ -21,10 +23,10 @@ class Materialflow(FiwareEntity):
         return api_materialflow
 
     @classmethod
-    def CreateObjectFromJson(cls, _my_json):
+    def CreateObjectFromJson(cls, my_json):
         ts = Materialflow()
         try:
-            ObjectFiwareConverter.fiware2Obj(_my_json, ts, setAttr=True)
+            ObjectFiwareConverter.fiware2Obj(my_json, ts, setAttr=True)
             ts.specification = urllib.parse.unquote_plus(ts.specification)
             ts.specification = ts.specification.replace("\r\n", "\n")
         except Exception:

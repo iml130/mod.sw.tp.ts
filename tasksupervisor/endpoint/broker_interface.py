@@ -1,3 +1,5 @@
+""" Contains BrokerInterface class """
+
 import abc
 import uuid
 
@@ -11,12 +13,12 @@ class BrokerInterface(metaclass=abc.ABCMeta):
 
     @classmethod
     def __subclasshook__(cls, subclass):
-        return (hasattr(subclass, 'start_interface') and callable(subclass.start_interface) and
-                hasattr(subclass, 'subscribe') and callable(subclass.subscribe) and
-                hasattr(subclass, 'create') and callable(subclass.create) and
-                hasattr(subclass, 'update') and callable(subclass.update) and
-                hasattr(subclass, 'delete') and callable(subclass.delete) and
-                hasattr(subclass, 'shutdown') and callable(subclass.shutdown) or
+        return (hasattr(subclass, "start_interface") and callable(subclass.start_interface) and
+                hasattr(subclass, "subscribe") and callable(subclass.subscribe) and
+                hasattr(subclass, "create") and callable(subclass.create) and
+                hasattr(subclass, "update") and callable(subclass.update) and
+                hasattr(subclass, "delete") and callable(subclass.delete) and
+                hasattr(subclass, "shutdown") and callable(subclass.shutdown) or
                 NotImplemented)
 
     @abc.abstractmethod
@@ -27,7 +29,7 @@ class BrokerInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def subscribe(self, topic, opt_data=None, generic=False):
         """
-        Subscribes to the given topic. 
+        Subscribes to the given topic.
 
         Parameters:
         topic           -- Will always be an api entity object. Could be converted into a broker specific format.
@@ -42,8 +44,9 @@ class BrokerInterface(metaclass=abc.ABCMeta):
     @abc.abstractmethod
     def create(self, entity):
         """
-        Creates a new entry for the entity at the broker. Converts given api entity object into a broker specific format.
-        
+        Creates a new entry for the entity at the broker. Converts the given api entity object
+        into a broker specific format.
+
         Parameters:
         entity          -- An api entity object used in the TaskSupervisor.
         """
@@ -53,19 +56,19 @@ class BrokerInterface(metaclass=abc.ABCMeta):
     def update(self, entity):
         """
         Updates the given entity at the broker. Converts given api entity object into a broker specific format.
-        
+
         Parameters:
         entity          -- An api entity object used in the TaskSupervisor.
         """
         pass
 
     @abc.abstractmethod
-    def delete(self, id, delete_entity=True):
+    def delete(self, id_, delete_entity=True):
         """
         Handles deletion of entities and subscriptions.
 
         Parameters:
-        id              -- Either an entity id or an subscription id depending on delete_entity
+        id_             -- Either an entity id or an subscription id depending on delete_entity
         delete_entity   -- Boolean, True if the id is from an entity and False if it is a subscription id
         """
         pass

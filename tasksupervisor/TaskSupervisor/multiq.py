@@ -1,4 +1,5 @@
 """
+Contains MultiQueue class
 Allow multiple queues to be waited upon.
 
 An EndOfQueueMarker marks a queue as
@@ -19,7 +20,7 @@ class EndOfQueueMarker:
     pass
 
 
-class queue_reader(threading.Thread):
+class QueueReader(threading.Thread):
     def __init__(self, inq, sharedq):
         threading.Thread.__init__(self)
         self.inq = inq
@@ -35,42 +36,42 @@ class queue_reader(threading.Thread):
                 q_run = False
 
 
-class multi_queue(queue.Queue):
+class MultiQueue(queue.Queue):
+    """ Allow multiple queues to be waited upon """
     def __init__(self, list_of_queues):
         queue.Queue.__init__(self)
-        self.qList = list_of_queues
-        self.qrList = []
+        self.q_list = list_of_queues
+        self.qr_list = []
         for q in list_of_queues:
-            qr = queue_reader(q, self)
+            qr = QueueReader(q, self)
             qr.start()
-            self.qrList.append(qr)
+            self.qr_list.append(qr)
 
     def get(self, blocking=True, timeout=None):
         res = []
         while len(res) == 0:
-            if len(self.qList) == 0:
+            if len(self.q_list) == 0:
                 res = (self, EndOfQueueMarker)
             else:
                 res = queue.Queue.get(self, blocking, timeout)
                 if res[1] is EndOfQueueMarker:
-                    self.qList.remove(res[0])
+                    self.q_list.remove(res[0])
                     res = []
         return res
 
     def join(self):
-        for qr in self.qrList:
+        for qr in self.qr_list:
             qr.join()
 
     def finish(self):
-        for qr in self.qList:
+        for qr in self.q_list:
             qr.put(EndOfQueueMarker)
-        
         self.join()
 
 
 def select(list_of_queues):
     outq = queue.Queue()
     for q in list_of_queues:
-        qr = queue_reader(q, outq)
+        qr = QueueReader(q, outq)
         qr.start()
     return outq.get()

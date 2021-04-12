@@ -1,7 +1,8 @@
+""" Contains TestBrokerInterface TestCase """
+
 import unittest
 from unittest import TestCase
-from unittest.mock import Mock, patch
-import requests
+from unittest.mock import patch
 
 # local imports
 from tasksupervisor import my_globals
@@ -12,24 +13,20 @@ from tasksupervisor.endpoint.fiware_orion.entities.materialflow import Materialf
 from tasksupervisor.endpoint.fiware_orion.entities.sensor_agent_node import SensorAgent
 from tasksupervisor.endpoint.fiware_orion.entities.materialflow_specification_state import MaterialflowSpecificationState
 from tasksupervisor.endpoint.fiware_orion.entities.tasksupervisor_info import TaskSupervisorInfo
-from tasksupervisor.endpoint.fiware_orion.entities.transport_order_update import TransportOrderUpdate
-from tasksupervisor.endpoint.fiware_orion.entities.materialflow_update import MaterialflowUpdate
 from tasksupervisor.task_supervisor_knowledge import TaskSupervisorKnowledge
 
-from tasksupervisor.TaskSupervisor import materialflow
-
-# Just a plain BrokerInterface implementation to test the Connector
 class TestBrokerInterface(BrokerInterface):
+    """ A plain BrokerInterface implementation to test the Connector """
     def __init__(self, broker_id, broker_name):
+        BrokerInterface.__init__(BrokerConnector(None), broker_name)
         self.broker_id = broker_id
         self.broker_name = broker_name
+
     def start_interface(self):
         pass
     def run(self):
         pass
     def subscribe(self, topic, opt_data=None, generic=False):
-        pass
-    def create(self, data):
         pass
     def create(self, data):
         pass
@@ -55,18 +52,12 @@ class DummyTransportOrder:
         self._to_state_machine = DummyStateMachine()
         self._robot_id = None
 
-class DummyMaterialflow:
-    def __init__(self):
-        self.taskManagerName = ""
-        self.transportOrderList = []
-        self.broker_ref_id = "id"
-
-class TestContextBrokerHandler(TestCase):
-
+class TestBrokerConnector(TestCase):
+    """ Unit test for the BrokerConnector class """
     def setUp(self):
         task_supervisor_knowledge = TaskSupervisorKnowledge()
         self.broker_connector = BrokerConnector(task_supervisor_knowledge)
-    
+
     def test_register_interface(self):
         test_interface = TestBrokerInterface("id", "broker_name")
         self.broker_connector.register_interface(test_interface)
@@ -83,7 +74,7 @@ class TestContextBrokerHandler(TestCase):
         with patch.object(test_interface_2, "subscribe") as mock:
             self.broker_connector.subscribe_to_specific("test_topic", "id_2")
         mock.assert_called_with("test_topic", opt_data=None, generic=False)
-    
+
     def test_subscribe_to_specific_generic(self):
         test_interface = TestBrokerInterface("id", "broker_name")
         test_interface_2 = TestBrokerInterface("id_2", "broker_name_2")
@@ -101,7 +92,7 @@ class TestContextBrokerHandler(TestCase):
         with patch.object(test_interface, "subscribe") as mock:
             self.broker_connector.subscribe_to_all("test_topic")
         mock.assert_called_with("test_topic", opt_data=None, generic=False)
-    
+
     def test_subscribe_to_all_generic(self):
         test_interface = TestBrokerInterface("id", "broker_name")
         self.broker_connector.register_interface(test_interface)
@@ -112,7 +103,7 @@ class TestContextBrokerHandler(TestCase):
     def test_retreive_with_materialflow(self):
         test_interface = TestBrokerInterface("id", "broker_name")
         self.broker_connector.register_interface(test_interface)
-        
+
         materialflow = Materialflow()
         self.broker_connector.retreive(materialflow, test_interface)
 
@@ -162,7 +153,7 @@ class TestContextBrokerHandler(TestCase):
         self.broker_connector.register_interface(test_interface_2)
 
         task_supervisor_info = TaskSupervisorInfo()
-        
+
         # check if methods in both interfaces are being called
         with patch.object(test_interface, "create") as mock:
             self.broker_connector.create(task_supervisor_info)
@@ -194,7 +185,7 @@ class TestContextBrokerHandler(TestCase):
         with patch.object(test_interface_2, "update") as mock_2:
             self.broker_connector.update(mf_spec_state)
         mock_2.assert_called_with(mf_spec_state)
-    
+
     def test_delete_with_entity(self):
         test_interface = TestBrokerInterface("id", "broker_name")
         test_interface_2 = TestBrokerInterface("id_2", "broker_name_2")
@@ -231,5 +222,5 @@ class TestContextBrokerHandler(TestCase):
         interface_id = self.broker_connector.get_interface_by_broker_id("id")
         self.assertEqual(interface_id, test_interface.broker_id)
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

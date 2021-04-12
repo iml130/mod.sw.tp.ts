@@ -1,6 +1,9 @@
+""" Contains MaterialflowSpecification Fiware class """
+
 from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
 
 class MaterialflowSpecificationState(FiwareEntity):
+    """ This entity provides information about the Materialflow and the processed TaskLanguage. """
     def __init__(self):
         FiwareEntity.__init__(self)
         self.refId = ""

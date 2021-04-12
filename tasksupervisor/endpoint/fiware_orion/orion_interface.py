@@ -1,5 +1,6 @@
+""" Contains OrionInterface class """
+
 import threading
-import json
 import logging
 
 # import local libs
@@ -8,7 +9,7 @@ import tasksupervisor.my_globals as my_globals
 from tasksupervisor.helpers import servercheck
 from tasksupervisor.helpers.config_reader import ConfigReader
 
-from tasksupervisor.endpoint.fiware_orion.flask.flask_setup import create_flask_app, FI_SUB_ID, FI_DATA 
+from tasksupervisor.endpoint.fiware_orion.flask.flask_setup import create_flask_app, FI_SUB_ID, FI_DATA
 
 from tasksupervisor.endpoint.fiware_orion.entities.materialflow import Materialflow
 from tasksupervisor.endpoint.fiware_orion.entities.sensor_agent_node import SensorAgent
@@ -48,16 +49,17 @@ class OrionInterface(BrokerInterface):
             parsed_config_file.is_valid()
         except Exception:
             raise Exception("Error while parsing Fiware config file")
-        
+
         self.context_broker_handler = ContextBrokerHandler(parsed_config_file.get_fiware_server_address())
 
         logger.info("Setting up thread_check_if_server_is_up")
-        self.thread_check_if_server_is_up = threading.Thread(name='checkServerRunning',
+        self.thread_check_if_server_is_up = threading.Thread(name="checkServerRunning",
                                                              target=servercheck.webserver_is_running,
                                                              args=("localhost", my_globals.parsed_config_file.TASKPLANNER_PORT,))
 
         logger.info("Setting up thread_flask_server")
-        self.thread_flask_server = threading.Thread(name='callback_flask_server', target=callback_flask_server, args=(self.flask_app,))
+        self.thread_flask_server = threading.Thread(name="callback_flask_server", target=callback_flask_server,
+                                                    args=(self.flask_app,))
 
     def start_interface(self):
         self.thread_check_if_server_is_up.start()
@@ -76,7 +78,7 @@ class OrionInterface(BrokerInterface):
                 description = opt_data.description
                 if class_name == "SensorAgent":
                     notification = my_globals.parsed_config_file.get_taskplanner_address() + "/san/" + opt_data.to_id
-                
+
             entities = [{"id": topic.id, "type": class_name}]
             sub_id = self.context_broker_handler.subscribe_to_entity(description, entities,
                                                                      notification, generic=generic)
@@ -92,12 +94,12 @@ class OrionInterface(BrokerInterface):
         fiware_entity.update_time()
         self.context_broker_handler.update_entity(fiware_entity)
 
-    def delete(self, id, delete_entity=True):
+    def delete(self, id_, delete_entity=True):
         with self.lock:
             if delete_entity:
-                self.context_broker_handler.delete_entity(id)
+                self.context_broker_handler.delete_entity(id_)
             else:
-                self.context_broker_handler.delete_subscription_by_id(id)
+                self.context_broker_handler.delete_subscription_by_id(id_)
 
     def create_fiware_entity(self, entity):
         class_name = str(entity.__class__.__name__)
@@ -132,8 +134,8 @@ class OrionInterface(BrokerInterface):
                         self.broker_connector.retreive(api_materialflow, self)
                 elif entity_type == "SensorAgent":
                     for temp_json_request in json_requests[FI_DATA]:
-                        orion_sensor_agent = SensorAgent.CreateObjectFromJson(temp_json_request)
-                        
+                        orion_sensor_agent = SensorAgent.create_object_from_json(temp_json_request)
+
                         api_sensor_agent = orion_sensor_agent.to_api_object()
                         self.broker_connector.retreive(api_sensor_agent, self)
             else:

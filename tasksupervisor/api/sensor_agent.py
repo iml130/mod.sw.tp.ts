@@ -1,5 +1,5 @@
-# using enum34
-from enum import IntEnum
+""" Contains SensorAgent and SensorData API class """
+
 import uuid
 
 class SensorData(object):
@@ -9,6 +9,7 @@ class SensorData(object):
         self.__dict__.update(entries)  # Insert values from given dict
 
 class SensorAgent():
+    """ Representation of a real world sensor """
     def __init__(self, _id=None):
         self.id = uuid.uuid4()
         self.type = "SensorAgent"
@@ -21,9 +22,9 @@ class SensorAgent():
         self.sensor_type = ""
         self.units = ""
 
-    def findSensorById(self, trigger_name):
+    def find_sensor_by_id(self, trigger_name):
         trigger_name = trigger_name.split(".")[0]
         for sdata in self.sensorData:
-            if(sdata.sensor_id == trigger_name):
+            if sdata.sensor_id == trigger_name:
                 return sdata
         return None

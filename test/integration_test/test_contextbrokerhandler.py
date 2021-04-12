@@ -1,8 +1,10 @@
+""" Contains TestContextBrokerHandler TestCase """
+
 import http
 import json
 import jsonschema
+import unittest
 from unittest import TestCase
-from unittest.mock import Mock, patch
 import requests
 
 # local imports
@@ -15,9 +17,10 @@ ENTITY_ADDRESS = FIWARE_ADDRESS + "/v2/entities"
 SUBSCRIPTION_ADDRESS = FIWARE_ADDRESS + "/v2/subscriptions"
 
 class TestContextBrokerHandler(TestCase):
+    """ Integration TestCase for the (Orion) ContextBrokerHandler """
     def setUp(self):
         self.context_broker_handler = ContextBrokerHandler(FIWARE_ADDRESS)
-    
+
     def tearDown(self):
         # If we test delete_subscription_by_id subscription is already deleted
         # Catch this exception and do nothing
@@ -43,7 +46,7 @@ class TestContextBrokerHandler(TestCase):
 
         self.assertEqual(response_is_ok(response.status_code), True)
 
-        content = json.loads(response.content.decode('utf-8'))
+        content = json.loads(response.content.decode("utf-8"))
         materialflow_schema = open("./tasksupervisor/endpoint/fiware_orion/flask/materialflow_schema.json")
 
         self.validate_schema(content[0], json.loads(materialflow_schema.read()))
@@ -63,7 +66,7 @@ class TestContextBrokerHandler(TestCase):
         response = requests.request("GET", ENTITY_ADDRESS)
         self.assertEqual(response_is_ok(response.status_code), True)
 
-        content = json.loads(response.content.decode('utf-8'))
+        content = json.loads(response.content.decode("utf-8"))
         self.assertEqual(content, [])
 
     def test_update_entity(self):
@@ -73,7 +76,7 @@ class TestContextBrokerHandler(TestCase):
         response = requests.request("GET", ENTITY_ADDRESS)
         self.assertEqual(response_is_ok(response.status_code), True)
 
-        content = json.loads(response.content.decode('utf-8'))
+        content = json.loads(response.content.decode("utf-8"))
         self.assertEqual(content[0]["active"]["value"], False)
 
         test_entity.active = True
@@ -82,14 +85,14 @@ class TestContextBrokerHandler(TestCase):
         response = requests.request("GET", ENTITY_ADDRESS)
         self.assertEqual(response_is_ok(response.status_code), True)
 
-        content = json.loads(response.content.decode('utf-8'))
+        content = json.loads(response.content.decode("utf-8"))
         self.assertEqual(content[0]["active"]["value"], True)
 
     def test_subscribe_to_entity(self):
         sub_id = self.context_broker_handler.subscribe_to_entity("test", [{"id": "id", "type": "type"}], FIWARE_ADDRESS)
         response = requests.request("GET", SUBSCRIPTION_ADDRESS)
         self.assertEqual(response_is_ok(response.status_code), True)
-        content = json.loads(response.content.decode('utf-8'))
+        content = json.loads(response.content.decode("utf-8"))
 
         self.assertEqual(len(content), 1)
         self.assertEqual(content[0]["id"], sub_id)
@@ -115,7 +118,7 @@ class TestContextBrokerHandler(TestCase):
         self.context_broker_handler.create_entity(test_entity_2)
 
         entities = self.context_broker_handler.get_entities(entity_type="Materialflow")
-        
+
         self.assertEqual(len(entities), 2)
         self.assertEqual(entities[0]["id"], test_entity.id)
         self.assertEqual(entities[1]["id"], test_entity_2.id)
@@ -126,14 +129,14 @@ class TestContextBrokerHandler(TestCase):
 
         response = requests.request("GET", SUBSCRIPTION_ADDRESS)
         self.assertEqual(response_is_ok(response.status_code), True)
-        content = json.loads(response.content.decode('utf-8'))
+        content = json.loads(response.content.decode("utf-8"))
 
         self.assertEqual(len(content), 0)
 
 def response_is_ok(status_code):
-    if(status_code >= http.client.OK and status_code <= http.client.IM_USED):  
+    if(status_code >= http.client.OK and status_code <= http.client.IM_USED): 
         return True
     return False
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

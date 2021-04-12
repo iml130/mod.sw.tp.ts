@@ -1,3 +1,8 @@
+"""
+    Contains a method for creation of a flask app and endpoint methods
+    for materialflows and sensor agents
+"""
+
 import os
 import logging
 import http.client
@@ -26,13 +31,13 @@ materialflow_schema = open("./tasksupervisor/endpoint/fiware_orion/flask/materia
 def create_flask_app(interface):
     app = Flask(__name__)
     logger.info("Registering Blueprints")
-    app.register_blueprint(construct_blueprint_sensor(interface), url_prefix='/san')
-    app.register_blueprint(construct_blueprint_materialflow(interface), url_prefix='/materialflow')
+    app.register_blueprint(construct_blueprint_sensor(interface), url_prefix="/san")
+    app.register_blueprint(construct_blueprint_materialflow(interface), url_prefix="/materialflow")
 
     logger.info("Registering Blueprints_done")
 
-    @app.route('/')
-    @app.route('/home')
+    @app.route("/")
+    @app.route("/home")
     def home():
         """Renders the landing page where a version number is returned."""
         return (VERSION, http.client.OK)
@@ -40,15 +45,14 @@ def create_flask_app(interface):
     return app
 
 def construct_blueprint_sensor(interface):
-    sensor_agent_node_blueprint = Blueprint(
-        'sensor_agent_node_endpoint', __name__)
+    sensor_agent_node_blueprint = Blueprint("sensor_agent_node_endpoint", __name__)
 
-    @sensor_agent_node_blueprint.route('/<token>', methods=['GET', 'POST'])
+    @sensor_agent_node_blueprint.route("/<token>", methods=["GET", "POST"])
     def sensor_agent_node_endpoint(token):
         """ Endpoint for the Sensor Agent to handle update notification """
         if request.json:
             json_request = request.json
-            #dictQueue.put_data(token, jsonReq)
+
             if FI_SUB_ID in json_request and FI_DATA in json_request:
                 interface.retreive(json_request)
             else:
@@ -62,23 +66,23 @@ def construct_blueprint_sensor(interface):
 
 def construct_blueprint_materialflow(interface):
 
-    materialflow_blueprint = Blueprint('materialflow_endpoint', __name__)
+    materialflow_blueprint = Blueprint("materialflow_endpoint", __name__)
 
-    @materialflow_blueprint.route('', methods=['GET', 'POST'])
+    @materialflow_blueprint.route("", methods=["GET", "POST"])
     def materialflow_endpoint():
         """ Endpoint for getting a new materialflow description and validates it against a json schema """
         logger.info("taskEP is running and received new data")
         if request.json:
             # handle POST request
             json_requests = request.json
-            # decodedString = jsonReq['data'][0]["TaskSpec"]["value"]
+            # decodedString = jsonReq["data"][0]["TaskSpec"]["value"]
             # decodedString = urllib.unquote_plus(decodedString)
 
             # retVal = checkTaskLanguage(decodedString)
 
             try:
                 jsonschema.validate(
-                    json_requests['data'][0], json.loads(materialflow_schema))
+                    json_requests["data"][0], json.loads(materialflow_schema))
             except jsonschema.ValidationError as err:
                 logger.error(
                     "Materialflow Endpoint ValidationError: %s", str(err.message))
@@ -91,7 +95,6 @@ def construct_blueprint_materialflow(interface):
                 logger.error("General error")
 
             if(FI_SUB_ID in json_requests and FI_DATA in json_requests):
-                subscription_id = json_requests[FI_SUB_ID]
                 # a lock is needed ohterwise it is possible that we receive a notification BEFORE we could add it
                 # if this doesnt work, a work around could be a delay of handling the notification (time.sleep(0.5))
                 with my_globals.lock:
@@ -102,11 +105,11 @@ def construct_blueprint_materialflow(interface):
         else:
             # handle GET request
 
-            if os.path.isfile('../images/task.png'):
+            if os.path.isfile("../images/task.png"):
                 full_filename = "../images/task.png"
             else:
-                full_filename = '../images/idle.png'
-            return send_file(full_filename, mimetype='image/png')
+                full_filename = "../images/idle.png"
+            return send_file(full_filename, mimetype="image/png")
         return "ok", http.client.CREATED
 
     return materialflow_blueprint

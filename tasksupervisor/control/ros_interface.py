@@ -1,10 +1,13 @@
+""" Contains RosControl class """
+
 # import system libs
 import logging
 
 # import 3rd party libs
 import rospy
 
-from mars_agent_logical_srvs.srv import AddTransportOrder, AddTransportOrderRequest, ManualActionDone, ManualActionDoneRequest
+from mars_agent_logical_srvs.srv import AddTransportOrder, AddTransportOrderRequest
+from mars_agent_logical_srvs.srv import ManualActionDone, ManualActionDoneRequest
 from mars_agent_logical_msgs.msg import TransportOrder, TransportOrderStep, MoveOrder
 from mars_agent_physical_robot_msgs.msg import RobotAction
 from mars_agent_physical_robot_msgs.msg._RobotAction import RobotAction as ROBOT_ACTION
@@ -13,10 +16,8 @@ from mars_topology_msgs.msg import TopologyEntity, TopologyEntityType
 from mars_common.Id import Id, IdType
 from std_msgs.msg import Duration
 
-
 # import local libs
 from .interface import FormalControlInterface
-
 
 logger = logging.getLogger(__name__)
 
@@ -27,7 +28,7 @@ TOPIC_MANUAL_ACTION_DONE = "manual_action_done"
 
 
 class RosControl(FormalControlInterface):
-
+    """ Implementation of the FormalControlInterface for ROS """
     def __init__(self, robot_id : str):
         self.robot_id = robot_id
         self.status = 0
@@ -48,7 +49,8 @@ class RosControl(FormalControlInterface):
 
             # FROM
             move_order_from = MoveOrder(move_order_id=ros_task_id.to_msg(), destination_entity=TopologyEntity(
-                id=ros_from_id.to_msg(), entity_type=TopologyEntityType(10)), destination_reservation_time=duration.data)
+                id=ros_from_id.to_msg(), entity_type=TopologyEntityType(10)),
+                destination_reservation_time=duration.data)
             robot_action_load = RobotAction(
                 category=ROBOT_ACTION.CATEGORY_MANUAL_LOAD, description="load")
 
@@ -111,8 +113,3 @@ class RosControl(FormalControlInterface):
 
     def _create_topic(self, robot_id, topic):
         return NAMESPACE + str(robot_id) + "/" + str(topic)
-
-
-if __name__ == "__main__":
-    temp_ros_control = RosControl()
-    temp_ros_control.create_transport_order("1", "2", "3", "4")

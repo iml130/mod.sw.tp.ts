@@ -1,7 +1,8 @@
+""" Contains OrionInterface TestCase """
+
 import unittest
 from unittest import TestCase
 from unittest.mock import Mock, patch
-import requests
 
 # local imports
 from tasksupervisor.endpoint.fiware_orion.orion_interface import OrionInterface
@@ -13,9 +14,8 @@ from tasksupervisor.endpoint.fiware_orion.contextbrokerhandler import ContextBro
 from tasksupervisor.endpoint.fiware_orion.entities.materialflow_specification_state import MaterialflowSpecificationState
 from tasksupervisor.api import materialflow_specification_state
 from tasksupervisor.api import materialflow
-from tasksupervisor.api import sensor_agent
 
-from tasksupervisor import my_globals 
+from tasksupervisor import my_globals
 
 JSON_MATERIALFLOW_DUMMY = {
     "subscriptionId": "sub_id",
@@ -42,7 +42,7 @@ JSON_MATERIALFLOW_DUMMY = {
 
 JSON_SENSOR_AGENT_DUMMY = {
     "subscriptionId": "sub_id",
-    "data": 
+    "data":
     [
         {
             "id": "test_id",
@@ -106,7 +106,7 @@ class OptData:
         self.description = description
 
 class TestOrionInterface(TestCase):
-
+    """ Unit test for the OrionInterface class """
     def setUp(self):
         task_supervisor_knowledge = TaskSupervisorKnowledge()
         broker_connector = BrokerConnector(task_supervisor_knowledge)
@@ -191,7 +191,7 @@ class TestOrionInterface(TestCase):
 
         with patch.object(self.orion_interface.broker_connector, "retreive") as mock:
             self.orion_interface.retreive(json_dummy)
-        
+
         self.assertEqual(len(mock.call_args), 2)
 
         new_materialflow = mock.call_args[0][0]
@@ -211,12 +211,11 @@ class TestOrionInterface(TestCase):
 
         with patch.object(self.orion_interface.broker_connector, "retreive") as mock:
             self.orion_interface.retreive(json_dummy)
-        
+
         self.assertIsNotNone(mock.call_args)
         self.assertEqual(len(mock.call_args), 2)
 
         new_sensor_agent = mock.call_args[0][0]
-        interface = mock.call_args[0][1]
 
         self.assertEqual(new_sensor_agent.id, "test_id")
         self.assertEqual(new_sensor_agent.measurement_type, "boolean")
@@ -228,5 +227,5 @@ class TestOrionInterface(TestCase):
         self.assertEqual(new_sensor_agent.units, "boolean")
         self.assertEqual(new_sensor_agent.readings, [{"reading": False}])
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     unittest.main()

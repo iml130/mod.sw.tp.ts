@@ -1,7 +1,13 @@
+""" Contains TransportOrderUpdate FIware class """
+
 from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
 from tasksupervisor.TaskSupervisor.user_action import UserAction
 
 class TransportOrderUpdate(FiwareEntity):
+    """
+        Once, a Transportion by an AGV starts, the TaskPlanner will create a TransportOrderUpdate.
+        It contains information about the TransportOrder for example the start time.    
+    """
     def __init__(self, _transport_order=None):
         FiwareEntity.__init__(self)
 
@@ -55,4 +61,3 @@ class TransportOrderUpdate(FiwareEntity):
         transport_order_update.robotId = api_transport_order_update.robot_id
 
         return transport_order_update
-

@@ -1,3 +1,5 @@
+""" Contains global variables """
+
 import sys
 import queue
 import threading

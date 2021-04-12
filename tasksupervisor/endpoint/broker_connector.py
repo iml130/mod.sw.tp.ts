@@ -1,15 +1,20 @@
+""" Contains BrokerConnector and BrokerException class """
+
 from tasksupervisor import my_globals
 
 class BrokerException(Exception):
-    def __init__(self, status, message, *args, **kwargs):
-        super().__init__(status, message, *args, **kwargs)
+    """
+        Gets raised if something went wrong while interacting with the Broker.
+        For example unexcepted or error status codes.
+    """
+    pass
 
 class BrokerConnector:
     """
         Layer between Broker Interfaces and Supervisor.
         Manages multiple Interface instances and the correct distribution of messages
     """
-    
+
     def __init__(self, task_supervisor):
         self.interfaces = {}
         self.task_supervisor = task_supervisor
@@ -65,15 +70,15 @@ class BrokerConnector:
             interface = self.get_interface_by_broker_id(entity.broker_ref_id)
             interface.update(entity)
 
-    def delete(self, id, broker_id, delete_entity=True):
+    def delete(self, id_, broker_id, delete_entity=True):
         interface = self.get_interface_by_broker_id(broker_id)
-        interface.delete(id, delete_entity=delete_entity)
+        interface.delete(id_, delete_entity=delete_entity)
 
     def get_interface_by_broker_id(self, broker_id):
         if broker_id in self.interfaces:
             return self.interfaces[broker_id]
         raise ValueError("Unknown BrokerID: {}".format(broker_id))
-    
+
     def shutdown(self):
         for interface in self.interfaces.values():
             interface.shutdown()

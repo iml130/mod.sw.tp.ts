@@ -1,3 +1,5 @@
+""" Contains ContextBrokerHandler class """
+
 import http.client
 import json
 import logging
@@ -16,6 +18,7 @@ ENTITIES = "entities"
 SUBSCRIPTIONS = "subscriptions"
 
 class ContextBrokerHandler:
+    """ This class provides methods for interaction with the Orion Context Broker """
     lock = threading.Lock()
     HEADER = {"Content-Type": "application/json"}
     HEADER_NO_PAYLOAD = {
@@ -35,7 +38,7 @@ class ContextBrokerHandler:
         response = None
         try:
             response = requests.request(
-                method, url, data=data, headers=kwargs['headers'], timeout=self.TIMEOUT)
+                method, url, data=data, headers=kwargs["headers"], timeout=self.TIMEOUT)
         except requests.exceptions.Timeout as err:
             logger.error("Orion Timeout")
             raise err
@@ -57,10 +60,11 @@ class ContextBrokerHandler:
             response = self._request("POST", self._getUrl(ENTITIES), data=json_obj, headers=self.HEADER)
             status_code = response.status_code
             if not response_is_ok(status_code):
+                logger.error("Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
                 raise BrokerException(status_code, "Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
             else:
                 self.published_entities.append(str(entity_instance.id))
-    
+
     def delete_entity(self, entity_id):
         with self.lock:
             logger.info("Id: %s", str(entity_id))
@@ -70,6 +74,7 @@ class ContextBrokerHandler:
             status_code = response.status_code
 
             if not response_is_ok(status_code):
+                logger.error("Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
                 raise BrokerException(status_code, "Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
             else:
                 logger.info("Id: %s - Done", str(entity_id))
@@ -85,6 +90,7 @@ class ContextBrokerHandler:
                 ENTITIES + "/" + entity_id + "/attrs"), data=json_obj, headers=self.HEADER)
             status_code = response.status_code
             if not response_is_ok(status_code):
+                logger.error("Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
                 raise BrokerException(status_code, "Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
             else:
                 logger.info("Id: %s", str(entity_instance))
@@ -106,8 +112,8 @@ class ContextBrokerHandler:
             subject["entities"] = entities
             if generic:
                 for item in subject["entities"]:
-                    item['idPattern'] = ".*"
-                    del item['id']
+                    item["idPattern"] = ".*"
+                    del item["id"]
             if has_condition:
                 subject["condition"] = (has_condition)
 
@@ -128,12 +134,12 @@ class ContextBrokerHandler:
             response = self._request("POST", self._getUrl(
                 SUBSCRIPTIONS), data=json.dumps(msg), headers=self.HEADER)
 
-            subscription_id = response.headers.get('Location').replace("/v2/subscriptions/", "")
+            subscription_id = response.headers.get("Location").replace("/v2/subscriptions/", "")
             logger.info("Subscriptions Id: %s", subscription_id)
 
             status_code = response.status_code
             if not response_is_ok(status_code):
-                logger.info("Subscriptions Failed: %s" + str(status_code))
+                logger.error("Unexpected HTTP status code {} received while subscribing: {}".format(str(status_code), str(response.content)))
                 raise BrokerException(status_code, "Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
             else:
                 logger.info("Subscriptions OK")
@@ -147,7 +153,7 @@ class ContextBrokerHandler:
                     SUBSCRIPTIONS) + "/" + id_, headers=self.HEADER_NO_PAYLOAD)
                 status_code = response.status_code
                 if not response_is_ok(status_code):
-                    logger.info("Subscription deletion Failed: " + id_)
+                    logger.error("Unexpected HTTP status code {} received while deleting id: {}".format(str(status_code), str(response.content)))
                     raise BrokerException(status_code, "Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
                 else:
                     logger.info("Subscriptions Deleted: " + id_)
@@ -164,10 +170,10 @@ class ContextBrokerHandler:
 
         status_code = response.status_code
         if not response_is_ok(status_code):
-            logger.info("Get entities failed: " + str(status_code))
+            logger.error("Unexpected HTTP status code {} received for get_entities: {}".format(str(status_code), str(response.content)))
             raise BrokerException(status_code, "Unexpected HTTP status code {} received: {}".format(str(status_code), str(response.content)))
         else:
-            return json.loads(response.content.decode('utf-8'))
+            return json.loads(response.content.decode("utf-8"))
 
     def attach_entity(self, entity):
         self.entities.append(entity)
@@ -192,11 +198,11 @@ class ContextBrokerHandler:
         return self.fiware_address + "/v1/updateContext"
 
 def response_is_ok(status_code):
-    if(status_code >= http.client.OK and status_code <= http.client.IM_USED):  
+    if(status_code >= http.client.OK and status_code <= http.client.IM_USED):
         return True
     return False
 
 def convert_object_to_json_array(obj):
     temp_array = []
     temp_array.append(obj)
-    return (temp_array)
+    return temp_array

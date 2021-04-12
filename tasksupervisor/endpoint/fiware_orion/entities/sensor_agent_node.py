@@ -1,5 +1,4 @@
-# using enum34
-from enum import IntEnum
+""" Contains SensorAgent and SensorData Fiware class """
 
 from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
 from fiwareobjectconverter.object_fiware_converter import ObjectFiwareConverter
@@ -42,10 +41,10 @@ class SensorAgent(FiwareEntity):
         return api_sensor_agent
 
     @classmethod
-    def CreateObjectFromJson(cls, _my_json):
+    def create_object_from_json(cls, my_json):
         sa = SensorAgent()
         try:
-            ObjectFiwareConverter.fiware2Obj(_my_json, sa, setAttr=True)
+            ObjectFiwareConverter.fiware2Obj(my_json, sa, setAttr=True)
             # for i in range(len(sa.sensorData)):
             #     print sa.sensorData[i]
             #     sa.sensorData[i] = SensorData(**sa.sensorData[i])
@@ -54,9 +53,9 @@ class SensorAgent(FiwareEntity):
 
         return sa
 
-    def findSensorById(self, _trigger_name):
-        _trigger_name = _trigger_name.split(".")[0]
+    def find_sensor_by_id(self, trigger_name):
+        trigger_name = trigger_name.split(".")[0]
         for sdata in self.sensorData:
-            if(sdata.sensorId == _trigger_name):
+            if(sdata.sensorId == trigger_name):
                 return sdata
         return None

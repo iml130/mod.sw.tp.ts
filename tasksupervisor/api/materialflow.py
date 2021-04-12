@@ -1,3 +1,5 @@
+""" Contains Materialflow API class """
+
 import uuid
 
 class Materialflow():

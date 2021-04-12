@@ -22,7 +22,7 @@ from tasksupervisor.TaskSupervisor.transport_order_state_machine import TRANSPOR
 from tasksupervisor.TaskSupervisor.taskState import State
 from tasksupervisor.helpers.utc import get_utc_time
 
-from tasksupervisor.TaskSupervisor.multiq import multi_queue
+from tasksupervisor.TaskSupervisor.multiq import MultiQueue
 from tasksupervisor.TaskSupervisor.user_action import UserAction
 
 
@@ -51,23 +51,25 @@ class OptData(object):
         self.to_id = to_id
 
 class TransportOrder(threading.Thread):
-    def __init__(self, _uuid, _refMaterialflowUpdateId, _refOwnerId, queueTransportOrders, task_supervisor_knowledge, broker_ref_id):
+    """ Manages the different states of a TransportOrder and controls the AGVs """
+    def __init__(self, uuid_, _refMaterialflowUpdateId, _refOwnerId,
+                 queueTransportOrders, task_supervisor_knowledge, broker_ref_id):
         threading.Thread.__init__(self)
 
         # these attributes representing the materialflow
         self._to_info = None
-        self._event_info_triggered_by = None # triggered_by of the task 
+        self._event_info_triggered_by = None # triggered_by of the task
         self._event_info_finished_by = None # finished_by of the task
         self._wait_for_trigger = False
         self._wait_for_finished_by = False
 
         # internal attributes
-        self.id = str(_uuid)
+        self.id = str(uuid_)
         self.ref_materialflow_update_id = _refMaterialflowUpdateId
         self.ref_owner_id = _refOwnerId
         self.broker_ref_id = broker_ref_id
         self.start_time = get_utc_time()
-        self.task_name = str(_uuid)
+        self.task_name = str(uuid_)
         self.state = State.Idle
         self._task_supervisor_knowledge = task_supervisor_knowledge
         self._to_state_machine = TransportOrderStateMachine(
@@ -141,7 +143,7 @@ class TransportOrder(threading.Thread):
         self.state = State.Running
         send_transport_order = True
 
-        select_on_queues = multi_queue(
+        select_on_queues = MultiQueue(
             [self._sensor_queue, self._internal_queue])
 
         while(self._to_state_machine.get_state() != "finished" and self._to_state_machine.get_state() != "error"):
@@ -283,9 +285,10 @@ class TransportOrder(threading.Thread):
 
                         self._task_supervisor_knowledge.broker_connector.update(
                             self._transport_order_update)
-                        
+
                         # send info to scheduler
-                        self._queue_to_materialflow.put((self.task_name, Event("moved_to_location", "", "Boolean", value=True)))
+                        self._queue_to_materialflow.put((self.task_name, Event("moved_to_location", "",
+                         "Boolean", value=True)))
 
             elif self.is_current_state(TRANSPORT_ORDER_STATES.WAITING_FOR_LOADING):
                 logger.info("current_state: %s, id: %s, TaskName: %s",
@@ -317,9 +320,9 @@ class TransportOrder(threading.Thread):
                     sensor_physical_name = sensor_entity_data.sensor_id
                     for event_info in self._to_info.pickup_tos.finished_by:
                         if event_info.physical_name == sensor_physical_name:
-                            self._queue_to_materialflow.put((self.task_name, Event(
-                                event_info.logical_name, sensor_physical_name, event_info.event_type, "", sensor_value)))
-
+                            self._queue_to_materialflow.put((self.task_name,
+                                                             Event(event_info.logical_name, sensor_physical_name,
+                                                                   event_info.event_type, "", sensor_value)))
                 else:  # automatic loaded is now simulated ;)
                     self._to_state_machine.AgvIsLoaded()
 
@@ -413,8 +416,10 @@ class TransportOrder(threading.Thread):
 
                     for event_info in self._to_info.delivery_tos.finished_by:
                         if event_info.physical_name == sensor_physical_name:
-                            self._queue_to_materialflow.put((self.task_name, Event(
-                                event_info.logical_name, sensor_physical_name, event_info.event_type, "", sensor_value)))
+                            self._queue_to_materialflow.put((self.task_name, Event(event_info.logical_name,
+                                                                                   sensor_physical_name,
+                                                                                   event_info.event_type,
+                                                                                   "", sensor_value)))
                 else:
                     self._to_state_machine.AgvIsUnloaded()
                 pass
@@ -431,7 +436,6 @@ class TransportOrder(threading.Thread):
                         sensor_agent = SensorAgent(
                             wait_for_fb.physical_name)
 
-                        
                         opt_data = OptData(self.get_subscription_desc() + "WaitForFinishedBy", self.id)
                         temp_subscription_id = self._task_supervisor_knowledge.broker_connector.subscribe_to_specific(sensor_agent, self.broker_ref_id, opt_data=opt_data)
 

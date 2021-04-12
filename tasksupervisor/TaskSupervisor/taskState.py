@@ -1,18 +1,19 @@
-from enum import IntEnum
+""" Contains TaskState class """
+
 from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
+from tasksupervisor.endpoint.fiware_orion.entities.task import Task
 
 class TaskState(FiwareEntity):
-
+    """ Represents the current state of the Task """
     def __init__(self, _task):
-        if(not isinstance(_task, Task)):
+        if not isinstance(_task, Task):
             raise Exception("TypeMissmatch")
         FiwareEntity.__init__(self, id=_task.id)
         self.name = _task.taskName
         self.state = State.Idle
-        self.taskId = _task.id
-        self.taskManagerId = _task.taskManagerId
-        # self.taskSpecUuid = None
-        self.errorMessage = ""
+        self.task_id = _task.id
+        self.task_manager_id = _task.taskManagerId
+        self.error_message = ""
 
 
 class State():

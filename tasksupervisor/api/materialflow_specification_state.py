@@ -1,8 +1,11 @@
+""" Contains MaterialflowSpecificationState and SpecState API class """
+
 import uuid
 
 class MaterialflowSpecificationState():
+    """ This entity provides information about the Materialflow and the processed TaskLanguage. """
     def __init__(self):
-        self.id = uuid.uuid4() 
+        self.id = uuid.uuid4()
         self.ref_id = ""
         self.state = SpecState.Idle
         self.message = ""

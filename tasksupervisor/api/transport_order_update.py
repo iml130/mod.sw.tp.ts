@@ -1,8 +1,14 @@
+""" Contains TransportOrderUpdate API class """
+
 import uuid
 
 from tasksupervisor.TaskSupervisor.user_action import UserAction
 
 class TransportOrderUpdate():
+    """
+        Once, a Transportion by an AGV starts, the TaskPlanner will create a TransportOrderUpdate.
+        It contains information about the TransportOrder for example the start time.    
+    """
     def __init__(self, transport_order):
         self.id = uuid.uuid4() 
         self.name = transport_order.task_name

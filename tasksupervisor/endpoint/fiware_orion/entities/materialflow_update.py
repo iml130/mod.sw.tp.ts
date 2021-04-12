@@ -1,3 +1,5 @@
+""" Contains MaterialflowUpdate Fiware class """
+
 from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
 from tasksupervisor.helpers.utc import get_utc_time
 

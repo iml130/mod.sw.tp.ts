@@ -1,9 +1,8 @@
-# using enum34
-from enum import IntEnum
+""" Contains Task and TaskState Fiware class """
 
 from tasksupervisor.endpoint.fiware_orion.entities.entity import FiwareEntity
 
-class Task(FiwareEntity): 
+class Task(FiwareEntity):
     def __init__(self): 
         self.state = TaskState.NoTask
         self.taskId = 1
@@ -17,11 +16,3 @@ class TaskState():
     Cancel = 3
     EmergencyStop = 4
     Reset = 5
-
-# class TaskOrder():
-#     New = 0 
-#     Start = 1
-#     Pause = 2
-#     Cancel = 3
-#     EmergencyStop = 4
-#     Reset = 5

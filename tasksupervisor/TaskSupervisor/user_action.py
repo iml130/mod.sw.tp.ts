@@ -1,3 +1,5 @@
+""" Contains UserAction class """
+
 class UserAction():
     Idle = 0
     WaitForStartTrigger = 1

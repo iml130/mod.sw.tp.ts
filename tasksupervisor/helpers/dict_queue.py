@@ -1,3 +1,5 @@
+""" Contains DictQueue class """
+
 import threading
 import queue
 import logging
