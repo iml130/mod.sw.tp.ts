@@ -30,7 +30,6 @@ jobs:
 
       - name: Test
         run: |
-            cd ../..
             python -m xmlrunner discover -s test -v -o ./tmp/build/junit-reports
 
       - uses: actions/upload-artifact@v2
