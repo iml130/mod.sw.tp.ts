@@ -29,4 +29,4 @@ jobs:
       - name: Test
         run: |
           cd test/integration_test
-          docker-compose down; docker-compose up --exit-code-from integration_test integration_test
+          docker-compose down; docker-compose up --exit-code-from integration-test integration-test
