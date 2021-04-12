@@ -13,7 +13,7 @@ jobs:
       - name: Run docker-compose
         run: |
           cd test/integration_test
-          docker-compose down; docker-compose up
+          docker-compose down; docker-compose up -d
 
   unit-tests:
     needs: orion-setup 
