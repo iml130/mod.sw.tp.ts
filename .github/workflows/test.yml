@@ -7,9 +7,9 @@ jobs:
   unit-tests:
     # Set the type of machine to run on
     runs-on: ubuntu-latest
-
-    ports:
-      - 1026:1026
+    
+    env:
+      PORT: 1026
     steps:
       # Checks out a copy of your repository on the ubuntu-latest machine
       - uses: actions/checkout@v2
