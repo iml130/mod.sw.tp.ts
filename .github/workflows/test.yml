@@ -22,10 +22,14 @@ jobs:
           sudo ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime
           pip3 install -r "requirements.txt"
           export PYTHONIOENCODING=utf-8
+
+      - name: Setup Orion
+        run: |
+          cd test/integration_test
+          docker-compose down; docker-compose up -d
+
       - name: Test
         run: |
-            cd test/integration_test
-            docker-compose down; docker-compose up -d
             cd ../..
             python -m xmlrunner discover -s test -v -o ./tmp/build/junit-reports
 
