@@ -7,6 +7,9 @@ jobs:
   orion-setup:
     runs-on: ubuntu-latest
     steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - uses: actions/checkout@v2
+
       - name: Run docker-compose
         run: |
           cd test/integration_test
@@ -17,9 +20,6 @@ jobs:
     # Set the type of machine to run on
     runs-on: ubuntu-latest
     steps:
-      # Checks out a copy of your repository on the ubuntu-latest machine
-      - uses: actions/checkout@v2
-
       - uses: actions/setup-python@v2
         with:
           python-version: '3.8'
