@@ -12,7 +12,7 @@ from tasksupervisor.endpoint.fiware_orion.contextbrokerhandler import ContextBro
 from tasksupervisor.endpoint.fiware_orion.contextbrokerhandler import BrokerException
 from tasksupervisor.endpoint.fiware_orion.entities.materialflow import Materialflow
 
-FIWARE_ADDRESS = "http://127.0.0.1:1026"
+FIWARE_ADDRESS = "http://orion:1026"
 ENTITY_ADDRESS = FIWARE_ADDRESS + "/v2/entities"
 SUBSCRIPTION_ADDRESS = FIWARE_ADDRESS + "/v2/subscriptions"
 
