@@ -1,3 +1,4 @@
+import os
 import http
 import threading
 import json
@@ -20,6 +21,7 @@ FLASK_PORT = 2906
 
 ORION_PORT = 1026
 
+# Host names used here are for testing with github actions only
 FIWARE_ADDRESS = "http://orion:1026"
 ENTITY_ADDRESS = FIWARE_ADDRESS + "/v2/entities"
 
@@ -123,14 +125,15 @@ class TestOrionEndpoints(TestCase):
 
         thread_flask_server = threading.Thread(name="callback_flask_server", target=callback_flask_server,
                                                     args=(cls.app,))
+        thread_flask_server.setDaemon(True) # Terminate when main thread terminates
         thread_flask_server.start()
 
         cls.context_broker_handler = ContextBrokerHandler(FIWARE_ADDRESS)
 
     def tearDown(self):
-        #TestOrionEndpoints.context_broker_handler.shutdown()
+        TestOrionEndpoints.context_broker_handler.shutdown()
         requests.request("DELETE", ENTITY_ADDRESS + "/" + str("mf_id"), headers=HEADER_NO_PAYLOAD)
-        requests.request("DELETE", ENTITY_ADDRESS + "/" + str("sensor_id"), headers=HEADER_NO_PAYLOAD)
+        requests.request("DELETE", ENTITY_ADDRESS + "/" + str("sensor_id"), headers=HEADER_NO_PAYLOAD) 
 
     def test_materialflow_endpoint(self):
         topic = Materialflow()
