@@ -1,3 +1,5 @@
+""" Contains TransportOrderStateMachine class """
+
 from transitions import Machine
 import random
 import uuid
@@ -9,11 +11,12 @@ from enum import Enum
 # a singleton-task-generator also to store the latest information
 # configuration file (first: hardcoded, later config file)
 #
-def createUuid(salt):
+def create_uuid(salt):
     return uuid.uuid3(uuid.NAMESPACE_URL, salt)
 
 
 class TRANSPORT_ORDER_STATES(Enum):
+    """ Representation of all the states a TransportOrder can take """
     INIT = 0
     WAIT_FOR_TRIGGER = 1
     START_PICKUP = 2
@@ -29,7 +32,7 @@ class TRANSPORT_ORDER_STATES(Enum):
 
 
 class TransportOrderStateMachine(object):
-
+    """ A state machine to process events a TransportOrder receives """
     # Define some states. Most of the time, narcoleptic superheroes are just like
     # everyone else. Except for...
     states = ['init', 'waitForTrigger', 'startPickup', 'movingToPickup', 'waitForLoading', 'startDelivery',
@@ -38,7 +41,7 @@ class TransportOrderStateMachine(object):
     def __init__(self, name):
         self.name = name
         #self.task = task
-        self.uuid = createUuid(self.name)
+        self.uuid = create_uuid(self.name)
         print(self.uuid)
         # Initialize the state machine
         self.machine = Machine(
@@ -96,26 +99,16 @@ class TransportOrderStateMachine(object):
         self.machine.add_transition('Panic', '*', 'error')
         self.machine.add_transition('Init', 'error', 'init')
 
-    # def registerForTrigger(self):
-    #     print "reigstererd for Trigger"
-
     def get_state(self):
         return self.state
 
-    def current_state_is(self, _state):
-        if not isinstance(_state, TRANSPORT_ORDER_STATES):
-            raise RuntimeError("Wrong parameter")
-        if self.__dict__["state"]:
-            if self.state == self.states[_state.value]:
+    def current_state_is(self, state_):
+        if not isinstance(state_, TRANSPORT_ORDER_STATES):
+            raise RuntimeError('Wrong parameter')
+        if self.__dict__['state']:
+            if self.state == self.states[state_.value]:
                 return True
         return False
 
-    def getUuid(self):
+    def get_uuid(self):
         return self.uuid
-
-
-if __name__ == "__main__":
-    to_state = TransportOrderStateMachine("peter")
-    print(to_state.current_state_is(234))
-    print(to_state.current_state_is(TRANSPORT_ORDER_STATES.INIT))
-    print(to_state.current_state_is(TRANSPORT_ORDER_STATES.WAIT_FOR_TRIGGER))

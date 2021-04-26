@@ -1,7 +1,4 @@
-__author__ = "Peter Detzner"
-__maintainer__ = "Peter Detzner"
-__version__ = "0.0.1a"
-__status__ = "Developement"
+""" Contains a method for checking if a webserver is running """
 
 import urllib
 import http.client
@@ -11,10 +8,8 @@ MAX_CHECK = 100
 
 logger = logging.getLogger(__name__)
 
-# check if the server is running, otherwise wait until
-
-
 def webserver_is_running(server_address, port):
+    """ checks if the server is running, otherwise waits until """
     do_forever = True
     max_check_counter = 0
     while do_forever:

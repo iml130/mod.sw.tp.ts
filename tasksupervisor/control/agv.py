@@ -1,4 +1,7 @@
+""" Contains Location and AGV class """
+
 class Location():
+    """ A physical location """
     def __init__(self):
         self.coord_x = 0
         self.coord_y = 0
@@ -24,6 +27,7 @@ class WorkingQueue():
 
 
 class AGV():
+    """ Representation of an real world AGV """
     def __init__(self, _id, _name, _type):
         self.id = _id
         self.name = _name
@@ -31,7 +35,6 @@ class AGV():
         self.location = Location()
         self.working_queue = WorkingQueue()
         self.control = None
-        
-    
+
     def set_control(self, control):
         self.control = control

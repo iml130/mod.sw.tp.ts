@@ -10,3 +10,5 @@ matplotlib
 fiwareobjectconverter==0.1.1
 lotlan-scheduler
 sqlalchemy
+unittest-xml-reporting
+xmlrunner

@@ -1,7 +1,9 @@
+""" Contains FormalOptimizationInterface class """
+
 import abc
 
-
 class FormalOptimizationInterface(metaclass=abc.ABCMeta):
+    """ Interface for implementing a optimization strategy """
     agv_manager = None
     agv_types = []
     agv_current_index = []
@@ -12,7 +14,7 @@ class FormalOptimizationInterface(metaclass=abc.ABCMeta):
                 NotImplemented)
 
     @abc.abstractmethod
-    def get_next_agv_by_type(self, _task_id: str):
+    def get_next_agv_by_type(self, task_id: str):
         """Load in the data set"""
         raise NotImplementedError
 

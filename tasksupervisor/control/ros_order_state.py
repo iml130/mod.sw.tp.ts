@@ -1,7 +1,9 @@
+""" Contains Ros OrderState classes """
+
 import uuid
 
-
 class OrderState(object):
+    """ A Ros Order State """
     def __init__(self):
         self.uuid = ""
         self.type = 0

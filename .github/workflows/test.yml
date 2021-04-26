@@ -1,0 +1,32 @@
+name: Unit-Tests
+
+# Run this workflow every time a new commit pushed to your repository
+on: push
+
+jobs:
+  unit-tests:
+    # Set the type of machine to run on
+    runs-on: ubuntu-latest
+    
+    env:
+      PORT: 1026
+    steps:
+      # Checks out a copy of your repository on the ubuntu-latest machine
+      - uses: actions/checkout@v2
+
+      - uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
+
+      - name: Setup Testing
+        run: |
+          sudo apt -qq update
+          sudo apt -qq install -y graphviz
+          sudo ln -fs /usr/share/zoneinfo/Europe/Berlin /etc/localtime
+          pip3 install -r "requirements.txt"
+          export PYTHONIOENCODING=utf-8
+
+      - name: Test
+        run: |
+          cd test/integration_test
+          docker-compose down; docker-compose up --exit-code-from integration-test integration-test
